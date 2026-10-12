@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: alkhairate-backend
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: alhabibfadoul@gmail.com
+      - key: ADMIN_PASSWORD
+        value: Mast@66341078@
+      - key: CORS_ORIGIN
+        value: "http://localhost:4000,http://localhost:8080"

@@ -2,9 +2,10 @@
   "name": "eaepcg-webapp",
   "private": true,
   "scripts": {
-    "start": "npm --prefix backend start",
+    "build": "npm --prefix backend install",
+    "start": "node backend/server.js",
+    "backend": "npm --prefix backend start",
     "db:init": "npm --prefix backend run db:init",
-    "seed-admin": "npm --prefix backend run seed-admin",
-    "install:backend": "npm --prefix backend install"
+    "seed-admin": "npm --prefix backend run seed-admin"
   }
 }

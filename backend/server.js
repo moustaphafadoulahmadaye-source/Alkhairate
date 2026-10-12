@@ -30,6 +30,7 @@ function isAllowedOrigin(origin) {
     if (
       hostname === 'localhost' ||
       hostname === '127.0.0.1' ||
+      hostname.endsWith('.onrender.com') ||
       /^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
       /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
       /^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(hostname)
@@ -128,5 +129,12 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`EAEPCG backend running on http://localhost:${PORT}`);
+  console.log(`EAEPCG backend running on port ${PORT}`);
+  if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
+    try {
+      require('./seedAdmin');
+    } catch (e) {
+      console.warn('Admin seed notice:', e.message);
+    }
+  }
 });
