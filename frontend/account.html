@@ -11,43 +11,54 @@
   .account-page-wrapper {
     background-color: #f4f7f9;
     min-height: calc(100vh - 80px);
-    padding: 60px 24px;
+    padding: 40px 20px;
     font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
   .account-container {
     max-width: 1100px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 40px;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: 32px;
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
   }
 
   /* SIDEBAR PROFILE */
   .account-sidebar {
     background: #ffffff;
     border-radius: 16px;
-    padding: 40px 30px;
+    padding: 36px 24px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.03);
     border: 1px solid #eef2f6;
     text-align: center;
     align-self: start;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   .account-avatar {
-    width: 100px; height: 100px;
+    width: 96px; height: 96px;
     border-radius: 50%;
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     color: #fff;
-    font-size: 40px;
+    font-size: 38px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 20px auto;
+    margin: 0 auto 18px auto;
     text-transform: uppercase;
     box-shadow: 0 8px 16px rgba(15, 23, 42, 0.15);
     position: relative;
     cursor: pointer;
     overflow: hidden;
+    flex-shrink: 0;
   }
   .account-avatar::after {
     content: '📷';
@@ -55,7 +66,7 @@
     bottom: 0; left: 0; right: 0;
     background: rgba(0,0,0,0.6);
     color: white;
-    font-size: 16px;
+    font-size: 15px;
     height: 34%;
     display: flex;
     align-items: center;
@@ -67,17 +78,18 @@
     opacity: 1;
   }
   .account-name {
-    font-size: 22px;
+    font-size: 21px;
     font-weight: 800;
     color: #0f172a;
-    margin: 0 0 8px 0;
-    line-height: 1.2;
+    margin: 0 0 6px 0;
+    line-height: 1.25;
     font-family: 'Outfit', sans-serif;
+    word-break: break-word;
   }
   .account-email {
-    font-size: 14px;
+    font-size: 13.5px;
     color: #64748b;
-    margin: 0 0 32px 0;
+    margin: 0 0 28px 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -93,9 +105,9 @@
   .account-nav-btn {
     background: transparent;
     border: none;
-    padding: 14px 20px;
+    padding: 13px 18px;
     border-radius: 12px;
-    font-size: 15px;
+    font-size: 14.5px;
     font-weight: 600;
     color: #475569;
     cursor: pointer;
@@ -105,8 +117,9 @@
     gap: 12px;
   }
   .account-nav-btn svg {
-    width: 20px; height: 20px;
+    width: 19px; height: 19px;
     stroke-width: 2.5;
+    flex-shrink: 0;
   }
   .account-nav-btn:hover {
     background: #f8fafc;
@@ -121,21 +134,27 @@
   .account-content {
     background: #ffffff;
     border-radius: 16px;
-    padding: 40px;
+    padding: 36px 32px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.03);
     border: 1px solid #eef2f6;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
   .account-content-header {
-    margin-bottom: 32px;
-    padding-bottom: 24px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
     border-bottom: 1px solid #e2e8f0;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
   }
   .account-content-header h2 {
     margin: 0;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 800;
     color: #0f172a;
     font-family: 'Outfit', sans-serif;
@@ -144,27 +163,32 @@
   /* TABLES */
   .acc-table-wrapper {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    border-radius: 8px;
   }
   .acc-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 600px;
+    min-width: 480px;
   }
   .acc-table th {
     text-align: left;
-    padding: 16px 0;
+    padding: 14px 10px;
     color: #64748b;
-    font-size: 12px;
+    font-size: 11.5px;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     font-weight: 700;
     border-bottom: 2px solid #f1f5f9;
     background: transparent;
   }
   .acc-table td {
-    padding: 20px 0;
+    padding: 16px 10px;
     border-bottom: 1px solid #f1f5f9;
-    font-size: 15px;
+    font-size: 14px;
     color: #334155;
     vertical-align: top;
     line-height: 1.5;
@@ -175,12 +199,12 @@
   
   .status-badge {
     display: inline-flex;
-    padding: 6px 12px;
+    padding: 5px 10px;
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
   }
   .status-badge.pending { background: #fef3c7; color: #b45309; }
   .status-badge.confirmed { background: #d1fae5; color: #047857; }
@@ -189,25 +213,36 @@
 
   /* FORMS */
   .acc-form {
-    max-width: 500px;
+    max-width: 540px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .acc-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .acc-form-group {
     margin-bottom: 24px;
+    min-width: 0;
   }
   .acc-form-group label {
     display: block;
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 700;
     color: #334155;
     margin-bottom: 8px;
   }
   .acc-form-group input {
     width: 100%;
-    padding: 14px 16px;
+    box-sizing: border-box;
+    padding: 13px 16px;
     border-radius: 10px;
     border: 1px solid #cbd5e1;
     background: #fff;
-    font-size: 15px;
+    font-size: 14.5px;
     transition: border-color 0.2s;
   }
   .acc-form-group input:focus {
@@ -219,10 +254,10 @@
   .btn-acc-primary {
     background: #0f172a;
     color: #fff;
-    padding: 12px 24px;
+    padding: 12px 22px;
     border-radius: 10px;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 14.5px;
     border: none;
     cursor: pointer;
     transition: background 0.2s;
@@ -230,6 +265,7 @@
     align-items: center;
     gap: 8px;
     text-decoration: none;
+    box-sizing: border-box;
   }
   .btn-acc-primary:hover {
     background: #1e293b;
@@ -255,13 +291,114 @@
     border-color: #94a3b8;
   }
 
+  .account-locked-card {
+    max-width: 480px;
+    margin: 40px auto;
+    background: white;
+    padding: 44px 32px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    text-align: center;
+    border: 1px solid #eef2f6;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
   @media(max-width: 900px) {
-    .account-container { grid-template-columns: 1fr; gap: 24px; }
-    .account-sidebar { padding: 30px 20px; }
-    .account-nav { flex-direction: row; overflow-x: auto; padding-bottom: 8px; }
-    .account-nav-btn { flex: 0 0 auto; }
-    .account-content { padding: 30px 20px; }
-    .account-content-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .account-page-wrapper {
+      padding: 24px 16px;
+    }
+    .account-container {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 20px;
+    }
+    .account-sidebar {
+      padding: 26px 18px;
+    }
+    .account-email {
+      margin-bottom: 20px;
+    }
+    .account-nav {
+      flex-direction: row;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 6px;
+      gap: 6px;
+      scrollbar-width: none;
+    }
+    .account-nav::-webkit-scrollbar {
+      display: none;
+    }
+    .account-nav-btn {
+      flex: 1 1 auto;
+      justify-content: center;
+      padding: 10px 14px;
+      font-size: 13.5px;
+      white-space: nowrap;
+    }
+    .account-content {
+      padding: 24px 16px;
+    }
+    .account-content-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 14px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+    }
+    .account-content-header h2 {
+      font-size: 20px;
+    }
+    .account-content-header .btn-acc-primary {
+      width: 100%;
+      justify-content: center;
+    }
+    .acc-form-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+
+  @media(max-width: 480px) {
+    .account-page-wrapper {
+      padding: 16px 12px;
+    }
+    .account-sidebar {
+      padding: 20px 14px;
+      border-radius: 14px;
+    }
+    .account-avatar {
+      width: 80px;
+      height: 80px;
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+    .account-name {
+      font-size: 19px;
+    }
+    .account-nav-btn {
+      padding: 9px 12px;
+      font-size: 13px;
+      border-radius: 10px;
+    }
+    .account-nav-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+    .account-content {
+      padding: 20px 14px;
+      border-radius: 14px;
+    }
+    .acc-table {
+      min-width: 440px;
+    }
+    .acc-table th, .acc-table td {
+      padding: 12px 8px;
+      font-size: 13px;
+    }
+    .account-locked-card {
+      padding: 32px 18px;
+    }
   }
 </style>
 </head>
@@ -270,7 +407,7 @@
 <main class="account-page-wrapper">
 
 <section id="lockedSection" hidden>
-  <div style="max-width: 480px; margin: 60px auto; background: white; padding: 50px 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; border: 1px solid #eef2f6;">
+  <div class="account-locked-card">
     <div style="font-size: 56px; margin-bottom: 24px;">🔒</div>
     <h3 style="margin-bottom:16px; font-family: 'Outfit', sans-serif; font-size: 26px; font-weight: 800; color: #0f172a;">
       <span data-fr>Espace Sécurisé</span><span data-en>Secure Space</span><span data-ar>مساحة آمنة</span>
@@ -386,7 +523,7 @@
             <input type="file" id="avatarFileInput" accept="image/*" style="opacity:0; width:1px; height:1px; position:absolute; z-index:-1;">
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="acc-form-grid">
             <div class="acc-form-group" style="grid-column: 1 / -1; margin-bottom: 0;">
               <label><span data-fr>Nom complet</span><span data-en>Full name</span><span data-ar>الاسم الكامل</span></label>
               <input name="full_name" required minlength="2" maxlength="120" style="background: #f8fafc; border: 1px solid #e2e8f0;">
