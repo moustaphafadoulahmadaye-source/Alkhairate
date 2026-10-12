@@ -147,6 +147,40 @@ if (count === 0) {
   ]);
 }
 
+// Seed default site settings if empty
+const settingsCount = db.prepare('SELECT COUNT(*) AS c FROM site_settings').get().c;
+if (settingsCount === 0) {
+  const insSetting = db.prepare('INSERT OR IGNORE INTO site_settings (key, value) VALUES (?, ?)');
+  const defaultSettings = [
+    ['hero', 'assets/img/hero-solar.jpg'],
+    ['contact', 'assets/img/pompe.jpg'],
+    ['about', 'assets/img/materiels.jpg'],
+    ['about_expertise', 'assets/img/about-expertise.jpg'],
+    ['about_ingenierie', 'assets/img/installation.jpg'],
+    ['about_distribution', 'assets/img/about-distribution.jpg'],
+    ['service_pompe-forage', 'assets/img/pompe.jpg'],
+    ['service_materiels-electriques', 'assets/img/materiels.jpg'],
+    ['service_commerce-general', 'assets/img/commerce.jpg'],
+    ['service_lavage', 'assets/img/lavage.jpg'],
+    ['service_installation-immeubles', 'assets/img/installation.jpg'],
+    ['service_vente-pompes', 'assets/img/vente-pompes.jpg']
+  ];
+  defaultSettings.forEach(([k, v]) => insSetting.run(k, v));
+}
+
+// Ensure service default images are set
+const serviceImages = {
+  'pompe-forage': 'assets/img/pompe.jpg',
+  'vente-pompes': 'assets/img/vente-pompes.jpg',
+  'materiels-electriques': 'assets/img/materiels.jpg',
+  'commerce-general': 'assets/img/commerce.jpg',
+  'lavage': 'assets/img/lavage.jpg',
+  'installation-immeubles': 'assets/img/installation.jpg'
+};
+for (const [slug, img] of Object.entries(serviceImages)) {
+  db.prepare("UPDATE services SET image_url = ? WHERE slug = ? AND (image_url IS NULL OR image_url = '')").run(img, slug);
+}
+
 // Seed products and items
 const prodCount = db.prepare('SELECT COUNT(*) AS c FROM products').get().c;
 if (prodCount === 0) {
