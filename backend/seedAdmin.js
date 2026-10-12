@@ -14,12 +14,12 @@ const full_name = 'EAEPCG Admin';
 
 const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
 if (existing) {
-  const hash = bcrypt.hashSync(password, 10);
+  // Ensure the admin account exists and has admin privileges without overwriting custom password
   db.prepare(
-    "UPDATE users SET full_name = ?, password_hash = ?, role = 'admin' WHERE id = ?"
-  ).run(full_name, hash, existing.id);
+    "UPDATE users SET full_name = ?, role = 'admin' WHERE id = ?"
+  ).run(full_name, existing.id);
   db.prepare("UPDATE users SET role = 'customer' WHERE id != ? AND role = 'admin'").run(existing.id);
-  console.log(`Admin account updated: ${email}.`);
+  console.log(`Admin account confirmed: ${email}.`);
 } else {
   const hash = bcrypt.hashSync(password, 10);
   db.prepare('INSERT INTO users (full_name, email, password_hash, role) VALUES (?,?,?,?)')

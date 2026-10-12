@@ -163,4 +163,49 @@ router.patch('/me', requireAuth, (req, res) => {
   res.json({ user });
 });
 
+// Change password (authenticated users and admin)
+router.post('/change-password', requireAuth, (req, res) => {
+  const { current_password, new_password, new_password_confirmation } = req.body || {};
+
+  if (!current_password || !new_password) {
+    return res.status(400).json({ error: 'Le mot de passe actuel et le nouveau mot de passe sont requis.' });
+  }
+
+  if (typeof new_password !== 'string' || new_password.length < 6 || new_password.length > 128) {
+    return res.status(400).json({ error: 'Le nouveau mot de passe doit contenir au moins 6 caractères.' });
+  }
+
+  if (new_password !== new_password_confirmation) {
+    return res.status(400).json({ error: 'La confirmation du mot de passe ne correspond pas.' });
+  }
+
+  const userRow = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
+  if (!userRow) {
+    return res.status(404).json({ error: 'Utilisateur introuvable.' });
+  }
+
+  if (!bcrypt.compareSync(current_password, userRow.password_hash)) {
+    return res.status(400).json({ error: 'Le mot de passe actuel est incorrect.' });
+  }
+
+  const newHash = bcrypt.hashSync(new_password, 10);
+  db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(newHash, req.user.id);
+
+  const updatedUser = {
+    id: userRow.id,
+    full_name: userRow.full_name,
+    email: userRow.email,
+    role: userRow.role,
+    avatar_url: userRow.avatar_url
+  };
+  const token = jwt.sign(updatedUser, JWT_SECRET, { expiresIn: '7d', jwtid: crypto.randomUUID() });
+
+  res.json({
+    ok: true,
+    message: 'Votre mot de passe a été modifié avec succès !',
+    token,
+    user: updatedUser
+  });
+});
+
 module.exports = router;
