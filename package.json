@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "private": true,
   "scripts": {
-    "build": "npm --prefix backend install",
+    "build": "npm --prefix backend install --no-audit --fund=false",
     "start": "node backend/server.js",
     "backend": "npm --prefix backend start",
     "db:init": "npm --prefix backend run db:init",
