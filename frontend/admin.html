@@ -1,0 +1,2091 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manager — EAEPCG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* ══════════════════════════════════════════════════════════════════
+     ULTRA-CLEAN SAAS DASHBOARD (MODERN LIGHT THEME)
+     ══════════════════════════════════════════════════════════════════ */
+  :root {
+    --bg-admin: #F8FAFC;
+    --sidebar-bg: #FFFFFF;
+    --card-bg: #FFFFFF;
+    
+    --text-heading: #0F172A;
+    --text-main: #334155;
+    --text-muted: #64748B;
+    
+    --border-light: #E2E8F0;
+    --border-dark: #CBD5E1;
+    
+    --brand-primary: #4F46E5; /* Indigo/Blurple */
+    --brand-primary-hover: #4338CA;
+    
+    /* Icon Colors */
+    --c-green: #10B981;
+    --c-green-light: #D1FAE5;
+    --c-blue: #3B82F6;
+    --c-blue-light: #DBEAFE;
+    --c-purple: #8B5CF6;
+    --c-purple-light: #EDE9FE;
+    --c-orange: #F59E0B;
+    --c-orange-light: #FEF3C7;
+    
+    --sidebar-width: 260px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+    --shadow-card: 0 10px 15px -3px rgba(0,0,0,0.03), 0 4px 6px -2px rgba(0,0,0,0.02);
+  }
+
+  body {
+    background: var(--bg-admin);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    margin: 0;
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Override global header/footer */
+  #site-header, #site-footer { display: none !important; }
+
+  /* ── 1. SIDEBAR ── */
+  .admin-sidebar {
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; bottom: 0; left: 0;
+    z-index: 100;
+  }
+  .sidebar-header {
+    padding: 24px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .sidebar-header img {
+    width: 38px; height: 38px; 
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+  }
+  .sidebar-header h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-heading);
+    letter-spacing: -0.5px;
+  }
+  .sidebar-header h2 span {
+    font-weight: 500;
+    color: var(--text-muted);
+    display: block;
+    font-size: 13px;
+    letter-spacing: 0;
+    margin-top: -2px;
+  }
+
+  .sidebar-nav {
+    padding: 16px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    position: relative;
+  }
+  .nav-item svg {
+    width: 20px; height: 20px;
+    stroke-width: 2.2;
+    transition: color 0.2s ease;
+  }
+  .nav-item:hover {
+    background: #F1F5F9;
+    color: var(--text-heading);
+  }
+  .nav-item.active {
+    background: #EEF2FF;
+    color: var(--brand-primary);
+  }
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: -16px;
+    top: 10%;
+    height: 80%;
+    width: 4px;
+    background: var(--brand-primary);
+    border-radius: 0 4px 4px 0;
+  }
+  .nav-item.active svg { 
+    stroke: var(--brand-primary); 
+  }
+
+  /* ── 2. MAIN LAYOUT ── */
+  .admin-main {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .admin-topbar {
+    height: 72px;
+    background: var(--bg-admin);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 48px;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .topbar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+  .btn-site {
+    background: var(--white);
+    border: 1px solid var(--border-light);
+    color: var(--text-main);
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-site:hover { 
+    background: #F8FAFC;
+    border-color: var(--border-dark); 
+  }
+  .btn-logout {
+    background: #FEF2F2;
+    border: 1px solid #FEE2E2;
+    color: #DC2626;
+  }
+  .btn-logout:hover { 
+    background: #FEE2E2; 
+  }
+
+  .admin-content {
+    padding: 0 48px 48px;
+    flex: 1;
+  }
+  .page-header {
+    margin-bottom: 40px;
+    padding-top: 10px;
+  }
+  .page-header h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-heading);
+    letter-spacing: -0.02em;
+    margin: 0 0 6px 0;
+  }
+  .page-header p {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin: 0;
+  }
+
+  /* ── 3. DASHBOARD STATS ── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+  .stat-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .stat-card:hover {
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.02);
+    transform: translateY(-2px);
+  }
+  .stat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .stat-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .stat-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .stat-icon svg { width: 22px; height: 22px; }
+  
+  .stat-val {
+    font-family: 'Outfit', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--text-heading);
+    line-height: 1;
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+  }
+  .stat-val small {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0;
+  }
+  .stat-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .stat-badge {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  
+  /* Icon colors - Soft backgrounds with solid icons */
+  .c-green { background: var(--c-green-light); color: #059669; }
+  .c-blue { background: var(--c-blue-light); color: #2563EB; }
+  .c-purple { background: var(--c-purple-light); color: #7C3AED; }
+  .c-orange { background: var(--c-orange-light); color: #D97706; }
+
+  .b-green { background: #ECFDF5; color: #059669; }
+  .b-blue { background: #EFF6FF; color: #2563EB; }
+  .b-purple { background: #F5F3FF; color: #7C3AED; }
+
+  /* ── 4. TABLES & VIEWS ── */
+  .view-section { display: none; }
+  .view-section.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 16px;
+  }
+  .search-bar {
+    width: 320px;
+    padding: 12px 16px 12px 42px;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    color: var(--text-main);
+    background: var(--white) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 14px center;
+    background-size: 18px;
+    outline: none;
+    font-family: inherit;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+  }
+  .search-bar::placeholder { color: #94A3B8; }
+  .search-bar:focus { 
+    border-color: var(--brand-primary); 
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); 
+  }
+
+  .table-wrap {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  table th {
+    background: #F8FAFC;
+    padding: 16px 24px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-light);
+  }
+  table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 14px;
+    color: var(--text-heading);
+    vertical-align: middle;
+  }
+  table tbody tr { transition: background 0.2s ease; }
+  table tbody tr:hover { background: #F8FAFC; }
+  
+  .btn-primary {
+    background: var(--brand-primary);
+    color: var(--white);
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+  }
+  .btn-primary:hover { 
+    background: var(--brand-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 10px rgba(79, 70, 229, 0.3);
+  }
+  
+  .btn-danger {
+    background: transparent;
+    color: #EF4444;
+    border: 1px solid #FCA5A5;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s ease;
+  }
+  .btn-danger:hover {
+    background: #FEF2F2;
+    border-color: #EF4444;
+  }
+
+  /* Custom Status Select */
+  .status-select {
+    appearance: none;
+    padding: 6px 32px 6px 12px;
+    border-radius: 100px;
+    border: 1px solid transparent;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  .s-pending { background-color: #FEF3C7; color: #92400E; border-color: #FDE68A; }
+  .s-confirmed { background-color: #D1FAE5; color: #065F46; border-color: #A7F3D0; }
+  .s-shipped { background-color: #DBEAFE; color: #1E40AF; border-color: #BFDBFE; }
+  .s-cancelled { background-color: #FEE2E2; color: #991B1B; border-color: #FECACA; }
+
+  /* ══════════════════════════════════════════════════════════════════
+     SITE SETTINGS & IMAGE MANAGER
+     ══════════════════════════════════════════════════════════════════ */
+  .settings-grid-layout {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 28px;
+    margin-bottom: 36px;
+    align-items: start;
+  }
+  @media (max-width: 1024px) {
+    .settings-grid-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+  .settings-box {
+    background: var(--white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-card);
+  }
+  .settings-box-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .settings-box-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .preview-display-card {
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    background: #F8FAFC;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .preview-img-container {
+    width: 100%;
+    height: 250px;
+    background: #E2E8F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .preview-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  .preview-img-container:hover img {
+    transform: scale(1.03);
+  }
+  .badge-status-custom {
+    background: #D1FAE5;
+    color: #065F46;
+    border: 1px solid #A7F3D0;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .badge-status-default {
+    background: #E2E8F0;
+    color: #475569;
+    border: 1px solid #CBD5E1;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .preview-meta {
+    padding: 16px 20px;
+    background: white;
+    border-top: 1px solid var(--border-light);
+  }
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .meta-row:last-child {
+    margin-bottom: 0;
+  }
+  .meta-label {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .meta-value {
+    color: var(--text-heading);
+    font-weight: 600;
+    text-align: right;
+  }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .gallery-card {
+    background: white;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .gallery-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 20px -5px rgba(0,0,0,0.08);
+    border-color: var(--brand-primary);
+  }
+  .gallery-thumb {
+    width: 100%;
+    height: 160px;
+    background: #E2E8F0;
+    position: relative;
+    overflow: hidden;
+  }
+  .gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  .gallery-card:hover .gallery-thumb img {
+    transform: scale(1.05);
+  }
+  .gallery-card-body {
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .gallery-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin: 0 0 6px 0;
+  }
+  .gallery-card-desc {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin: 0 0 14px 0;
+    line-height: 1.45;
+  }
+  .btn-quick-edit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-dark);
+    background: #F8FAFC;
+    color: var(--text-heading);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-quick-edit:hover {
+    background: var(--brand-primary);
+    color: white;
+    border-color: var(--brand-primary);
+  }
+  .gallery-filter-btn {
+    padding: 7px 16px;
+    border-radius: 100px;
+    border: 1px solid var(--border-dark);
+    background: white;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .gallery-filter-btn.active {
+    background: var(--brand-primary);
+    color: white;
+    border-color: var(--brand-primary);
+  }
+  /* Toast Notification */
+  .toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+  }
+  .toast-item {
+    background: #0F172A;
+    color: white;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideInToast 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    pointer-events: auto;
+  }
+  .toast-item.toast-success {
+    border-left: 4px solid #10B981;
+  }
+  .toast-item.toast-error {
+    border-left: 4px solid #EF4444;
+  }
+  @keyframes slideInToast {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     MOBILE NAVIGATION & RESPONSIVE LAYOUT
+     ══════════════════════════════════════════════════════════════════ */
+  .mobile-sidebar-toggle {
+    display: none;
+    background: #FFFFFF;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-heading);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+  }
+  .mobile-sidebar-toggle:hover {
+    background: #F1F5F9;
+  }
+  .mobile-sidebar-toggle svg {
+    width: 22px;
+    height: 22px;
+  }
+  .mobile-topbar-title {
+    display: none;
+    font-family: 'Outfit', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-heading);
+    letter-spacing: -0.3px;
+  }
+  .sidebar-close-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    font-size: 26px;
+    line-height: 1;
+    color: var(--text-muted);
+    cursor: pointer;
+    margin-left: auto;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: color 0.2s;
+  }
+  .sidebar-close-btn:hover {
+    color: var(--text-heading);
+    background: #F1F5F9;
+  }
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 95;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+  .sidebar-backdrop.active {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .show-mobile-only { display: none !important; }
+
+  @media (max-width: 992px) {
+    :root {
+      --sidebar-width: 0px;
+    }
+    body {
+      overflow-x: hidden;
+      width: 100%;
+    }
+    .mobile-sidebar-toggle {
+      display: inline-flex;
+    }
+    .mobile-topbar-title {
+      display: block;
+    }
+    .sidebar-close-btn {
+      display: block;
+    }
+    .hide-on-mobile {
+      display: none !important;
+    }
+    .show-mobile-only {
+      display: inline-flex !important;
+    }
+
+    /* Off-canvas Sidebar Drawer */
+    .admin-sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 280px;
+      max-width: 85vw;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+      box-shadow: none;
+    }
+    .admin-sidebar.open {
+      transform: translateX(0);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Main Container resets */
+    .admin-main {
+      margin-left: 0 !important;
+      width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
+    }
+    .admin-topbar {
+      padding: 0 16px;
+      height: 64px;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .admin-content {
+      padding: 0 16px 32px;
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+    }
+
+    .page-header {
+      margin-bottom: 20px;
+      padding-top: 14px;
+    }
+    .page-header h1 {
+      font-size: 22px;
+      line-height: 1.25;
+    }
+    .page-header p {
+      font-size: 13.5px;
+    }
+
+    .stat-grid {
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      padding: 18px;
+    }
+    .stat-val {
+      font-size: 32px;
+    }
+
+    .toolbar {
+      flex-direction: column;
+      gap: 12px;
+    }
+    .search-bar {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Horizontally scrollable tables on mobile */
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: var(--radius-md);
+      margin: 0 -2px;
+    }
+    table {
+      min-width: 650px;
+    }
+
+    /* Settings & Image Manager on Mobile */
+    .settings-grid-layout {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .settings-box {
+      padding: 20px 16px;
+    }
+    .settings-box-title {
+      font-size: 16px;
+    }
+    .preview-img-container {
+      height: 200px;
+    }
+    .gallery-grid {
+      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+      gap: 12px;
+    }
+    .gallery-thumb {
+      height: 110px;
+    }
+    .gallery-card-body {
+      padding: 12px;
+    }
+    .gallery-card-title {
+      font-size: 13.5px;
+    }
+    .gallery-card-desc {
+      font-size: 11.5px;
+      margin-bottom: 8px;
+    }
+    .btn-quick-edit {
+      font-size: 12px;
+      padding: 7px 10px;
+    }
+
+    /* Touch buttons friendly sizing */
+    .btn, .topbar-btn, .order-tab, .gallery-filter-btn {
+      min-height: 40px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page-header h1 {
+      font-size: 20px;
+    }
+    .gallery-grid {
+      grid-template-columns: 1fr;
+    }
+    .gallery-thumb {
+      height: 160px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="sidebar-header">
+    <img src="assets/img/logo.jpg" alt="Logo">
+    <h2>EAEPCG <span>MANAGER</span></h2>
+    <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Fermer le menu">&times;</button>
+  </div>
+  <div class="sidebar-nav">
+    <button class="nav-item active" data-target="view-dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      Dashboard
+    </button>
+    <button class="nav-item" data-target="view-products">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+      Produits
+    </button>
+    <button class="nav-item" data-target="view-orders">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+      Commandes
+    </button>
+    <button class="nav-item" data-target="view-clients">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      Clients
+    </button>
+    <button class="nav-item" data-target="view-messages">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      Messages
+    </button>
+    
+    <div style="height:1px; background:var(--border-dark); margin:8px 16px;"></div>
+
+    <button class="nav-item" data-target="view-settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      Paramètres du Site
+    </button>
+  </div>
+</aside>
+
+<main class="admin-main">
+  <div class="admin-topbar">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button class="mobile-sidebar-toggle" id="mobileSidebarToggle" aria-label="Menu" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+      <div class="mobile-topbar-title">EAEPCG Manager</div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="index.html" class="topbar-btn btn-site">🌐 <span class="hide-on-mobile">Voir le site</span></a>
+      <button id="logoutBtn" class="topbar-btn btn-logout"><span class="hide-on-mobile">Déconnexion</span><span class="show-mobile-only">Quitter</span></button>
+    </div>
+  </div>
+
+  <div class="admin-content" id="appSection" hidden>
+    
+    <!-- DASHBOARD VIEW -->
+    <div id="view-dashboard" class="view-section active">
+      <div class="page-header">
+        <h1>Tableau de bord</h1>
+        <p>Bienvenue sur votre panneau de gestion. Voici un aperçu en temps réel.</p>
+      </div>
+
+      <div class="stat-grid" id="statGrid">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+
+    <!-- ORDERS VIEW -->
+    <div id="view-orders" class="view-section">
+      <div class="page-header">
+        <h1>Commandes</h1>
+        <p>Gestion et suivi des commandes de vos clients.</p>
+      </div>
+      
+      <div id="orderTabs" style="display:flex; gap:8px; margin-bottom:24px; overflow-x:auto; padding-bottom:8px;">
+        <button class="order-tab active" data-filter="all" style="padding:8px 16px; border-radius:100px; border:1px solid var(--border-dark); background:var(--brand-primary); color:white; font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; transition:all 0.2s;">Toutes</button>
+        <button class="order-tab" data-filter="commerce" style="padding:8px 16px; border-radius:100px; border:1px solid var(--border-dark); background:white; color:var(--text-muted); font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; transition:all 0.2s;">Commerce / Électricité</button>
+        <button class="order-tab" data-filter="lavage" style="padding:8px 16px; border-radius:100px; border:1px solid var(--border-dark); background:white; color:var(--text-muted); font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; transition:all 0.2s;">Lavage</button>
+        <button class="order-tab" data-filter="installation" style="padding:8px 16px; border-radius:100px; border:1px solid var(--border-dark); background:white; color:var(--text-muted); font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; transition:all 0.2s;">Installation Immeubles</button>
+        <button class="order-tab" data-filter="pompe" style="padding:8px 16px; border-radius:100px; border:1px solid var(--border-dark); background:white; color:var(--text-muted); font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; transition:all 0.2s;">Pompes de forage</button>
+      </div>
+
+      <div class="toolbar">
+        <input type="text" class="search-bar" id="search-orders" placeholder="Rechercher une commande...">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Client</th>
+            <th>Contact</th>
+            <th>Service</th>
+            <th>Détails</th>
+            <th>Statut</th>
+            <th>Date</th>
+          </tr></thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PRODUCTS VIEW -->
+    <div id="view-products" class="view-section">
+      <div class="page-header">
+        <h1>Produits</h1>
+        <p>Catalogue des équipements et articles.</p>
+      </div>
+      <div class="toolbar">
+        <input type="text" class="search-bar" id="search-products" placeholder="Rechercher un produit...">
+        <button class="btn-primary" id="openAddProductModal">+ Ajouter un produit</button>
+      </div>
+      
+      <!-- Add Product Form Template -->
+      <template id="addProductFormTemplate">
+        <form id="addProductForm" style="display:flex; flex-direction:column; gap:16px; padding-top: 10px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <input name="slug" placeholder="slug (ex: onduleurs)" required class="search-bar" style="border-radius:8px; padding-left:16px; width:100%; box-sizing:border-box;">
+            <select name="service_slug" class="search-bar" style="border-radius:8px; padding-left:16px; width:100%; box-sizing:border-box;" required>
+              <option value="">— Service lié —</option>
+              <option value="pompe-forage">Pompe forage</option>
+              <option value="materiels-electriques">Matériels électriques</option>
+              <option value="commerce-general">Commerce général</option>
+              <option value="lavage">Lavage</option>
+              <option value="installation-immeubles">Installation immeubles</option>
+            </select>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <input name="name_fr" placeholder="Nom FR" required class="search-bar" style="border-radius:8px; padding-left:16px; width:100%; box-sizing:border-box;">
+            <input name="name_en" placeholder="Name EN" required class="search-bar" style="border-radius:8px; padding-left:16px; width:100%; box-sizing:border-box;">
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <input name="description_fr" placeholder="Description FR" class="search-bar" style="border-radius:8px; padding-left:16px; width:100%; box-sizing:border-box;">
+            <input name="description_en" placeholder="Description EN" class="search-bar" style="border-radius:8px; padding-left:16px; width:100%; box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:13px; font-weight:600; margin-bottom:6px; display:block; color:var(--text-muted);">Image (optionnel)</label>
+            <input type="file" name="image_file" accept="image/*" class="search-bar" style="border-radius:8px; padding:10px 16px; width:100%; box-sizing:border-box;">
+          </div>
+          <div class="admin-msg" id="addProductMsg"></div>
+        </form>
+      </template>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Article</th>
+              <th>Catégorie</th>
+              <th>Prix</th>
+              <th>Stock</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="productsBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CLIENTS VIEW -->
+    <div id="view-clients" class="view-section">
+      <div class="page-header">
+        <h1>Clients</h1>
+        <p>Liste des utilisateurs inscrits.</p>
+      </div>
+      <div class="toolbar">
+        <input type="text" class="search-bar" id="search-clients" placeholder="Rechercher un client...">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Nom</th>
+            <th>Email / Tel</th>
+            <th>Rôle</th>
+            <th>Inscrit le</th>
+            <th style="text-align:right;">Actions</th>
+          </tr></thead>
+          <tbody id="usersBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MESSAGES VIEW -->
+    <div id="view-messages" class="view-section">
+      <div class="page-header">
+        <h1>Messages</h1>
+        <p>Boîte de réception des contacts du site.</p>
+      </div>
+      <div class="toolbar">
+        <input type="text" class="search-bar" id="search-messages" placeholder="Rechercher un message...">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Client</th>
+            <th>Contact</th>
+            <th>Sujet</th>
+            <th>Message</th>
+            <th>Statut</th>
+          </tr></thead>
+          <tbody id="messagesBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SETTINGS VIEW -->
+    <div id="view-settings" class="view-section">
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+        <div>
+          <h1 style="color:var(--text-heading);">PARAMÈTRES DU SITE & GESTION DES IMAGES</h1>
+          <p>Visualisez en direct toutes les images actuellement affichées sur vos pages web et modifiez-les en un clic.</p>
+        </div>
+        <button id="refreshSettingsBtn" type="button" class="btn btn-outline" style="display:inline-flex; align-items:center; gap:8px; padding:10px 18px; font-weight:600; cursor:pointer;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          Actualiser les images
+        </button>
+      </div>
+
+      <!-- MAIN 2-COLUMN MANAGEMENT BOX -->
+      <div class="settings-grid-layout">
+        <!-- FORM COLUMN -->
+        <div class="settings-box">
+          <div class="settings-box-header">
+            <h2 class="settings-box-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+              Modifier une image du site
+            </h2>
+            <span style="font-size:12px; color:var(--text-muted); font-weight:600;">Mise à jour instantanée</span>
+          </div>
+
+          <form id="siteSettingsForm">
+            <!-- 1. Select Key -->
+            <label style="font-weight:700; font-size:13.5px; display:block; margin-bottom:8px; color:var(--text-heading);">
+              1. Emplacement de l'image sur le site
+            </label>
+            <select id="settingsImageKey" name="imageKey" class="search-bar" style="width:100%; border-radius:10px; padding:12px 16px; margin-bottom:12px; background-image:none; border:1.5px solid var(--border-dark); font-weight:600; font-size:14px; color:var(--text-heading);">
+              <optgroup label="PAGE D'ACCUEIL (Diaporama Hero)">
+                <option value="hero" selected>Accueil — Bannière Principale (Slide 1)</option>
+                <option value="contact">Accueil — Bannière Contact / Diapo (Slide 2)</option>
+                <option value="about">Accueil — Bannière À Propos / Diapo (Slide 3)</option>
+              </optgroup>
+              <optgroup label="PAGE À PROPOS">
+                <option value="about_expertise">À propos: 1. Expertise & Confiance (1ère image)</option>
+                <option value="about_ingenierie">À propos: 2. Ingénierie Globale (2ème image)</option>
+                <option value="about_distribution">À propos: 3. Logistique & Distribution (3ème image)</option>
+              </optgroup>
+              <optgroup label="SERVICES">
+                <option value="service_commerce-general">Service: Commerce Général</option>
+                <option value="service_materiels-electriques">Service: Matériels Électriques</option>
+                <option value="service_lavage">Service: Station de Lavage</option>
+                <option value="service_installation-immeubles">Service: Installation Immeubles</option>
+                <option value="service_pompe-forage">Service: Pompes de forage</option>
+                <option value="service_vente-pompes">Service: Vente de pompes</option>
+              </optgroup>
+            </select>
+
+            <!-- Context Hint -->
+            <div id="selectedImageHint" style="background:#F1F5F9; border-radius:8px; padding:10px 14px; margin-bottom:24px; font-size:12.5px; color:var(--text-main); display:flex; align-items:center; gap:10px;">
+              <div style="width:24px; height:24px; border-radius:6px; background:#E2E8F0; color:#475569; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              </div>
+              <span id="selectedImageDesc">Grande image affichée en haut de la page d'accueil (Slide 1).</span>
+            </div>
+
+            <!-- 2. Choose File -->
+            <label style="font-weight:700; font-size:13.5px; display:block; margin-bottom:8px; color:var(--text-heading);">
+              2. Sélectionner une nouvelle image (.jpg, .png, .webp)
+            </label>
+            <label for="settingsImageFile" style="background:#F8FAFC; border:2px dashed var(--border-dark); border-radius:12px; padding:18px 20px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; margin-bottom:16px; cursor:pointer; width:100%; box-sizing:border-box; transition:all 0.2s ease;">
+              <input type="file" id="settingsImageFile" name="image_file" accept="image/*" style="display:none;">
+              <div style="width:42px; height:42px; border-radius:50%; background:#EEF2FF; color:var(--brand-primary); display:flex; align-items:center; justify-content:center;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              </div>
+              <div style="text-align:center;">
+                <span style="font-weight:700; color:var(--brand-primary); font-size:14px;">Cliquez pour choisir un fichier</span>
+                <span style="display:block; font-size:12px; color:var(--text-muted); margin-top:2px;">PNG, JPG, WEBP jusqu'à 5 Mo</span>
+              </div>
+              <span id="settingsFileName" style="color:var(--text-muted); font-size:13px; font-weight:600; background:white; padding:4px 12px; border-radius:100px; border:1px solid var(--border-light);">Aucun fichier sélectionné</span>
+            </label>
+
+            <!-- Pre-upload Preview (when file is chosen) -->
+            <div id="newImagePreviewContainer" style="display:none; margin-bottom:24px; padding:14px; background:#F0FDF4; border:1px solid #BBF7D0; border-radius:10px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                <span style="font-weight:700; font-size:12px; color:#166534; text-transform:uppercase; letter-spacing:0.5px;">✓ Nouvelle image prête à être publiée</span>
+                <button type="button" id="clearSelectedFileBtn" style="background:transparent; border:none; color:#DC2626; font-size:12px; font-weight:700; cursor:pointer;">Annuler la sélection</button>
+              </div>
+              <div style="display:flex; gap:14px; align-items:center;">
+                <img id="newImagePreviewImg" src="" alt="Aperçu nouveau" style="width:80px; height:60px; object-fit:cover; border-radius:6px; border:1px solid #86EFAC;">
+                <div>
+                  <div id="newImagePreviewName" style="font-weight:700; font-size:13px; color:var(--text-heading);"></div>
+                  <div id="newImagePreviewSize" style="font-size:12px; color:var(--text-muted);"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">
+              <button type="submit" id="saveImageBtn" style="background:#0F172A; color:white; border:none; padding:13px 26px; border-radius:10px; font-weight:700; cursor:pointer; font-family:inherit; font-size:13.5px; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 12px rgba(15,23,42,0.25); transition:all 0.2s;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                REMPLACER L'IMAGE EN LIGNE
+              </button>
+              <button type="button" id="deleteImageBtn" style="background:white; color:#DC2626; border:1.5px solid #FCA5A5; padding:13px 20px; border-radius:10px; font-weight:700; cursor:pointer; font-family:inherit; font-size:13.5px; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                RÉTABLIR L'IMAGE PAR DÉFAUT
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- LIVE PREVIEW COLUMN -->
+        <div class="settings-box">
+          <div class="settings-box-header">
+            <h2 class="settings-box-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              Image Actuellement sur le Site
+            </h2>
+            <span id="currentStatusBadge" class="badge-status-default">
+              <span style="width:6px; height:6px; border-radius:50%; background:currentColor;"></span>
+              Image par Défaut
+            </span>
+          </div>
+
+          <div class="preview-display-card">
+            <div class="preview-img-container">
+              <img id="currentImageDisplay" src="assets/img/installation.jpg" alt="Aperçu actuel" onerror="this.src='assets/img/commerce.jpg'">
+              <a id="currentImageViewLink" href="assets/img/installation.jpg" target="_blank" style="position:absolute; bottom:12px; right:12px; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); color:white; font-size:12px; font-weight:700; padding:6px 14px; border-radius:100px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 10px rgba(0,0,0,0.3);">
+                🔍 Plein écran
+              </a>
+            </div>
+            <div class="preview-meta">
+              <div class="meta-row">
+                <span class="meta-label">Titre :</span>
+                <span class="meta-value" id="currentImageTitle">Bannière Principale (Slide 1)</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">Page web :</span>
+                <span class="meta-value" id="currentImagePage">Accueil (index.html)</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">Fichier source :</span>
+                <span class="meta-value" id="currentImageSource" style="word-break:break-all; max-width:260px; font-family:monospace; font-size:11.5px; color:var(--brand-primary);">assets/img/installation.jpg</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:18px; padding:14px; background:#F8FAFC; border:1px solid var(--border-light); border-radius:10px; font-size:12.5px; color:var(--text-muted); line-height:1.5;">
+            <div style="display:flex; align-items:center; gap:6px; font-weight:700; color:var(--text-heading); margin-bottom:4px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.5"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6h8c1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"></path></svg>
+              Aperçu en temps réel
+            </div>
+            Cette boîte vous montre exactement l'image active sur le site. Lorsque vous remplacez l'image, vos visiteurs la voient immédiatement sans redémarrage.
+          </div>
+        </div>
+      </div>
+
+      <!-- VISUAL GALLERY OVERVIEW (ALL SITE IMAGES) -->
+      <div style="background:var(--white); border:1px solid var(--border-light); border-radius:var(--radius-lg); padding:32px; box-shadow:var(--shadow-card); margin-bottom:32px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:24px; padding-bottom:18px; border-bottom:1px solid var(--border-light);">
+          <div>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+              <div style="width:34px; height:34px; border-radius:10px; background:#EEF2FF; color:var(--brand-primary); display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(79,70,229,0.15);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+              </div>
+              <h2 style="font-family:'Outfit', sans-serif; font-size:20px; font-weight:800; color:var(--text-heading); margin:0;">
+                Galerie de Toutes les Images du Site Web
+              </h2>
+            </div>
+            <p style="color:var(--text-muted); font-size:13.5px; margin:0;">
+              Visualisez l'état de chaque image du site en un coup d'œil. Cliquez sur « Gérer cette image » pour la modifier directement.
+            </p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;" id="galleryFilterTabs">
+            <button class="gallery-filter-btn active" data-filter="all">Toutes (12)</button>
+            <button class="gallery-filter-btn" data-filter="accueil">Accueil (3)</button>
+            <button class="gallery-filter-btn" data-filter="about">À propos (3)</button>
+            <button class="gallery-filter-btn" data-filter="services">Services (6)</button>
+          </div>
+        </div>
+
+        <div class="gallery-grid" id="allImagesGalleryGrid">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+    </div>
+
+  <section id="lockedSection" hidden>
+    <div style="margin: 40px auto; max-width: 400px; width: 90%; text-align: center; background: white; padding: 40px 24px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); box-sizing: border-box;">
+      <div style="font-size: 40px; margin-bottom: 16px;">🔒</div>
+      <h3 style="margin-bottom:24px; font-family:'Outfit', sans-serif; font-size: 24px; color: var(--brand-primary);">
+        Accès Réservé
+      </h3>
+      <a class="btn-primary" href="login.html" style="width: 100%; justify-content: center;">
+        Se connecter
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/components.js"></script>
+<script>
+  let lastPendingOrdersCount = null;
+
+  // Mobile Drawer Elements & Helpers (defined globally so usable anywhere)
+  const adminSidebar = document.getElementById('adminSidebar');
+  const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+  const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
+  const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+
+  function openMobileSidebar() {
+    if (adminSidebar) adminSidebar.classList.add('open');
+    if (sidebarBackdrop) sidebarBackdrop.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMobileSidebar() {
+    if (adminSidebar) adminSidebar.classList.remove('open');
+    if (sidebarBackdrop) sidebarBackdrop.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  if (mobileSidebarToggle) mobileSidebarToggle.addEventListener('click', openMobileSidebar);
+  if (sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeMobileSidebar);
+  if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeMobileSidebar);
+
+  if (!Auth.isLoggedIn() || !Auth.isAdmin()) {
+    document.getElementById('lockedSection').hidden = false;
+  } else {
+    document.getElementById('appSection').hidden = false;
+    
+    // Sidebar Navigation Logic
+    const navItems = document.querySelectorAll('.nav-item');
+    const views = document.querySelectorAll('.view-section');
+    
+    navItems.forEach(btn => {
+      btn.addEventListener('click', () => {
+        closeMobileSidebar();
+        navItems.forEach(b => b.classList.remove('active'));
+        views.forEach(v => v.classList.remove('active'));
+        
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.target).classList.add('active');
+        if (btn.dataset.target === 'view-settings') {
+          loadSiteSettingsManager();
+        }
+      });
+    });
+
+    // Check URL parameters for explicit tabs
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('filter') === 'pending') {
+      document.querySelector('.nav-item[data-target="view-orders"]').click();
+    }
+
+    // Load data
+    loadSummary();
+    loadOrders();
+    loadProducts();
+    loadUsers();
+    loadMessages();
+    loadSiteSettingsManager();
+    initSettingsManagerEvents();
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try { await apiFetch('/auth/logout', { method: 'POST' }); }
+      finally { Auth.clear(); window.location.href = 'login.html'; }
+    });
+
+    // Search Logic (Simple text match for tables)
+    ['orders', 'products', 'clients', 'messages'].forEach(type => {
+      const input = document.getElementById('search-' + type);
+      if (input) {
+        input.addEventListener('input', (e) => {
+          const term = e.target.value.toLowerCase();
+          const tbody = document.getElementById(type === 'clients' ? 'usersBody' : type + 'Body');
+          Array.from(tbody.querySelectorAll('tr:not(.item-edit-row)')).forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+          });
+        });
+      }
+    });
+  }
+
+  async function loadSummary(isPolling = false) {
+    const container = document.getElementById('statGrid');
+    try {
+      const d = await apiFetch('/admin/summary');
+      if (lastPendingOrdersCount !== null && d.pendingOrders > lastPendingOrdersCount) {
+        showNotification('Nouvelle commande reçue !');
+      }
+      lastPendingOrdersCount = d.pendingOrders;
+
+      container.innerHTML = `
+        <!-- Revenu (Placeholder) -->
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon c-green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+            <div class="stat-title">Chiffre d'Affaires</div>
+          </div>
+          <div class="stat-val">0 <small>FCFA</small></div>
+          <div class="stat-footer">
+            <span class="stat-badge b-green">0 FCFA</span> par commande
+          </div>
+        </div>
+
+        <!-- Commandes -->
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon c-blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            </div>
+            <div class="stat-title">Commandes</div>
+          </div>
+          <div class="stat-val">${d.ordersCount}</div>
+          <div class="stat-footer">
+            <span class="stat-badge b-blue">${d.pendingOrders} en attente</span>
+          </div>
+        </div>
+
+        <!-- Clients -->
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon c-purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <div class="stat-title">Clients</div>
+          </div>
+          <div class="stat-val">${d.usersCount}</div>
+          <div class="stat-footer">
+            <span class="stat-badge b-purple">Membres inscrits</span>
+          </div>
+        </div>
+
+        <!-- Produits -->
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon c-orange">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+            </div>
+            <div class="stat-title">Produits</div>
+          </div>
+          <div class="stat-val">${d.productsCount}</div>
+          <div class="stat-footer">
+            En catalogue
+          </div>
+        </div>
+      `;
+    } catch(e) { if(e.status===401||e.status===403) { Auth.clear(); window.location.href='login.html'; } }
+  }
+
+  setInterval(() => { if (Auth.isLoggedIn() && Auth.isAdmin()) loadSummary(true); }, 15000);
+
+  function getStatusClass(s) {
+    if(s==='pending'||s==='new') return 's-pending';
+    if(s==='confirmed'||s==='replied') return 's-confirmed';
+    if(s==='shipped'||s==='read') return 's-shipped';
+    if(s==='cancelled') return 's-cancelled';
+    return '';
+  }
+
+  let currentOrderFilter = 'all';
+
+  // Tab click listener
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('order-tab')) {
+      document.querySelectorAll('.order-tab').forEach(b => {
+        b.style.background = 'white';
+        b.style.color = 'var(--text-muted)';
+        b.classList.remove('active');
+      });
+      e.target.style.background = 'var(--brand-primary)';
+      e.target.style.color = 'white';
+      e.target.classList.add('active');
+      currentOrderFilter = e.target.getAttribute('data-filter');
+      loadOrders();
+    }
+  });
+
+  async function loadOrders(){
+    const table = document.getElementById('ordersBody');
+    try {
+      const d = await apiFetch('/admin/orders');
+      
+      let filteredOrders = d.orders;
+      if (currentOrderFilter === 'commerce') {
+        filteredOrders = d.orders.filter(o => o.service === 'commerce-general' || o.service === 'materiels-electriques');
+      } else if (currentOrderFilter === 'lavage') {
+        filteredOrders = d.orders.filter(o => o.service === 'lavage');
+      } else if (currentOrderFilter === 'installation') {
+        filteredOrders = d.orders.filter(o => o.service === 'installation-immeubles');
+      } else if (currentOrderFilter === 'pompe') {
+        filteredOrders = d.orders.filter(o => o.service === 'pompe-forage');
+      }
+
+      if (!filteredOrders.length) { table.innerHTML = '<tr><td colspan="6">Aucune commande pour cette catégorie.</td></tr>'; return; }
+      table.innerHTML = filteredOrders.map(o => {
+        const opts = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
+        const optionsHtml = opts.map(s=>`<option value="${s}" ${s===o.status?'selected':''}>${s}</option>`).join('');
+        return `
+        <tr>
+          <td><strong>${escapeHtml(o.full_name)}</strong> ${o.is_guest?'<span style="font-size:10px; background:#E2E8F0; padding:2px 6px; border-radius:4px; margin-left:4px;">GUEST</span>':''}</td>
+          <td>${escapeHtml(o.email||'')}<br><small style="color:var(--text-muted);">${escapeHtml(o.phone||'')}</small></td>
+          <td><span style="background:#F1F5F9; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:700;">${escapeHtml(o.service)}</span></td>
+          <td>${escapeHtml(o.details||'')}</td>
+          <td><select data-id="${o.id}" class="status-select ${getStatusClass(o.status)}">${optionsHtml}</select></td>
+          <td style="color:var(--text-muted); font-size:13px;">${o.created_at}</td>
+        </tr>`
+      }).join('');
+      
+      table.querySelectorAll('.status-select').forEach(sel => {
+        sel.addEventListener('change', async()=>{
+          sel.className = 'status-select ' + getStatusClass(sel.value);
+          await apiFetch('/admin/orders/'+sel.dataset.id,{method:'PATCH',body:JSON.stringify({status:sel.value})});
+          loadSummary();
+        });
+      });
+    } catch(e) {}
+  }
+
+  async function loadProducts(){
+    const table = document.getElementById('productsBody');
+    try {
+      const d = await apiFetch('/products');
+      if (!d.products.length) { table.innerHTML = '<tr><td colspan="5">Aucun produit.</td></tr>'; return; }
+      
+      let html = '';
+      for (const p of d.products) {
+        const detail = await apiFetch('/products/' + encodeURIComponent(p.slug));
+        html += detail.items.map(it => `
+          <tr>
+            <td>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <img src="${it.image_url ? escapeHtml(it.image_url) : 'assets/img/placeholder.png'}" alt="Produit" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1px solid var(--border-light); background:#F8FAFC;">
+                <div>
+                  <strong>${escapeHtml(it.name_fr)}</strong><br>
+                  <small style="color:var(--text-muted);">${escapeHtml(it.name_en)}</small>
+                </div>
+              </div>
+            </td>
+            <td><span style="background:#F1F5F9; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:700;">${escapeHtml(p.name_fr)}</span></td>
+            <td><strong>${new Intl.NumberFormat('fr-FR').format(it.price)} ${it.currency}</strong></td>
+            <td>${it.in_stock ? '<span style="color:#10B981; font-weight:700;">En stock</span>' : '<span style="color:#EF4444; font-weight:700;">Rupture</span>'}</td>
+            <td style="text-align:right;">
+              <button class="btn-danger deleteItem" data-item-id="${it.id}">Supprimer</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+      table.innerHTML = html;
+      
+      table.querySelectorAll('.deleteItem').forEach(btn => {
+        btn.addEventListener('click', () => {
+          showModal('Supprimer ce produit ?', 'Cette action est irréversible. Êtes-vous sûr de vouloir supprimer cet article du catalogue ?', {
+            confirmText: 'Supprimer',
+            cancelText: 'Annuler',
+            danger: true
+          }).then(async (confirmed) => {
+            if(!confirmed) return;
+            await apiFetch('/products/items/' + btn.dataset.itemId, { method: 'DELETE' });
+            loadProducts();
+          });
+        });
+      });
+    } catch(e) {}
+  }
+
+  document.getElementById('openAddProductModal').addEventListener('click', () => {
+    const template = document.getElementById('addProductFormTemplate');
+    const formNode = template.content.cloneNode(true);
+    const form = formNode.querySelector('form');
+    
+    showModal('Ajouter un nouveau produit', form, { confirmText: 'Créer le produit', cancelText: 'Annuler' }).then(async (confirmed) => {
+      if (!confirmed) return;
+      const realForm = document.querySelector('.custom-modal-overlay #addProductForm');
+      if (!realForm) return;
+
+      const fd = new FormData(realForm);
+      try {
+        const uploadedUrl = await handleImageUpload(realForm).catch(() => null);
+        await apiFetch('/products', {
+          method: 'POST',
+          body: JSON.stringify({
+            slug: fd.get('slug'), name_fr: fd.get('name_fr'), name_en: fd.get('name_en'),
+            description_fr: fd.get('description_fr'), description_en: fd.get('description_en'),
+            service_slug: fd.get('service_slug'),
+            image_url: uploadedUrl || ''
+          })
+        });
+        loadProducts(); loadSummary();
+      } catch(err){}
+    });
+  });
+
+  async function loadUsers(){
+    const table = document.getElementById('usersBody');
+    try {
+      const d = await apiFetch('/admin/users');
+      const me = Auth.getUser();
+      table.innerHTML = d.users.map(u => `
+        <tr>
+          <td><strong>${escapeHtml(u.full_name)}</strong></td>
+          <td>${escapeHtml(u.email)}<br><small style="color:var(--text-muted);">${escapeHtml(u.phone||'')}</small></td>
+          <td><span style="background:${u.role==='admin'?'var(--brand-primary)':'#F1F5F9'}; color:${u.role==='admin'?'white':'#475569'}; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:700; text-transform:uppercase;">${u.role}</span></td>
+          <td style="color:var(--text-muted); font-size:13px;">${u.created_at}</td>
+          <td style="text-align:right;">${u.id !== me.id ? `<button class="btn-danger deleteUser" data-user-id="${u.id}">Supprimer</button>` : '<span style="color:var(--text-muted);">(Vous)</span>'}</td>
+        </tr>`).join('');
+        
+      table.querySelectorAll('.deleteUser').forEach(btn => {
+        btn.addEventListener('click', () => {
+          showModal('Supprimer ce compte ?', 'Cette action est irréversible. Le compte et ses données seront effacés.', {
+            confirmText: 'Supprimer',
+            cancelText: 'Annuler',
+            danger: true
+          }).then(async (confirmed) => {
+            if(!confirmed) return;
+            await apiFetch('/admin/users/' + btn.dataset.userId, { method: 'DELETE' });
+            loadUsers(); loadSummary();
+          });
+        });
+      });
+    } catch(e) {}
+  }
+
+  async function loadMessages(){
+    const table = document.getElementById('messagesBody');
+    try {
+      const d = await apiFetch('/admin/messages');
+      if (!d.messages || !d.messages.length) {
+        table.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-muted);">Aucun message pour le moment.</td></tr>';
+        return;
+      }
+      table.innerHTML = d.messages.map(m => {
+        const opts = ['new', 'read', 'replied'];
+        const optionsHtml = opts.map(s=>`<option value="${s}" ${s===m.status?'selected':''}>${s}</option>`).join('');
+        return `
+        <tr>
+          <td><strong>${escapeHtml(m.full_name)}</strong></td>
+          <td>${escapeHtml(m.email)}<br><small style="color:var(--text-muted);">${escapeHtml(m.phone||'')}</small></td>
+          <td><strong>${escapeHtml(m.subject||'—')}</strong></td>
+          <td style="font-size:13px; max-width:250px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(m.body)}</td>
+          <td><select data-id="${m.id}" class="status-select ${getStatusClass(m.status)}">${optionsHtml}</select></td>
+        </tr>`
+      }).join('');
+      
+      table.querySelectorAll('.status-select').forEach(sel => {
+        sel.addEventListener('change', async()=>{
+          sel.className = 'status-select ' + getStatusClass(sel.value);
+          await apiFetch('/admin/messages/'+sel.dataset.id,{method:'PATCH',body:JSON.stringify({status:sel.value})});
+          loadSummary();
+        });
+      });
+    } catch(e) {}
+  }
+
+  async function handleImageUpload(formElement) {
+    const fileInput = formElement.querySelector('input[type="file"]');
+    const file = fileInput ? fileInput.files[0] : null;
+    if (!file) return null;
+    
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const res = await apiFetch('/upload', {
+            method: 'POST',
+            body: JSON.stringify({
+              imageBase64: reader.result,
+              filename: file.name
+            })
+          });
+          resolve(res.url);
+        } catch (err) {
+          console.error('Upload failed:', err);
+          reject(err);
+        }
+      };
+      reader.onerror = () => reject(new Error('File reading failed'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ── SITE IMAGES DEFINITIONS & MANAGER ──
+  const SITE_IMAGES = [
+    {
+      key: 'hero',
+      category: 'accueil',
+      name: "Accueil — Bannière Principale (Slide 1)",
+      page: "Page d'Accueil (index.html)",
+      section: "Haut de page — Diapo 1",
+      defaultUrl: "assets/img/hero-solar.jpg",
+      desc: "Grande image principale affichée en haut de la page d'accueil (Centrale Solaire & Énergie au Tchad)."
+    },
+    {
+      key: 'contact',
+      category: 'accueil',
+      name: "Accueil — Bannière Secondaire (Slide 2)",
+      page: "Page d'Accueil (index.html)",
+      section: "Haut de page — Diapo 2",
+      defaultUrl: "assets/img/pompe.jpg",
+      desc: "Deuxième image du diaporama international d'accueil (Station de Pompage Solaire Forage)."
+    },
+    {
+      key: 'about',
+      category: 'accueil',
+      name: "Accueil — Bannière Tertiaire (Slide 3)",
+      page: "Page d'Accueil (index.html)",
+      section: "Haut de page — Diapo 3",
+      defaultUrl: "assets/img/materiels.jpg",
+      desc: "Troisième image du diaporama international d'accueil (Matériels Électriques Industriels)."
+    },
+    {
+      key: 'about_expertise',
+      category: 'about',
+      name: "À Propos — 1. Expertise & Confiance",
+      page: "Page À Propos (about.html)",
+      section: "Section Expertise & Métiers",
+      defaultUrl: "assets/img/about-expertise.jpg",
+      desc: "Équipe d'ingénieurs et techniciens sur site de projet au Tchad."
+    },
+    {
+      key: 'about_ingenierie',
+      category: 'about',
+      name: "À Propos — 2. Ingénierie Globale",
+      page: "Page À Propos (about.html)",
+      section: "Section Ingénierie Globale",
+      defaultUrl: "assets/img/installation.jpg",
+      desc: "Ingénieurs et électriciens qualifiés sur armoire électrique industrielle."
+    },
+    {
+      key: 'about_distribution',
+      category: 'about',
+      name: "À Propos — 3. Logistique & Distribution",
+      page: "Page À Propos (about.html)",
+      section: "Section Déploiement Tchad",
+      defaultUrl: "assets/img/about-distribution.jpg",
+      desc: "Centre logistique et flotte de distribution couvrant le Tchad."
+    },
+    {
+      key: 'service_commerce-general',
+      category: 'services',
+      name: "Service: Commerce Général",
+      page: "Services & Accueil",
+      section: "Carte de Service",
+      defaultUrl: "assets/img/commerce.jpg",
+      desc: "Showroom professionnel d'outillage technique et quincaillerie."
+    },
+    {
+      key: 'service_materiels-electriques',
+      category: 'services',
+      name: "Service: Matériels Électriques",
+      page: "Services & Accueil",
+      section: "Carte de Service",
+      defaultUrl: "assets/img/materiels.jpg",
+      desc: "Magasin de câbles, disjoncteurs, compteurs et régulateurs solaires."
+    },
+    {
+      key: 'service_lavage',
+      category: 'services',
+      name: "Service: Station de Lavage",
+      page: "Services, Accueil & Lavage",
+      section: "Carte de Service & Page Dédiée",
+      defaultUrl: "assets/img/lavage.jpg",
+      desc: "Station moderne de lavage haute pression véhicules et motos."
+    },
+    {
+      key: 'service_installation-immeubles',
+      category: 'services',
+      name: "Service: Installation Immeubles",
+      page: "Services & Accueil",
+      section: "Carte de Service",
+      defaultUrl: "assets/img/installation.jpg",
+      desc: "Installation électrique complète et câblage de grands bâtiments."
+    },
+    {
+      key: 'service_pompe-forage',
+      category: 'services',
+      name: "Service: Pompes de forage",
+      page: "Services & Accueil",
+      section: "Carte de Service",
+      defaultUrl: "assets/img/pompe.jpg",
+      desc: "Installation de pompes solaires de forage et distribution d'eau."
+    },
+    {
+      key: 'service_vente-pompes',
+      category: 'services',
+      name: "Service: Vente de pompes",
+      page: "Services & Accueil",
+      section: "Carte de Service",
+      defaultUrl: "assets/img/vente-pompes.jpg",
+      desc: "Showroom de vente de pompes hydrauliques et submersibles."
+    }
+  ];
+
+  let currentSiteSettingsCache = {};
+  let currentGalleryFilter = 'all';
+
+  function getActiveImageUrl(item) {
+    if (currentSiteSettingsCache && currentSiteSettingsCache[item.key]) {
+      return currentSiteSettingsCache[item.key];
+    }
+    return item.defaultUrl;
+  }
+
+  function isCustomImage(item) {
+    return !!(currentSiteSettingsCache && currentSiteSettingsCache[item.key]);
+  }
+
+  function updateActivePreview(selectedKey) {
+    const item = SITE_IMAGES.find(i => i.key === selectedKey) || SITE_IMAGES[0];
+    const activeUrl = getActiveImageUrl(item);
+    const isCustom = isCustomImage(item);
+
+    const descEl = document.getElementById('selectedImageDesc');
+    if (descEl) descEl.textContent = item.desc;
+
+    const displayImg = document.getElementById('currentImageDisplay');
+    if (displayImg) {
+      displayImg.src = activeUrl;
+    }
+
+    const viewLink = document.getElementById('currentImageViewLink');
+    if (viewLink) {
+      viewLink.href = activeUrl;
+    }
+
+    const titleEl = document.getElementById('currentImageTitle');
+    if (titleEl) titleEl.textContent = item.name;
+
+    const pageEl = document.getElementById('currentImagePage');
+    if (pageEl) pageEl.textContent = item.page;
+
+    const sourceEl = document.getElementById('currentImageSource');
+    if (sourceEl) sourceEl.textContent = activeUrl;
+
+    const badgeEl = document.getElementById('currentStatusBadge');
+    if (badgeEl) {
+      if (isCustom) {
+        badgeEl.className = 'badge-status-custom';
+        badgeEl.innerHTML = '<span style="width:7px; height:7px; border-radius:50%; background:#059669;"></span> Image Personnalisée (En ligne)';
+      } else {
+        badgeEl.className = 'badge-status-default';
+        badgeEl.innerHTML = '<span style="width:7px; height:7px; border-radius:50%; background:#64748B;"></span> Image par Défaut du site';
+      }
+    }
+
+    const deleteBtn = document.getElementById('deleteImageBtn');
+    if (deleteBtn) {
+      deleteBtn.style.opacity = isCustom ? '1' : '0.45';
+      deleteBtn.title = isCustom ? 'Supprimer l\'image personnalisée pour revenir à l\'image par défaut' : 'Déjà à l\'image par défaut';
+    }
+  }
+
+  function renderImagesGallery() {
+    const grid = document.getElementById('allImagesGalleryGrid');
+    if (!grid) return;
+
+    const filtered = SITE_IMAGES.filter(item => {
+      if (currentGalleryFilter === 'all') return true;
+      return item.category === currentGalleryFilter;
+    });
+
+    grid.innerHTML = filtered.map(item => {
+      const activeUrl = getActiveImageUrl(item);
+      const isCustom = isCustomImage(item);
+      return `
+        <div class="gallery-card" data-key="${item.key}">
+          <div class="gallery-thumb">
+            <img src="${escapeHtml(activeUrl)}" alt="${escapeHtml(item.name)}" onerror="this.src='${item.defaultUrl}'">
+            <div style="position:absolute; top:10px; right:10px;">
+              ${isCustom 
+                ? '<span class="badge-status-custom" style="box-shadow:0 2px 6px rgba(0,0,0,0.15); font-size:11px;">En ligne</span>' 
+                : '<span class="badge-status-default" style="box-shadow:0 2px 6px rgba(0,0,0,0.15); font-size:11px;">Par défaut</span>'}
+            </div>
+            <div style="position:absolute; bottom:10px; left:10px;">
+              <span style="background:rgba(15,23,42,0.8); color:white; font-size:11px; font-weight:700; padding:3px 10px; border-radius:100px; backdrop-filter:blur(4px);">
+                ${escapeHtml(item.page.split(' ')[0])}
+              </span>
+            </div>
+          </div>
+          <div class="gallery-card-body">
+            <div>
+              <h4 class="gallery-card-title">${escapeHtml(item.name)}</h4>
+              <p class="gallery-card-desc">${escapeHtml(item.desc)}</p>
+            </div>
+            <button type="button" class="btn-quick-edit" onclick="selectImageForEdit('${item.key}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+              Gérer cette image
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  window.selectImageForEdit = function(key) {
+    const select = document.getElementById('settingsImageKey');
+    if (select) {
+      select.value = key;
+      updateActivePreview(key);
+      const formBox = document.getElementById('siteSettingsForm');
+      if (formBox) {
+        formBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  };
+
+  async function loadSiteSettingsManager() {
+    try {
+      const res = await apiFetch('/settings');
+      currentSiteSettingsCache = res || {};
+      const select = document.getElementById('settingsImageKey');
+      const selectedKey = select ? select.value : 'hero';
+      updateActivePreview(selectedKey);
+      renderImagesGallery();
+    } catch (err) {
+      console.error('Failed to load site settings:', err);
+    }
+  }
+
+  function initSettingsManagerEvents() {
+    const select = document.getElementById('settingsImageKey');
+    if (select) {
+      select.addEventListener('change', (e) => {
+        updateActivePreview(e.target.value);
+      });
+    }
+
+    const fileInput = document.getElementById('settingsImageFile');
+    const fileNameSpan = document.getElementById('settingsFileName');
+    const previewContainer = document.getElementById('newImagePreviewContainer');
+    const previewImg = document.getElementById('newImagePreviewImg');
+    const previewName = document.getElementById('newImagePreviewName');
+    const previewSize = document.getElementById('newImagePreviewSize');
+    const clearBtn = document.getElementById('clearSelectedFileBtn');
+
+    if (fileInput) {
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) {
+          fileNameSpan.textContent = file.name;
+          fileNameSpan.style.color = 'var(--text-heading)';
+          fileNameSpan.style.borderColor = 'var(--brand-primary)';
+          
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            if (previewImg) previewImg.src = ev.target.result;
+            if (previewName) previewName.textContent = file.name;
+            if (previewSize) previewSize.textContent = (file.size / 1024).toFixed(1) + ' Ko';
+            if (previewContainer) previewContainer.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        } else {
+          resetFileInput();
+        }
+      });
+    }
+
+    function resetFileInput() {
+      if (fileInput) fileInput.value = '';
+      if (fileNameSpan) {
+        fileNameSpan.textContent = 'Aucun fichier sélectionné';
+        fileNameSpan.style.color = 'var(--text-muted)';
+        fileNameSpan.style.borderColor = 'var(--border-light)';
+      }
+      if (previewContainer) previewContainer.style.display = 'none';
+      if (previewImg) previewImg.src = '';
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', resetFileInput);
+    }
+
+    const refreshBtn = document.getElementById('refreshSettingsBtn');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', async () => {
+        refreshBtn.style.opacity = '0.5';
+        await loadSiteSettingsManager();
+        refreshBtn.style.opacity = '1';
+        showNotification('Images actualisées avec succès !');
+      });
+    }
+
+    // Gallery filter tabs
+    const filterButtons = document.querySelectorAll('.gallery-filter-btn');
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentGalleryFilter = btn.dataset.filter;
+        renderImagesGallery();
+      });
+    });
+
+    // Form submit: Replace image
+    const form = document.getElementById('siteSettingsForm');
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const file = fileInput && fileInput.files && fileInput.files[0];
+        if (!file) {
+          alert("Veuillez sélectionner un fichier image à téléverser.");
+          return;
+        }
+
+        const submitBtn = document.getElementById('saveImageBtn');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = 'Publication en cours...';
+        submitBtn.disabled = true;
+
+        try {
+          const uploadedUrl = await handleImageUpload(form);
+          const key = select.value;
+          await apiFetch('/admin/settings', {
+            method: 'POST',
+            body: JSON.stringify({ key, value: uploadedUrl })
+          });
+          currentSiteSettingsCache[key] = uploadedUrl;
+          resetFileInput();
+          updateActivePreview(key);
+          renderImagesGallery();
+          showNotification('Image mise à jour et publiée avec succès !');
+        } catch (err) {
+          console.error(err);
+          showNotification('Échec de la mise à jour de l\'image.');
+        } finally {
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
+        }
+      });
+    }
+
+    // Delete button: Reset to default image
+    const deleteBtn = document.getElementById('deleteImageBtn');
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', async () => {
+        const key = select.value;
+        const item = SITE_IMAGES.find(i => i.key === key);
+        if (!isCustomImage(item)) {
+          alert('Cette image utilise déjà la valeur par défaut du thème.');
+          return;
+        }
+
+        if (!confirm(`Voulez-vous vraiment supprimer l'image personnalisée pour "${item.name}" et revenir à l'image par défaut ?`)) {
+          return;
+        }
+
+        deleteBtn.disabled = true;
+        deleteBtn.textContent = 'Réinitialisation...';
+
+        try {
+          await apiFetch(`/admin/settings/${key}`, { method: 'DELETE' });
+          delete currentSiteSettingsCache[key];
+          resetFileInput();
+          updateActivePreview(key);
+          renderImagesGallery();
+          showNotification('Image réinitialisée vers l\'image par défaut.');
+        } catch (err) {
+          console.error(err);
+          showNotification('Erreur lors de la réinitialisation.');
+        } finally {
+          deleteBtn.disabled = false;
+          deleteBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            RÉTABLIR L'IMAGE PAR DÉFAUT
+          `;
+        }
+      });
+    }
+  }
+
+  function showNotification(msg) {
+    let el = document.getElementById('admin-toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'admin-toast';
+      el.style.cssText = 'position:fixed; bottom:30px; right:30px; background:#0F172A; color:white; padding:14px 22px; border-radius:12px; font-weight:600; box-shadow:0 10px 25px rgba(0,0,0,0.25); z-index:9999; display:flex; align-items:center; gap:12px; border-left:4px solid #10B981; font-size:14px;';
+      document.body.appendChild(el);
+    }
+    el.innerHTML = `<div style="width:24px; height:24px; border-radius:50%; background:#10B981; color:white; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div> <span>${escapeHtml(msg)}</span>`;
+    setTimeout(() => { el.remove(); }, 5000);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nos services — EAEPCG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+<div class="page-hero">
+  <div class="eyebrow"><span class="dot"></span><span data-fr>Nos services</span><span data-en>Our services</span><span data-ar>خدماتنا</span></div>
+  <h1><span data-fr>Expertise & Ingénierie</span><span data-en>Expertise & Engineering</span><span data-ar>الخبرة والهندسة</span></h1>
+  <p class="lead"><span data-fr>Découvrez nos domaines d'excellence. Des solutions haut de gamme pour les infrastructures, l'énergie et la construction au Tchad.</span><span data-en>Discover our areas of excellence. Premium solutions for infrastructure, energy and construction in Chad.</span><span data-ar>اكتشف مجالات تفوقنا. حلول ممتازة للبنية التحتية والطاقة والبناء في تشاد.</span></p>
+</div>
+<section style="padding-top:0;">
+  <div class="section-inner">
+    <div class="services-grid-layout" id="servicesGrid"></div>
+    <div style="margin-top:40px; text-align:center;">
+      <a class="btn btn-primary" href="order.html"><span data-fr>Démarrer un projet</span><span data-en>Start a project</span><span data-ar>ابدأ مشروعًا</span></a>
+      <a class="btn btn-outline" href="products.html" style="margin-left:10px;"><span data-fr>Voir les équipements</span><span data-en>See equipment</span><span data-ar>رؤية المعدات</span></a>
+    </div>
+  </div>
+</section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/components.js"></script>
+<script>
+  renderHeader('services.html'); renderFooter();
+  const IMAGES = {
+    'pompe-forage': 'assets/img/pompe.jpg',
+    'vente-pompes': 'assets/img/vente-pompes.jpg',
+    'materiels-electriques': 'assets/img/materiels.jpg',
+    'commerce-general': 'assets/img/commerce.jpg',
+    'lavage': 'assets/img/lavage.jpg',
+    'installation-immeubles': 'assets/img/installation.jpg'
+  };
+
+  function loadServices(){
+    const container = document.getElementById('servicesGrid');
+    renderLoading(container);
+    Promise.all([apiFetch('/services'), apiFetch('/products')]).then(([sData, pData]) => {
+      if (!sData.services.length) { renderEmpty(container, 'emptyServices'); return; }
+      const prodsByService = {};
+      pData.products.forEach(p => { 
+        if(p.service_slug){
+          if(!prodsByService[p.service_slug]) prodsByService[p.service_slug]=[];
+          prodsByService[p.service_slug].push(p);
+        } 
+      });
+      document.getElementById('servicesGrid').innerHTML = sData.services.map((s, index) => {
+        const related = prodsByService[s.slug]||[];
+        let href = related.length ? `products.html#${s.slug}` : `order.html?service=${s.slug}`;
+        if (s.slug === 'lavage') href = 'lavage.html';
+        const num = String(index + 1).padStart(2, '0');
+        
+        // Use DB image if set, else fallback to hardcoded IMAGES array
+        const imgUrl = s.image_url || IMAGES[s.slug] || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80';
+        
+        const numItems = related.reduce((acc, curr) => acc + (curr.item_count || 0), 0);
+        const isAlt = index % 2 !== 0 ? 'alt' : '';
+        
+        return `
+          <a class="premium-service-card ${isAlt}" href="${href}" id="${s.slug}">
+            <div class="psc-bg">
+              <img src="${imgUrl}" alt="${escapeHtml(s.name_fr)}">
+            </div>
+            <div class="psc-content">
+              <div class="psc-num">SERVICE ${num}</div>
+              <h3 class="psc-title">
+                <span data-fr>${escapeHtml(s.name_fr)}</span>
+                <span data-en>${escapeHtml(s.name_en)}</span>
+                <span data-ar>${escapeHtml(s.name_fr)}</span>
+              </h3>
+              <p class="psc-desc">
+                <span data-fr>${escapeHtml(s.description_fr||'')}</span>
+                <span data-en>${escapeHtml(s.description_en||'')}</span>
+                <span data-ar>${escapeHtml(s.description_fr||'')}</span>
+              </p>
+              <div class="psc-footer">
+                <div class="psc-count"><strong>${numItems}</strong> <span data-fr>ÉQUIPEMENT(S)</span><span data-en>EQUIPMENT(S)</span><span data-ar>المعدات</span></div>
+                <div class="psc-arrow">→</div>
+              </div>
+            </div>
+          </a>
+        `;
+      }).join('');
+      
+      // Auto-scroll to the requested service if the URL has a hash
+      if (window.location.hash) {
+        setTimeout(() => {
+          const target = document.getElementById(window.location.hash.substring(1));
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 150);
+      }
+      
+    }).catch(()=>renderApiError(container, loadServices));
+  }
+  loadServices();
+</script>
+</body>
+</html>

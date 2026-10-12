@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produit — EAEPCG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .back-link{display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--blue-deep); margin-bottom:12px; text-decoration:none; text-transform:uppercase; letter-spacing:0.05em;}
+  .back-link:hover{color:var(--yellow);}
+  .cat-section{margin-bottom:48px;}
+  .cat-title{font-family:'Archivo Black'; font-size:16px; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:24px; padding-bottom:12px; border-bottom:2px solid rgba(11, 42, 138, 0.1); color: var(--blue-deep);}
+  
+  .item-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:24px;}
+  
+  /* Blue Service-style Item Card */
+  .item-card{
+    background: var(--blue-deep);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+  }
+  .item-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(11, 42, 138, 0.25);
+    border-color: rgba(245, 197, 24, 0.5); /* subtil reflet jaune */
+  }
+  
+  /* Yellow icon circle (when no image) */
+  .icon-wrap {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--yellow);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 6px;
+  }
+  
+  /* Image wrapper (when image uploaded) */
+  .item-img {
+    width: 100%; height: 180px; border-radius: 10px; overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .item-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+  .item-card:hover .item-img img { transform: scale(1.05); }
+  
+  .item-name { font-family: 'Archivo Black', sans-serif; font-size: 15px; line-height: 1.4; text-transform: uppercase; letter-spacing: 0.02em; }
+  .item-price { font-family: 'Archivo Black', sans-serif; font-size: 18px; color: var(--yellow); margin-top: auto; }
+  
+  .item-stock { font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; display: inline-block; align-self: flex-start; letter-spacing: 0.05em; }
+  .item-stock.yes { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.3); }
+  .item-stock.no { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.3); }
+  
+  .order-cta{margin-top:48px; text-align:center;}
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+<div class="page-hero" id="productHero">
+  <a class="back-link" href="products.html">← <span data-fr>Retour aux produits</span><span data-en>Back to products</span><span data-ar>العودة للمنتجات</span></a>
+  <div class="eyebrow"><span class="dot"></span><span id="heroEyebrow"></span></div>
+  <h1 id="heroTitle"><span data-fr>Chargement…</span><span data-en>Loading…</span><span data-ar>جاري التحميل…</span></h1>
+  <p class="lead" id="heroDesc"></p>
+</div>
+<section style="padding-top:0;">
+  <div class="section-inner" id="itemsContainer"><p><span data-fr>Chargement…</span><span data-en>Loading…</span><span data-ar>جاري التحميل…</span></p></div>
+  <div class="order-cta">
+    <a class="btn btn-primary" href="order.html"><span data-fr>Commander ce produit</span><span data-en>Order this product</span><span data-ar>اطلب هذا المنتج</span></a>
+    <a class="btn btn-outline" href="https://wa.me/23566341078?text=Bonjour%2C%20je%20vous%20contacte%20depuis%20votre%20site%20web%20EAEPCG.%20Je%20souhaite%20avoir%20des%20informations." target="_blank" rel="noopener" style="margin-left:10px;">WhatsApp</a>
+  </div>
+</section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/components.js"></script>
+<script>
+  renderHeader('products.html'); renderFooter();
+  const slug = new URLSearchParams(window.location.search).get('slug');
+  if (!slug) window.location.href = 'products.html';
+  function formatPrice(p,c){if(!p||p===0)return'—';return new Intl.NumberFormat('fr-FR').format(p)+' '+(c||'XAF');}
+  
+  window.addToCart = async function(id, name, price, currency, serviceSlug) {
+    const qtyStr = await showModal(
+      {fr:"Quantité ?",en:"Quantity?",ar:"الكمية؟"}[currentLang()] || "Quantité ?",
+      {fr:"Combien de '" + name + "' souhaitez-vous ajouter au panier ?",en:"How many '" + name + "' do you want to add to cart?",ar:"كم '" + name + "' تريد إضافته إلى السلة؟"}[currentLang()]||"Quantité ?",
+      { prompt: true, promptValue: "1", confirmText: {fr:"Ajouter",en:"Add",ar:"إضافة"}[currentLang()] || 'Ajouter', cancelText: {fr:"Annuler",en:"Cancel",ar:"إلغاء"}[currentLang()] || 'Annuler' }
+    );
+    if (!qtyStr) return;
+    const quantity = parseInt(qtyStr, 10);
+    if (quantity < 1 || isNaN(quantity)) {
+      showModal(localizedText('loadError'), {fr:"Quantité invalide",en:"Invalid quantity",ar:"كمية غير صالحة"}[currentLang()], { cancelText: null });
+      return;
+    }
+    
+    Cart.add({ id, name, price, quantity, currency, serviceSlug });
+    showModal('Succès', {fr:"Ajouté au panier !",en:"Added to cart!",ar:"تمت الإضافة إلى السلة!"}[currentLang()], { cancelText: null });
+  };
+
+  document.getElementById('itemsContainer').addEventListener('click', (e) => {
+    const card = e.target.closest('.item-card');
+    if (!card) return;
+    const id = parseInt(card.getAttribute('data-id'), 10);
+    const name = card.getAttribute('data-name');
+    const price = parseFloat(card.getAttribute('data-price')) || 0;
+    const currency = card.getAttribute('data-currency') || 'XAF';
+    const serviceSlug = card.getAttribute('data-service') || '';
+    if (id && name) addToCart(id, name, price, currency, serviceSlug);
+  });
+
+  const svgPlaceholder = `
+    <div class="icon-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--blue-deep)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+    </div>
+  `;
+
+  function loadProduct(){
+  const container = document.getElementById('itemsContainer');
+  renderLoading(container);
+  apiFetch('/products/'+encodeURIComponent(slug)).then(({product,items})=>{
+    const lang = document.documentElement.lang;
+    const nameFr = escapeHtml(product.name_fr), nameEn = escapeHtml(product.name_en);
+    document.getElementById('heroEyebrow').innerHTML=`<span data-fr>${nameFr}</span><span data-en>${nameEn}</span><span data-ar>${nameFr}</span>`;
+    document.getElementById('heroTitle').innerHTML=`<span data-fr>${nameFr}</span><span data-en>${nameEn}</span><span data-ar>${nameFr}</span>`;
+    document.getElementById('heroDesc').innerHTML=`<span data-fr>${escapeHtml(product.description_fr||'')}</span><span data-en>${escapeHtml(product.description_en||'')}</span><span data-ar>${escapeHtml(product.description_fr||'')}</span>`;
+    if(!items.length){renderEmpty(container, 'emptyItems');return;}
+    const categories={};
+    items.forEach(item=>{
+      const cat = lang==='en' ? (item.category_en||'General') : (item.category_fr||'Général');
+      if(!categories[cat])categories[cat]=[];
+      categories[cat].push(item);
+    });
+    document.getElementById('itemsContainer').innerHTML = Object.entries(categories).map(([cat,catItems])=>`
+      <div class="cat-section">
+        <div class="cat-title">${escapeHtml(cat)} <span style="opacity:0.5; font-size:12px; margin-left:8px;">(${catItems.length})</span></div>
+        <div class="item-grid">${catItems.map(item=>{
+          const localizedName = currentLang()==='en'?item.name_en:item.name_fr;
+          return `
+          <div class="item-card" data-id="${item.id}" data-name="${escapeHtml(localizedName)}" data-price="${item.price}" data-currency="${escapeHtml(item.currency)}" data-service="${escapeHtml(product.service_slug||'')}">
+            ${item.image_url?`<div class="item-img"><img src="${escapeHtml(item.image_url)}" alt=""></div>`: svgPlaceholder}
+            <div class="item-name"><span data-fr>${escapeHtml(item.name_fr)}</span><span data-en>${escapeHtml(item.name_en)}</span><span data-ar>${escapeHtml(item.name_fr)}</span></div>
+            <div class="item-price">${formatPrice(item.price,item.currency)}</div>
+            <div class="item-stock ${item.in_stock?'yes':'no'}">
+              ${item.in_stock?`<span data-fr>En stock</span><span data-en>In stock</span><span data-ar>متوفر</span>`:`<span data-fr>Rupture</span><span data-en>Out of stock</span><span data-ar>غير متوفر</span>`}
+            </div>
+            <div style="margin-top:12px; font-size:13px; font-weight:600; color:var(--yellow); text-transform:uppercase;">
+              <span data-fr>+ Ajouter au panier</span><span data-en>+ Add to cart</span><span data-ar>+ أضف إلى السلة</span>
+            </div>
+          </div>`}).join('')}
+        </div>
+      </div>`).join('');
+  }).catch((err)=>{
+    if (err.status === 404) {
+      container.innerHTML = `<p class="async-state error-state">${escapeHtml(localizedText('productNotFound'))}</p>`;
+      return;
+    }
+    renderApiError(container, loadProduct);
+  });
+  }
+  loadProduct();
+</script>
+</body>
+</html>

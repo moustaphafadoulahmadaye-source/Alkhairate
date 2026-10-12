@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon espace — EAEPCG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .account-page-wrapper {
+    background-color: #f4f7f9;
+    min-height: calc(100vh - 80px);
+    padding: 60px 24px;
+    font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+  }
+  .account-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 40px;
+  }
+
+  /* SIDEBAR PROFILE */
+  .account-sidebar {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 40px 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    border: 1px solid #eef2f6;
+    text-align: center;
+    align-self: start;
+  }
+  .account-avatar {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #fff;
+    font-size: 40px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px auto;
+    text-transform: uppercase;
+    box-shadow: 0 8px 16px rgba(15, 23, 42, 0.15);
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .account-avatar::after {
+    content: '📷';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    font-size: 16px;
+    height: 34%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .account-avatar:hover::after {
+    opacity: 1;
+  }
+  .account-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 8px 0;
+    line-height: 1.2;
+    font-family: 'Outfit', sans-serif;
+  }
+  .account-email {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0 0 32px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+
+  .account-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+  }
+  .account-nav-btn {
+    background: transparent;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .account-nav-btn svg {
+    width: 20px; height: 20px;
+    stroke-width: 2.5;
+  }
+  .account-nav-btn:hover {
+    background: #f8fafc;
+    color: #0f172a;
+  }
+  .account-nav-btn.active {
+    background: #eff6ff;
+    color: #2563eb;
+  }
+
+  /* MAIN CONTENT */
+  .account-content {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    border: 1px solid #eef2f6;
+  }
+  .account-content-header {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .account-content-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  /* TABLES */
+  .acc-table-wrapper {
+    overflow-x: auto;
+  }
+  .acc-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+  }
+  .acc-table th {
+    text-align: left;
+    padding: 16px 0;
+    color: #64748b;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    border-bottom: 2px solid #f1f5f9;
+    background: transparent;
+  }
+  .acc-table td {
+    padding: 20px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 15px;
+    color: #334155;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .acc-table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .status-badge {
+    display: inline-flex;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .status-badge.pending { background: #fef3c7; color: #b45309; }
+  .status-badge.confirmed { background: #d1fae5; color: #047857; }
+  .status-badge.shipped { background: #dbeafe; color: #1d4ed8; }
+  .status-badge.cancelled { background: #fee2e2; color: #b91c1c; }
+
+  /* FORMS */
+  .acc-form {
+    max-width: 500px;
+  }
+  .acc-form-group {
+    margin-bottom: 24px;
+  }
+  .acc-form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 8px;
+  }
+  .acc-form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    font-size: 15px;
+    transition: border-color 0.2s;
+  }
+  .acc-form-group input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+  
+  .btn-acc-primary {
+    background: #0f172a;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+  .btn-acc-primary:hover {
+    background: #1e293b;
+  }
+  
+  .btn-acc-outline {
+    background: transparent;
+    color: #0f172a;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    border: 1px solid #cbd5e1;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0;
+  }
+  .btn-acc-outline:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+  }
+
+  @media(max-width: 900px) {
+    .account-container { grid-template-columns: 1fr; gap: 24px; }
+    .account-sidebar { padding: 30px 20px; }
+    .account-nav { flex-direction: row; overflow-x: auto; padding-bottom: 8px; }
+    .account-nav-btn { flex: 0 0 auto; }
+    .account-content { padding: 30px 20px; }
+    .account-content-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+  }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main class="account-page-wrapper">
+
+<section id="lockedSection" hidden>
+  <div style="max-width: 480px; margin: 60px auto; background: white; padding: 50px 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; border: 1px solid #eef2f6;">
+    <div style="font-size: 56px; margin-bottom: 24px;">🔒</div>
+    <h3 style="margin-bottom:16px; font-family: 'Outfit', sans-serif; font-size: 26px; font-weight: 800; color: #0f172a;">
+      <span data-fr>Espace Sécurisé</span><span data-en>Secure Space</span><span data-ar>مساحة آمنة</span>
+    </h3>
+    <p style="color: #64748B; margin-bottom: 32px; font-size: 16px; line-height: 1.6;">
+      <span data-fr>Veuillez vous identifier pour accéder à votre tableau de bord client.</span>
+      <span data-en>Please log in to access your customer dashboard.</span>
+    </p>
+    <div style="display:flex; gap:16px; justify-content:center; flex-direction: column;">
+      <a class="btn-acc-primary" href="login.html" style="justify-content: center; padding: 16px;"><span data-fr>Se connecter</span><span data-en>Log in</span><span data-ar>تسجيل الدخول</span></a>
+      <a href="register.html" style="color: #2563eb; font-weight: 600; text-decoration: none; padding: 12px;"><span data-fr>Créer un compte</span><span data-en>Sign up</span><span data-ar>إنشاء حساب</span></a>
+    </div>
+  </div>
+</section>
+
+<section id="appSection" hidden>
+  <div class="account-container">
+    
+    <!-- SIDEBAR -->
+    <div class="account-sidebar">
+      <div class="account-avatar" id="dashAvatar" title="Modifier la photo">U</div>
+      <input type="file" id="sidebarAvatarInput" accept="image/*" hidden>
+      <h1 class="account-name" id="welcomeName">Bienvenue</h1>
+      <p class="account-email" id="welcomeEmail">email@example.com</p>
+
+      <div class="account-nav">
+        <button class="account-nav-btn active" data-tab="orders">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          <span data-fr>Mes commandes</span><span data-en>My orders</span><span data-ar>طلباتي</span>
+        </button>
+        <button class="account-nav-btn" data-tab="messages">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span data-fr>Mes messages</span><span data-en>My messages</span><span data-ar>رسائلي</span>
+        </button>
+        <button class="account-nav-btn" data-tab="profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span data-fr>Mon profil</span><span data-en>My profile</span><span data-ar>ملفي</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="account-content">
+      
+      <!-- ORDERS TAB -->
+      <div id="tab-orders">
+        <div class="account-content-header">
+          <h2><span data-fr>Historique des commandes</span><span data-en>Order History</span></h2>
+          <a href="order.html" class="btn-acc-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18"><path d="M12 5v14M5 12h14"/></svg>
+            <span data-fr>Nouvelle commande</span><span data-en>New order</span>
+          </a>
+        </div>
+        <div class="acc-table-wrapper">
+          <table class="acc-table">
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th><span data-fr>Détails</span><span data-en>Details</span><span data-ar>تفاصيل</span></th>
+                <th><span data-fr>Statut</span><span data-en>Status</span><span data-ar>الحالة</span></th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="ordersBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MESSAGES TAB -->
+      <div id="tab-messages" hidden>
+        <div class="account-content-header">
+          <h2><span data-fr>Messagerie</span><span data-en>Messaging</span></h2>
+          <a href="contact.html" class="btn-acc-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18"><path d="M12 5v14M5 12h14"/></svg>
+            <span data-fr>Nouveau message</span><span data-en>New message</span>
+          </a>
+        </div>
+        <div class="acc-table-wrapper">
+          <table class="acc-table">
+            <thead>
+              <tr>
+                <th><span data-fr>Sujet</span><span data-en>Subject</span><span data-ar>الموضوع</span></th>
+                <th>Message</th>
+                <th><span data-fr>Statut</span><span data-en>Status</span><span data-ar>الحالة</span></th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="messagesBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PROFILE TAB -->
+      <div id="tab-profile" hidden>
+        <div class="account-content-header">
+          <h2><span data-fr>Informations Personnelles</span><span data-en>Personal Information</span></h2>
+        </div>
+        <form id="profileForm" class="acc-form" style="max-width: 600px;">
+          <input type="hidden" name="avatar_url" id="avatarUrlInput">
+          
+          <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 40px; text-align: center;">
+            <label for="avatarFileInput" class="premium-avatar-upload" style="position: relative; width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 5px solid white; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); margin-bottom: 16px;" onmouseover="this.querySelector('.premium-avatar-overlay').style.opacity='1'" onmouseout="this.querySelector('.premium-avatar-overlay').style.opacity='0'">
+              <div id="formAvatarPreview" style="position: absolute; inset: 0; background-position: center; background-size: cover; background-repeat: no-repeat;"></div>
+              <span id="formAvatarInitials" style="font-size: 44px; font-weight: 800; color: #64748b; z-index: 1;">?</span>
+              
+              <div class="premium-avatar-overlay" style="position: absolute; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; opacity: 0; transition: all 0.3s ease; z-index: 2;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="28" height="28" style="margin-bottom:4px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Modifier</span>
+              </div>
+            </label>
+            <h4 style="margin:0 0 4px 0; font-size: 18px; color:#0f172a;"><span data-fr>Photo de profil</span><span data-en>Profile picture</span></h4>
+            <p style="font-size:13px; color:#64748b; margin:0;"><span data-fr>Format JPEG ou PNG (max 2MB).</span><span data-en>JPEG or PNG format (max 2MB).</span></p>
+            <input type="file" id="avatarFileInput" accept="image/*" style="opacity:0; width:1px; height:1px; position:absolute; z-index:-1;">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="acc-form-group" style="grid-column: 1 / -1; margin-bottom: 0;">
+              <label><span data-fr>Nom complet</span><span data-en>Full name</span><span data-ar>الاسم الكامل</span></label>
+              <input name="full_name" required minlength="2" maxlength="120" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+            </div>
+            <div class="acc-form-group" style="margin-bottom: 0;">
+              <label>Adresse Email</label>
+              <input name="email" type="email" required style="background: #f8fafc; border: 1px solid #e2e8f0;">
+            </div>
+            <div class="acc-form-group" style="margin-bottom: 0;">
+              <label><span data-fr>Téléphone</span><span data-en>Phone</span><span data-ar>الهاتف</span></label>
+              <input name="phone" maxlength="40" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+            </div>
+          </div>
+          
+          <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+            <button class="btn-acc-primary" type="submit" style="padding: 14px 28px; border-radius: 12px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);">
+              <span data-fr>Enregistrer les modifications</span><span data-en>Save changes</span><span data-ar>حفظ</span>
+            </button>
+          </div>
+          <div id="profileMsg" class="form-msg" style="margin-top: 16px;"></div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/components.js"></script>
+<script>
+  renderHeader('account.html'); renderFooter();
+  function updateAvatarDisplay(user) {
+    const avatarUrl = user.avatar_url;
+    const initial = user.full_name ? user.full_name.charAt(0).toUpperCase() : 'U';
+    
+    // Main header avatar
+    const headerAvatar = document.getElementById('dashAvatar');
+    if (headerAvatar) {
+      if (avatarUrl) {
+        headerAvatar.style.background = `url(${avatarUrl}) center/cover no-repeat`;
+        headerAvatar.textContent = '';
+      } else {
+        headerAvatar.style.background = `linear-gradient(135deg, #0f172a 0%, #1e293b 100%)`;
+        headerAvatar.textContent = initial;
+      }
+    }
+
+    // Form preview avatar
+    const formPreview = document.getElementById('formAvatarPreview');
+    const formInitials = document.getElementById('formAvatarInitials');
+    if (formPreview) {
+      if (avatarUrl) {
+        formPreview.style.backgroundImage = `url(${avatarUrl})`;
+        if (formInitials) formInitials.style.display = 'none';
+      } else {
+        formPreview.style.backgroundImage = `none`;
+        if (formInitials) {
+          formInitials.style.display = 'block';
+          formInitials.textContent = initial;
+        }
+      }
+    }
+  }
+
+  window.removeAvatar = async function() {
+    if (!confirm({fr:'Voulez-vous vraiment supprimer votre photo ?',en:'Really remove your photo?',ar:'هل تريد حقًا حذف صورتك؟'}[currentLang()])) return;
+    try {
+      const res = await apiFetch('/auth/me', { method: 'PATCH', body: JSON.stringify({ avatar_url: '' }) });
+      Auth.setSession(Auth.getToken(), res.user);
+      updateAvatarDisplay(res.user);
+      document.getElementById('avatarUrlInput').value = '';
+      
+      const formPreview = document.getElementById('formAvatarPreview');
+      if (formPreview) {
+        formPreview.style.backgroundImage = 'none';
+        const fi = document.getElementById('formAvatarInitials');
+        if (fi) {
+          fi.style.display = 'block';
+          fi.textContent = res.user.full_name ? res.user.full_name.charAt(0).toUpperCase() : 'U';
+        }
+      }
+    } catch(err) {
+      console.error(err);
+    }
+  };
+
+  if (!Auth.isLoggedIn()) { document.getElementById('lockedSection').hidden = false; }
+  else {
+    const user = Auth.getUser();
+    if (document.getElementById('welcomeName')) document.getElementById('welcomeName').textContent = user.full_name || 'Bienvenue';
+    if (document.getElementById('welcomeEmail')) {
+      const el = document.getElementById('welcomeEmail');
+      el.textContent = user.email || '';
+      el.title = user.email || '';
+    }
+    
+    updateAvatarDisplay(user);
+
+    document.querySelector('#profileForm [name="full_name"]').value = user.full_name || '';
+    document.querySelector('#profileForm [name="email"]').value = user.email || '';
+    document.querySelector('#profileForm [name="phone"]').value = user.phone || '';
+    document.getElementById('avatarUrlInput').value = user.avatar_url || '';
+
+    document.getElementById('appSection').hidden = false;
+    loadOrders(); loadMessages();
+    document.querySelectorAll('.account-nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.account-nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-orders').hidden = btn.dataset.tab !== 'orders';
+        document.getElementById('tab-messages').hidden = btn.dataset.tab !== 'messages';
+        document.getElementById('tab-profile').hidden = btn.dataset.tab !== 'profile';
+      });
+    });
+  }
+
+  // Handle form avatar selection (preview only, saves on form submit)
+  const avatarFile = document.getElementById('avatarFileInput');
+  if (avatarFile) {
+    avatarFile.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Image trop volumineuse (max 2MB)');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const base64 = ev.target.result;
+        // Preview locally first
+        const formPreview = document.getElementById('formAvatarPreview');
+        if (formPreview) {
+          formPreview.style.backgroundImage = `url(${base64})`;
+          const fi = document.getElementById('formAvatarInitials');
+          if (fi) fi.style.display = 'none';
+        }
+
+        try {
+          // Upload to server
+          const res = await apiFetch('/upload/avatar', {
+            method: 'POST',
+            body: JSON.stringify({ imageBase64: base64, filename: file.name })
+          });
+          if (res && res.url) {
+            document.getElementById('avatarUrlInput').value = res.url;
+            
+            // Also optionally update header
+            const headerAvatar = document.getElementById('dashAvatar');
+            if (headerAvatar) {
+              headerAvatar.style.background = `url(${res.url}) center/cover no-repeat`;
+              headerAvatar.textContent = '';
+            }
+          }
+        } catch (error) {
+          console.error("Avatar upload failed", error);
+          alert("Erreur lors de l'envoi de l'image.");
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Handle sidebar avatar click and auto-upload
+  const sidebarAvatar = document.getElementById('dashAvatar');
+  const sidebarInput = document.getElementById('sidebarAvatarInput');
+  if (sidebarAvatar && sidebarInput) {
+    sidebarAvatar.addEventListener('click', () => sidebarInput.click());
+    sidebarInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) return alert('Image trop volumineuse (max 2MB)');
+      
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const base64 = ev.target.result;
+        try {
+          // 1. Upload to server
+          const res = await apiFetch('/upload/avatar', {
+            method: 'POST', body: JSON.stringify({ imageBase64: base64, filename: file.name })
+          });
+          if (res && res.url) {
+            // 2. Auto-save to profile
+            const updateRes = await apiFetch('/auth/me', {
+              method: 'PATCH', body: JSON.stringify({ avatar_url: res.url })
+            });
+            // 3. Update UI & Session
+            Auth.setSession(Auth.getToken(), updateRes.user);
+            updateAvatarDisplay(updateRes.user);
+            document.getElementById('avatarUrlInput').value = res.url;
+          }
+        } catch(err) {
+          console.error(err);
+          alert("Erreur d'upload.");
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function loadOrders(){
+    const table = document.getElementById('ordersBody');
+    renderTableLoading(table, 4);
+    try {
+      const d = await apiFetch('/orders/mine');
+      if (!d.orders.length) { renderTableEmpty(table, 4, 'emptyOrders'); return; }
+      table.innerHTML = d.orders.map(o=>`<tr><td>${escapeHtml(o.service)}</td><td>${escapeHtml(o.details||'')}</td><td><span class="status-badge ${o.status}">${o.status.replace('_',' ')}</span></td><td>${o.created_at}</td></tr>`).join('');
+    } catch(e) { renderTableError(table, 4, loadOrders); }
+  }
+  async function loadMessages(){
+    const table = document.getElementById('messagesBody');
+    renderTableLoading(table, 4);
+    try {
+      const d = await apiFetch('/messages/mine');
+      if (!d.messages.length) { renderTableEmpty(table, 4, 'emptyMessages'); return; }
+      table.innerHTML = d.messages.map(m=>`<tr><td>${escapeHtml(m.subject||'—')}</td><td>${escapeHtml(m.body)}</td><td><span class="status-badge ${m.status}">${m.status}</span></td><td>${m.created_at}</td></tr>`).join('');
+    } catch(e) { renderTableError(table, 4, loadMessages); }
+  }
+  document.getElementById('profileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('profileMsg');
+    msg.className = 'form-msg';
+    const fd = new FormData(e.target);
+    try {
+      const data = await apiFetch('/auth/me', { method: 'PATCH', body: JSON.stringify({
+        full_name: fd.get('full_name'), 
+        email: fd.get('email'), 
+        phone: fd.get('phone'),
+        avatar_url: fd.get('avatar_url')
+      }) });
+      const token = Auth.getToken();
+      Auth.setSession(token, data.user);
+      if (document.getElementById('welcomeName')) document.getElementById('welcomeName').textContent = data.user.full_name || 'Bienvenue';
+      if (document.getElementById('welcomeEmail')) {
+        const el = document.getElementById('welcomeEmail');
+        el.textContent = data.user.email || '';
+        el.title = data.user.email || '';
+      }
+      updateAvatarDisplay(data.user);
+      msg.classList.add('show', 'ok');
+      msg.textContent = {fr:'Profil enregistré.',en:'Profile saved.',ar:'تم حفظ الملف الشخصي.'}[currentLang()];
+    } catch (err) {
+      msg.classList.add('show', 'err');
+      msg.textContent = err.data?.error || localizedText('loadError');
+    }
+  });
+</script>
+</body>
+</html>

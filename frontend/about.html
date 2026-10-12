@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>À propos — EAEPCG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .about-container {
+    padding: 80px 24px;
+    background: #ffffff;
+  }
+  .about-feature-row {
+    max-width: 1200px;
+    margin: 0 auto 100px auto;
+    display: flex;
+    align-items: center;
+    gap: 80px;
+  }
+  .about-feature-row:last-child {
+    margin-bottom: 0;
+  }
+  .about-feature-row:nth-child(even) {
+    flex-direction: row-reverse;
+  }
+  .about-feature-img {
+    flex: 1;
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 24px 48px rgba(11, 42, 138, 0.12);
+  }
+  .about-feature-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 24px;
+    pointer-events: none;
+  }
+  .about-feature-img img {
+    width: 100%;
+    height: 100%;
+    min-height: 480px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .about-feature-row:hover .about-feature-img img {
+    transform: scale(1.05);
+  }
+  .about-feature-content {
+    flex: 1;
+  }
+  .af-eyebrow {
+    font-size: 14px;
+    font-weight: 800;
+    color: #f59e0b;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .af-eyebrow::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 2px;
+    background: #f59e0b;
+  }
+  .af-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--blue-deep);
+    margin-bottom: 24px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .af-desc {
+    font-size: 17px;
+    line-height: 1.7;
+    color: #475569;
+    margin-bottom: 24px;
+  }
+  .af-list {
+    list-style: none;
+    padding: 0;
+    margin: 32px 0 0 0;
+  }
+  .af-list li {
+    position: relative;
+    padding-left: 32px;
+    margin-bottom: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--blue-deep);
+  }
+  .af-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #f59e0b;
+    font-weight: 800;
+    font-size: 18px;
+  }
+
+  @media(max-width: 900px) {
+    .about-feature-row, .about-feature-row:nth-child(even) {
+      flex-direction: column;
+      gap: 40px;
+      margin-bottom: 80px;
+    }
+    .about-feature-img img { min-height: 320px; }
+    .af-title { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+<div class="page-hero">
+  <div class="eyebrow"><span class="dot"></span><span data-fr>Notre Entreprise</span><span data-en>Our Company</span><span data-ar>شركتنا</span></div>
+  <h1><span data-fr>L'Excellence au service du Tchad.</span><span data-en>Excellence serving Chad.</span><span data-ar>التميز في خدمة تشاد.</span></h1>
+  <p class="lead">
+    <span data-fr>L'Établissement Alkhaïrat Énergie pour les Commerces Général (EAEPCG) est votre partenaire stratégique spécialisé dans les solutions énergétiques, hydrauliques et industrielles de pointe à travers tout le pays.</span>
+    <span data-en>Etablissement Alkhaïrat Énergie (EAEPCG) is your strategic partner specializing in cutting-edge energy, hydraulic, and industrial solutions across the entire country.</span>
+    <span data-ar>مؤسسة الخيرات للطاقة والتجارة العامة (EAEPCG) هي شريكك الاستراتيجي المتخصص في حلول الطاقة والمياه والحلول الصناعية المتطورة في جميع أنحاء البلاد.</span>
+  </p>
+</div>
+
+<section class="about-container">
+  
+  <!-- ROW 1 -->
+  <div class="about-feature-row">
+    <div class="about-feature-img">
+      <img src="assets/img/commerce.jpg" alt="Expertise EAEPCG" id="img-about-expertise">
+    </div>
+    <div class="about-feature-content">
+      <div class="af-eyebrow">
+        <span data-fr>Expertise & Confiance</span><span data-en>Expertise & Trust</span><span data-ar>الخبرة والثقة</span>
+      </div>
+      <h2 class="af-title">
+        <span data-fr>Cinq métiers clés,<br>Un seul partenaire.</span>
+        <span data-en>Five key trades,<br>One partner.</span>
+        <span data-ar>خمس مهن رئيسية،<br>شريك واحد.</span>
+      </h2>
+      <p class="af-desc">
+        <span data-fr>Basés au cœur d'Abéché, nous déployons une expertise technique reconnue pour les particuliers, les entreprises et les institutions. Notre mission : fournir des équipements fiables et assurer des installations durables répondant aux standards internationaux les plus exigeants.</span>
+        <span data-en>Based in the heart of Abéché, we deploy recognized technical expertise for individuals, businesses, and institutions. Our mission: to provide reliable equipment and ensure durable installations meeting the highest international standards.</span>
+        <span data-ar>يقع مقرنا في قلب أبشي، ونوفر خبرة تقنية معترف بها للأفراد والشركات والمؤسسات. مهمتنا: توفير معدات موثوقة وضمان تركيبات مستدامة تلبي أعلى المعايير الدولية.</span>
+      </p>
+      <ul class="af-list">
+        <li><span data-fr>Fiabilité garantie</span><span data-en>Guaranteed reliability</span><span data-ar>موثوقية مضمونة</span></li>
+        <li><span data-fr>Standards internationaux</span><span data-en>International standards</span><span data-ar>معايير دولية</span></li>
+        <li><span data-fr>Équipe qualifiée</span><span data-en>Qualified team</span><span data-ar>فريق مؤهل</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ROW 2 -->
+  <div class="about-feature-row">
+    <div class="about-feature-img">
+      <img src="assets/img/installation.jpg" alt="Ingénierie" id="img-about-ingenierie">
+    </div>
+    <div class="about-feature-content">
+      <div class="af-eyebrow">
+        <span data-fr>Ingénierie Globale</span><span data-en>Global Engineering</span><span data-ar>هندسة شاملة</span>
+      </div>
+      <h2 class="af-title">
+        <span data-fr>Solutions techniques sur mesure</span>
+        <span data-en>Tailor-made technical solutions</span>
+        <span data-ar>حلول تقنية مخصصة</span>
+      </h2>
+      <p class="af-desc">
+        <span data-fr>De l'installation de pompes de forage aux systèmes électriques industriels pour les grands immeubles, notre savoir-faire couvre l'intégralité de vos projets techniques avec une qualité de réalisation irréprochable.</span>
+        <span data-en>From borehole pump installation to industrial electrical systems for large buildings, our know-how covers all your technical projects with impeccable execution quality.</span>
+        <span data-ar>من تركيب مضخات الحفر إلى الأنظمة الكهربائية الصناعية للمباني الكبيرة، تغطي خبرتنا كافة مشاريعك التقنية بجودة تنفيذ لا تشوبها شائبة.</span>
+      </p>
+      <p class="af-desc">
+        <span data-fr>Nous nous engageons à offrir une exécution rapide tout en maintenant une exigence absolue sur la sécurité et la longévité de nos installations.</span>
+        <span data-en>We are committed to providing fast execution while maintaining an absolute requirement for the safety and longevity of our installations.</span>
+        <span data-ar>نحن ملتزمون بتوفير تنفيذ سريع مع الحفاظ على متطلبات مطلقة للسلامة وطول عمر منشآتنا.</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- ROW 3 -->
+  <div class="about-feature-row">
+    <div class="about-feature-img">
+      <img src="assets/img/materiels.jpg" alt="Distribution Tchad" id="img-about-distribution">
+    </div>
+    <div class="about-feature-content">
+      <div class="af-eyebrow">
+        <span data-fr>Logistique & Distribution</span><span data-en>Logistics & Distribution</span><span data-ar>الخدمات اللوجستية والتوزيع</span>
+      </div>
+      <h2 class="af-title">
+        <span data-fr>Déployés sur toute l'étendue du Tchad</span>
+        <span data-en>Deployed across all of Chad</span>
+        <span data-ar>موجودون في جميع أنحاء تشاد</span>
+      </h2>
+      <p class="af-desc">
+        <span data-fr>Notre capacité de distribution en commerce général et équipements de quincaillerie s'étend sur l'ensemble du territoire tchadien. Situés au Quartier Agate Rachite Dakhalani à Abéché, nous sommes immédiatement joignables par téléphone et WhatsApp.</span>
+        <span data-en>Our distribution capacity in general trading and hardware equipment spans the entire Chadian territory. Located in the Agate Rachite Dakhalani neighborhood in Abéché, we are immediately reachable by phone and WhatsApp.</span>
+        <span data-ar>تمتد قدرتنا على التوزيع في التجارة العامة ومعدات البناء عبر جميع الأراضي التشادية. يقع مقرنا في حي أقاتي راشيتي دخلاني في أبشي، ويمكن التواصل معنا فوراً عبر الهاتف والواتساب.</span>
+      </p>
+      <p class="af-desc">
+        <span data-fr>Nous disposons également d'une station de lavage moderne pour motos, véhicules et Rackchas, alliant rapidité et soin du détail.</span>
+        <span data-en>We also have a modern wash station for motorcycles, vehicles and Rackchas, combining speed and attention to detail.</span>
+        <span data-ar>لدينا أيضاً محطة غسيل حديثة للدراجات النارية والسيارات والرقشة، تجمع بين السرعة والاهتمام بالتفاصيل.</span>
+      </p>
+    </div>
+  </div>
+
+</section>
+
+
+<section>
+  <div class="section-inner" style="text-align:center;">
+    <a class="btn btn-primary" href="services.html" style="padding:16px 40px; font-size:18px;">
+      <span data-fr>Découvrir nos solutions de pointe →</span>
+      <span data-en>Discover our cutting-edge solutions →</span>
+      <span data-ar>اكتشف حلولنا المتطورة ←</span>
+    </a>
+  </div>
+</section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/components.js"></script>
+<script>
+  renderHeader('about.html'); 
+  renderFooter();
+
+  // Load dynamic settings for images
+  async function loadAboutImages() {
+    try {
+      const settings = await apiFetch('/settings');
+      if (settings.about_expertise) document.getElementById('img-about-expertise').src = settings.about_expertise;
+      if (settings.about_ingenierie) document.getElementById('img-about-ingenierie').src = settings.about_ingenierie;
+      if (settings.about_distribution) document.getElementById('img-about-distribution').src = settings.about_distribution;
+    } catch (error) {
+      console.error('Failed to load settings', error);
+    }
+  }
+  loadAboutImages();
+</script>
+</body>
+</html>

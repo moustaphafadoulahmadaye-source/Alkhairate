@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Etablissement Alkhaïrat Énergie — EAEPCG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* ══════════════════════════════════════════════════════════════════
+     INTERNATIONAL FULL-BLEED ENTERPRISE HERO
+     ══════════════════════════════════════════════════════════════════ */
+  .intl-hero-viewport {
+    position: relative;
+    width: 100%;
+    min-height: 82vh;
+    min-height: 640px;
+    background: #020714;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  /* Background Slideshow */
+  .intl-hero-slider-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .intl-bg-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.2s ease;
+  }
+  .intl-bg-slide.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  .intl-bg-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    transform: scale(1);
+    transition: transform 7s ease-out;
+  }
+  .intl-bg-slide.active img {
+    transform: scale(1.08);
+  }
+  
+  /* Multi-stage Cinematic Overlay */
+  .intl-hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: 
+      linear-gradient(90deg, rgba(2, 7, 20, 0.94) 0%, rgba(2, 7, 20, 0.86) 48%, rgba(2, 7, 20, 0.42) 85%, rgba(2, 7, 20, 0.25) 100%),
+      linear-gradient(180deg, rgba(2, 7, 20, 0.35) 0%, transparent 60%, rgba(2, 7, 20, 0.95) 100%);
+    pointer-events: none;
+  }
+  
+  /* Subtle Tech Mesh */
+  .intl-hero-mesh {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background-image: radial-gradient(rgba(245, 197, 24, 0.12) 1px, transparent 1px);
+    background-size: 32px 32px;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* Main Hero Container */
+  .intl-hero-container {
+    position: relative;
+    z-index: 5;
+    max-width: 1380px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 80px 32px 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .intl-hero-content {
+    max-width: 840px;
+  }
+
+  /* Corporate Eyebrow Beacon */
+  .intl-hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 16px;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #f1f5f9;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  }
+  .intl-beacon-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f59e0b;
+    box-shadow: 0 0 10px #f59e0b;
+    position: relative;
+  }
+  .intl-beacon-dot::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 1.5px solid #f59e0b;
+    animation: beaconPulse 2s infinite;
+  }
+  @keyframes beaconPulse {
+    0% { transform: scale(0.9); opacity: 1; }
+    100% { transform: scale(2.4); opacity: 0; }
+  }
+
+  /* Executive Headline */
+  .intl-hero-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(36px, 5vw, 62px);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+    margin-bottom: 22px;
+  }
+  .intl-hero-title .text-gold {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 60%, #ea580c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+  }
+
+  /* Description */
+  .intl-hero-desc {
+    font-size: clamp(16px, 1.3vw, 19px);
+    line-height: 1.65;
+    color: #cbd5e1;
+    max-width: 68ch;
+    font-weight: 400;
+    margin-bottom: 34px;
+  }
+
+  /* CTA Buttons */
+  .intl-hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .btn-intl-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 32px;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #020714 !important;
+    font-weight: 800;
+    font-size: 15px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -4px rgba(245, 158, 11, 0.45);
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+    letter-spacing: 0.01em;
+  }
+  .btn-intl-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px -4px rgba(245, 158, 11, 0.6);
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  }
+  .btn-intl-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 28px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(255, 255, 255, 0.22);
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 15px;
+    border-radius: 12px;
+    transition: all 0.25s ease;
+    text-decoration: none;
+  }
+  .btn-intl-secondary:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+  }
+  .intl-phone-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #94a3b8;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .intl-phone-chip strong {
+    color: #f8fafc;
+  }
+
+  /* Interactive Progress Tabs at Bottom of Hero */
+  .intl-hero-tabs {
+    position: relative;
+    z-index: 5;
+    max-width: 1380px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 32px 36px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .intl-tab {
+    position: relative;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    overflow: hidden;
+  }
+  .intl-tab:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+  .intl-tab.active {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(245, 158, 11, 0.6);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+  .intl-tab-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0;
+    background: #f59e0b;
+  }
+  .intl-tab.active .intl-tab-bar {
+    width: 100%;
+    transition: width 5s linear;
+  }
+  .intl-tab-num {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #f59e0b;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+  .intl-tab-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .intl-tab-desc {
+    font-size: 11.5px;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+
+  @media (max-width: 1024px) {
+    .intl-hero-tabs { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .intl-hero-container { padding: 50px 20px 20px; }
+    .intl-hero-tabs { grid-template-columns: 1fr; padding: 0 20px 24px; }
+  }
+
+
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="intl-hero-viewport" id="intlHero">
+  <!-- Full-Bleed Background Slideshow -->
+  <div class="intl-hero-slider-bg">
+    <div class="intl-bg-slide active" data-index="0">
+      <img id="heroSlide1" src="assets/img/hero-solar.jpg" alt="Ingénierie Solaire Alkhaïrat">
+    </div>
+    <div class="intl-bg-slide" data-index="1">
+      <img id="heroSlide2" src="assets/img/pompe.jpg" alt="Hydraulique & Forages Alkhaïrat">
+    </div>
+    <div class="intl-bg-slide" data-index="2">
+      <img id="heroSlide3" src="assets/img/materiels.jpg" alt="Matériels Électriques Industriels">
+    </div>
+    <div class="intl-bg-slide" data-index="3">
+      <img src="assets/img/commerce.jpg" alt="Commerce Général & Distribution">
+    </div>
+  </div>
+
+  <!-- Cinematic Gradients & Mesh -->
+  <div class="intl-hero-overlay"></div>
+  <div class="intl-hero-mesh"></div>
+
+  <!-- Hero Content Center Stage -->
+  <div class="intl-hero-container">
+    <div class="intl-hero-content">
+      <div class="intl-hero-eyebrow">
+        <span class="intl-beacon-dot"></span>
+        <span data-fr>Établissement Alkhaïrat Énergie · Groupe EAEPCG Tchad</span>
+        <span data-en>Alkhaïrat Energy · EAEPCG Group Chad</span>
+        <span data-ar>مؤسسة الخيرات للطاقة · مجموعة EAEPCG تشاد</span>
+      </div>
+
+      <h1 class="intl-hero-title">
+        <span data-fr>Bâtir l'Avenir Énergétique & les <span class="text-gold">Infrastructures du Tchad.</span></span>
+        <span data-en>Powering Sustainable Energy & <span class="text-gold">Infrastructure in Chad.</span></span>
+        <span data-ar>بناء مستقبل الطاقة والبنية <span class="text-gold">التحتية في تشاد.</span></span>
+      </h1>
+
+      <p class="intl-hero-desc">
+        <span data-fr>Acteur de référence à Abéché et sur l'ensemble du territoire tchadien, l'Établissement Alkhaïrat Énergie (EAEPCG) déploie des solutions durables en énergie photovoltaïque, pompage d'eau potable, quincaillerie industrielle et commerce général selon les plus hauts standards de fiabilité.</span>
+        <span data-en>A premier leader in Abéché and across Chad, Alkhaïrat Energy (EAEPCG) delivers sustainable solutions in solar energy, drinking water borehole pumping, industrial hardware, and general trading adhering to global standards.</span>
+        <span data-ar>رائد معتمد في أبشي وعبر تشاد، تقدم مؤسسة الخيرات للطاقة (EAEPCG) حلولاً مستدامة في الطاقة الكهروضوئية، وضخ المياه الصالحة للشرب، والعتاد الصناعي والتجارة العامة وفقاً لأعلى معايير الجودة.</span>
+      </p>
+
+      <div class="intl-hero-actions">
+        <a class="btn-intl-primary" href="services.html">
+          <span data-fr>Explorer nos Solutions →</span>
+          <span data-en>Explore Solutions →</span>
+          <span data-ar>استكشف حلولنا ←</span>
+        </a>
+        <a class="btn-intl-secondary" href="order.html">
+          <span data-fr>Demander une cotation</span>
+          <span data-en>Request a Quote</span>
+          <span data-ar>طلب عرض سعر</span>
+        </a>
+        <div class="intl-phone-chip">
+          <span>📞</span>
+          <span data-fr>Assistance technique : <strong>+235 66 34 10 78</strong></span>
+          <span data-en>Technical support: <strong>+235 66 34 10 78</strong></span>
+          <span data-ar>الدعم الفني: <strong>+235 66 34 10 78</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Enterprise Sector Tabs -->
+  <div class="intl-hero-tabs" id="intlHeroTabs">
+    <div class="intl-tab active" data-index="0">
+      <div class="intl-tab-bar"></div>
+      <div class="intl-tab-num">01 / SOLAIRE</div>
+      <div class="intl-tab-title"><span data-fr>Ingénierie Solaire</span><span data-en>Solar Engineering</span><span data-ar>هندسة الطاقة الشمسية</span></div>
+      <div class="intl-tab-desc"><span data-fr>Centrales & mini-réseaux PV</span><span data-en>PV plants & mini-grids</span><span data-ar>محطات وأنظمة طاقة شمسية</span></div>
+    </div>
+    <div class="intl-tab" data-index="1">
+      <div class="intl-tab-bar"></div>
+      <div class="intl-tab-num">02 / HYDRAULIQUE</div>
+      <div class="intl-tab-title"><span data-fr>Forages & Pompage</span><span data-en>Boreholes & Pumping</span><span data-ar>آبار وضخ المياه</span></div>
+      <div class="intl-tab-desc"><span data-fr>Adduction d'eau potable</span><span data-en>Drinking water supply</span><span data-ar>إمدادات مياه الشرب والري</span></div>
+    </div>
+    <div class="intl-tab" data-index="2">
+      <div class="intl-tab-bar"></div>
+      <div class="intl-tab-num">03 / ÉLECTRICITÉ</div>
+      <div class="intl-tab-title"><span data-fr>Matériels Industriels</span><span data-en>Industrial Materials</span><span data-ar>معدات صناعية</span></div>
+      <div class="intl-tab-desc"><span data-fr>Câblage armé & quincaillerie</span><span data-en>Armored cables & fittings</span><span data-ar>كابلات وأجهزة كهربائية</span></div>
+    </div>
+    <div class="intl-tab" data-index="3">
+      <div class="intl-tab-bar"></div>
+      <div class="intl-tab-num">04 / COMMERCE</div>
+      <div class="intl-tab-title"><span data-fr>Commerce & Logistique</span><span data-en>Trade & Logistics</span><span data-ar>تجارة ولوجستيات</span></div>
+      <div class="intl-tab-desc"><span data-fr>Distribution sur tout le Tchad</span><span data-en>Nationwide distribution</span><span data-ar>توزيع عبر أنحاء تشاد</span></div>
+    </div>
+  </div>
+</div>
+
+
+<main>
+<section>
+  <div class="section-inner">
+    <div class="section-head" style="text-align:center; max-width:640px; margin:0 auto 40px;">
+      <div class="eyebrow" style="justify-content:center;"><span class="dot"></span>
+        <span data-fr>Nos expertises</span><span data-en>Our expertise</span><span data-ar>خبراتنا</span>
+      </div>
+      <h2><span data-fr>Découvrez nos services</span><span data-en>Discover our services</span><span data-ar>اكتشف خدماتنا</span></h2>
+      <p><span data-fr>Des solutions de pointe pour accompagner vos projets énergétiques, hydrauliques et de construction au Tchad.</span><span data-en>Cutting-edge solutions to support your energy, hydraulic, and construction projects in Chad.</span><span data-ar>حلول متطورة لدعم مشاريعك في مجال الطاقة والمياه والبناء في تشاد.</span></p>
+    </div>
+    <div class="services-grid-layout" id="homeServicesGrid" style="padding-bottom:16px;">
+    </div>
+    
+    <div style="text-align:center; margin-top:48px;">
+      <a class="btn btn-primary" href="services.html"><span data-fr>Voir tous les détails</span><span data-en>See all details</span><span data-ar>عرض كل التفاصيل</span></a>
+    </div>
+  </div>
+</section>
+</main>
+
+<div id="site-footer"></div>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/components.js"></script>
+<script>
+  renderHeader('index.html'); renderFooter();
+
+  const IMAGES = {
+    'pompe-forage': 'assets/img/pompe.jpg',
+    'vente-pompes': 'assets/img/vente-pompes.jpg',
+    'materiels-electriques': 'assets/img/materiels.jpg',
+    'commerce-general': 'assets/img/commerce.jpg',
+    'lavage': 'assets/img/lavage.jpg',
+    'installation-immeubles': 'assets/img/installation.jpg'
+  };
+
+  async function loadHomeServices() {
+    const container = document.getElementById('homeServicesGrid');
+    renderLoading(container);
+    try {
+      const [sRes, pRes] = await Promise.all([apiFetch('/services'), apiFetch('/products')]);
+      if (!sRes.services.length) { container.innerHTML = ''; return; }
+      
+      const prodsByService = {};
+      if (pRes.products) {
+        pRes.products.forEach(p => { 
+          if(p.service_slug){
+            if(!prodsByService[p.service_slug]) prodsByService[p.service_slug]=[];
+            prodsByService[p.service_slug].push(p);
+          } 
+        });
+      }
+
+      container.innerHTML = sRes.services.map((s, idx) => {
+        const related = prodsByService[s.slug] || [];
+        const numItems = related.reduce((acc, curr) => acc + (curr.item_count || 0), 0);
+        
+        let href = '';
+        if (s.slug === 'lavage') {
+          href = 'lavage.html';
+        } else {
+          href = related.length ? `products.html#${s.slug}` : `order.html?service=${s.slug}`;
+        }
+        
+        // Use DB image if set, else fallback to hardcoded IMAGES array
+        const imgUrl = s.image_url || IMAGES[s.slug] || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80';
+        
+        const isEven = idx % 2 === 1;
+        const numStr = (idx + 1).toString().padStart(2, '0');
+        
+        return `
+          <a class="premium-service-card ${isEven ? 'alt' : ''}" href="${href}">
+            <div class="psc-bg">
+              <img src="${imgUrl}" alt="${escapeHtml(s.name_fr)}">
+            </div>
+            <div class="psc-content">
+              <div class="psc-num">SERVICE ${numStr}</div>
+              <h3 class="psc-title">
+                <span data-fr>${escapeHtml(s.name_fr)}</span>
+                <span data-en>${escapeHtml(s.name_en)}</span>
+                <span data-ar>${escapeHtml(s.name_fr)}</span>
+              </h3>
+              <p class="psc-desc">
+                <span data-fr>${escapeHtml(s.description_fr||'')}</span>
+                <span data-en>${escapeHtml(s.description_en||'')}</span>
+                <span data-ar>${escapeHtml(s.description_fr||'')}</span>
+              </p>
+              <div class="psc-footer">
+                <div class="psc-count"><strong>${numItems}</strong> <span data-fr>ÉQUIPEMENT(S)</span><span data-en>EQUIPMENT(S)</span><span data-ar>المعدات</span></div>
+                <div class="psc-arrow">→</div>
+              </div>
+            </div>
+          </a>
+        `;
+      }).join('');
+    } catch(e) {
+      container.innerHTML = '';
+    }
+  }
+
+  // Hero Slider & Tabs Controller
+  function initHeroSlider() {
+    const slides = document.querySelectorAll('.intl-bg-slide');
+    const tabs = document.querySelectorAll('.intl-tab');
+    if (!slides.length) return;
+    let current = 0;
+    let timer = null;
+
+    function goTo(idx) {
+      slides[current].classList.remove('active');
+      if (tabs[current]) tabs[current].classList.remove('active');
+      current = (idx + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      if (tabs[current]) tabs[current].classList.add('active');
+    }
+
+    function startTimer() {
+      stopTimer();
+      timer = setInterval(() => goTo(current + 1), 5000);
+    }
+    function stopTimer() {
+      if (timer) clearInterval(timer);
+    }
+
+    tabs.forEach((tab, idx) => {
+      tab.addEventListener('click', () => { goTo(idx); startTimer(); });
+    });
+
+    const hero = document.getElementById('intlHero');
+    if (hero) {
+      hero.addEventListener('mouseenter', stopTimer);
+      hero.addEventListener('mouseleave', startTimer);
+    }
+    startTimer();
+  }
+
+  async function loadSiteSettings() {
+    try {
+      const settings = await apiFetch('/settings');
+      if (settings.hero) {
+        document.getElementById('heroSlide1').src = settings.hero;
+      }
+      if (settings.contact) {
+        document.getElementById('heroSlide2').src = settings.contact;
+      }
+      if (settings.about) {
+        document.getElementById('heroSlide3').src = settings.about;
+      }
+    } catch(e) {}
+  }
+
+  initHeroSlider();
+  loadHomeServices();
+  loadSiteSettings();
+</script>
+</body>
+</html>

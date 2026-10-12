@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Service Lavage — EAEPCG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .lavage-hero {
+    background: linear-gradient(rgba(2, 7, 20, 0.8), rgba(2, 7, 20, 0.9)), url('assets/img/lavage_bg.jpg') center/cover;
+    color: white;
+    text-align: center;
+    padding: 100px 20px;
+  }
+  .lavage-hero h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 48px;
+    margin-bottom: 20px;
+  }
+  .lavage-hero p {
+    font-size: 18px;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .lavage-container {
+    max-width: 1200px;
+    margin: 60px auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+  .lavage-info h2 {
+    font-size: 32px;
+    margin-bottom: 24px;
+    color: var(--ink);
+  }
+  .lavage-info p {
+    font-size: 16px;
+    color: var(--text-main);
+    margin-bottom: 20px;
+    line-height: 1.7;
+  }
+  .lavage-features {
+    list-style: none;
+    padding: 0;
+    margin: 30px 0;
+  }
+  .lavage-features li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .lavage-features li::before {
+    content: "✓";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--brand-primary);
+    color: white;
+    border-radius: 50%;
+    font-size: 14px;
+  }
+  .lavage-map {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+  .lavage-map img {
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: block;
+  }
+  .lavage-map-info {
+    text-align: center;
+  }
+  .lavage-map-info h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  .btn-direction {
+    display: inline-block;
+    background: var(--ink);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    margin-top: 10px;
+  }
+  @media (max-width: 768px) {
+    .lavage-container {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="lavage-hero">
+  <h1 id="heroTitle">Service de Lavage EAEPCG</h1>
+  <p id="heroDesc">Un lavage de qualité professionnelle pour vos véhicules, tapis et équipements, disponible directement à notre station d'Abéché.</p>
+</div>
+
+<div class="lavage-container">
+  <div class="lavage-info">
+    <h2><span data-fr>Réservez votre lavage en ligne</span><span data-en>Book your wash online</span><span data-ar>احجز غسيلك عبر الإنترنت</span></h2>
+    <p><span data-fr>Gagnez du temps en réservant votre créneau de lavage en ligne. Que ce soit pour votre <strong>voiture, moto, tapis, moquettes ou autres</strong>, notre équipe de professionnels est équipée pour traiter tout type de besoin avec les meilleurs produits du marché.</span></p>
+    <a href="order-lavage.html" class="btn btn-primary" style="display: inline-block; padding: 14px 28px; background: #2563eb; color: white; text-decoration: none; border-radius: 8px; font-weight: 700; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); transition: background 0.3s;">
+      <span data-fr>Réserver un lavage</span><span data-en>Book a wash</span><span data-ar>حجز غسيل</span>
+    </a>
+    <ul class="lavage-features">
+      <li>Voiture & Moto (Complet, Intérieur, Extérieur)</li>
+      <li>Nettoyage de Tapis et Moquettes</li>
+      <li>Lavage d'équipements industriels et autres</li>
+      <li>Produits de haute qualité</li>
+      <li>Service rapide et soigné</li>
+    </ul>
+
+    <div style="margin-top: 40px; padding: 24px; background: #F1F5F9; border-radius: 12px; border-left: 4px solid var(--brand-primary);">
+      <h3 style="margin-bottom: 10px; font-size: 18px;">Horaires d'ouverture</h3>
+      <p style="margin: 0; color: var(--text-main);"><strong>Lundi - Samedi :</strong> 08h00 - 18h00<br><strong>Dimanche :</strong> 09h00 - 14h00</p>
+    </div>
+  </div>
+
+  <div class="lavage-map">
+    <!-- Map Image (copied from artifacts) -->
+    <img src="assets/img/abeche_map.jpg" alt="Carte EAEPCG Abéché">
+    <div class="lavage-map-info">
+      <h3>Station de Lavage EAEPCG</h3>
+      <p style="color: var(--text-muted); margin-bottom: 16px;">Quartier Am Rigo, Abéché, Tchad</p>
+      <a href="#" class="btn-direction" onclick="alert('Navigation GPS non disponible pour le moment.')">Obtenir l'itinéraire</a>
+    </div>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/components.js"></script>
+<script>
+  renderHeader('services.html');
+  renderFooter();
+
+  // Try to load dynamic settings for hero image if needed
+  async function loadSettings() {
+    try {
+      const res = await apiFetch('/settings');
+      if (res['service_lavage']) {
+        document.querySelector('.lavage-hero').style.backgroundImage = `linear-gradient(rgba(2, 7, 20, 0.8), rgba(2, 7, 20, 0.9)), url('${res['service_lavage']}')`;
+      }
+    } catch(e) {}
+  }
+  loadSettings();
+</script>
+</body>
+</html>

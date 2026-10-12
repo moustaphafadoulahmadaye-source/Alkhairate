@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passer commande — EAEPCG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+<div class="page-hero" style="text-align:center; max-width:640px;">
+  <div class="eyebrow" style="justify-content:center;"><span class="dot"></span><span data-fr>Commande</span><span data-en>Order</span><span data-ar>طلب</span></div>
+  <h1><span data-fr>Passer une commande</span><span data-en>Place an order</span><span data-ar>تقديم طلب</span></h1>
+</div>
+<section style="padding-top:0;" id="cartSection">
+  <div class="form-card" id="cartCard" style="max-width:640px;">
+    <h2 style="font-size:24px; margin-bottom:24px;" id="orderMainTitle"><span data-fr>Mon Panier</span><span data-en>My Cart</span><span data-ar>سلة التسوق</span></h2>
+    <div id="cartContent"></div>
+  </div>
+</section>
+
+<!-- Order history (only for logged-in users) -->
+<section style="padding-top:0;" id="historySection" hidden>
+  <div class="section-inner" style="margin-top:20px;">
+    <div class="section-head"><h2 style="font-size:20px;"><span data-fr>Mes commandes</span><span data-en>My orders</span><span data-ar>طلباتي</span></h2></div>
+    <div class="table-wrap" id="ordersTableWrap">
+      <table><thead><tr>
+        <th>Service</th><th><span data-fr>Détails</span><span data-en>Details</span><span data-ar>تفاصيل</span></th><th><span data-fr>Statut</span><span data-en>Status</span><span data-ar>الحالة</span></th><th>Date</th>
+      </tr></thead><tbody id="ordersBody"></tbody></table>
+    </div>
+  </div>
+</section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/api.js?v=3"></script>
+<script src="assets/js/components.js?v=3"></script>
+<script>
+  renderHeader('order.html'); renderFooter();
+
+  if (new URLSearchParams(window.location.search).get('service') === 'lavage') {
+    window.location.replace('lavage.html');
+  }
+
+  if (Auth.getUser()?.role === 'admin') {
+    window.location.replace('admin.html');
+  }
+
+  const isLoggedIn = Auth.isLoggedIn();
+  if (isLoggedIn) {
+    document.getElementById('historySection').hidden = false;
+    loadMyOrders();
+  }
+
+  window.removeFromCart = function(id) {
+    try {
+      Cart.remove(id);
+      renderCart();
+    } catch(e) {
+      alert("Erreur: " + e.message);
+    }
+  };
+  
+  // Use event delegation for robust click handling
+  document.getElementById('cartContent').addEventListener('click', (e) => {
+    const btn = e.target.closest('.remove-btn');
+    if (btn) {
+      removeFromCart(btn.getAttribute('data-id'));
+    }
+  });
+
+  renderCart();
+
+  async function renderCart() {
+    const container = document.getElementById('cartContent');
+
+    if (!isLoggedIn) {
+      container.innerHTML = `
+      <div style="text-align:center; padding:40px; background:var(--white); border-radius:16px; border:1px solid var(--line);">
+        <div style="font-size:40px; margin-bottom:16px;">🔒</div>
+        <h3 style="margin-bottom:16px; color:var(--ink); font-family:'Archivo Black';"><span data-fr>Compte requis</span><span data-en>Account required</span><span data-ar>حساب مطلوب</span></h3>
+        <p style="color:var(--text-light); margin-bottom:24px; font-size:15px; max-width:400px; margin-left:auto; margin-right:auto;">
+          <span data-fr>Pour des raisons de suivi et de sécurité, vous devez avoir un compte client pour passer une commande ou consulter votre panier.</span>
+        </p>
+        <a href="login.html" class="btn btn-primary" style="text-decoration:none; padding:12px 32px;">
+          <span data-fr>Créer un compte / Se connecter</span>
+        </a>
+      </div>`;
+      return;
+    }
+
+    const items = Cart.getItems();
+    const urlParams = new URLSearchParams(window.location.search);
+    const directService = urlParams.get('service');
+
+    if (!items.length && !directService) {
+      container.innerHTML = `<p class="async-state empty-state">${{fr:"Votre panier est vide.",en:"Your cart is empty.",ar:"سلة التسوق فارغة."}[currentLang()]}</p>
+      <p style="text-align:center; margin-top:16px;"><a class="btn btn-outline" href="products.html"><span data-fr>Voir les produits</span></a></p>`;
+      return;
+    }
+    
+    let tableHtml = '';
+    let currency = 'XAF';
+    let availablePumps = [];
+
+    if (!items.length && directService === 'pompe-forage') {
+       try {
+         const cat = await apiFetch('/services/vente-pompes/catalog');
+         if (cat && cat.items) availablePumps = cat.items;
+       } catch(e) { console.error('Failed to load pumps for installation form', e); }
+    }
+
+    if (items.length > 0) {
+      document.getElementById('orderMainTitle').innerHTML = '<span data-fr>Mon Panier</span>';
+      
+      currency = items[0]?.currency || 'XAF';
+      tableHtml += `<div class="cart-items-list" style="margin-bottom:24px;">`;
+      items.forEach(item => {
+        const totalItem = item.price * item.quantity;
+        tableHtml += `
+        <div class="cart-item" style="display:flex; justify-content:space-between; align-items:center; padding:16px; background:#f9fafc; border-radius:12px; margin-bottom:12px; border:1px solid rgba(0,0,0,0.05);">
+          <div style="flex:1; display:flex; align-items:center; gap:16px;">
+            ${item.imageUrl ? `<img src="${escapeHtml(item.imageUrl)}" style="width:56px; height:56px; object-fit:cover; border-radius:8px;">` : ''}
+            <div>
+              <div style="font-weight:700; font-size:15px; margin-bottom:6px; font-family:'Space Grotesk', sans-serif;">${escapeHtml(item.name)}</div>
+              <div style="font-size:13px; color:var(--text-light);">
+                ${new Intl.NumberFormat('fr-FR').format(item.price)} ${currency} x <strong style="color:var(--ink);">${item.quantity}</strong>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:right; margin-left:16px;">
+            <div style="font-weight:700; font-family:'Archivo Black'; font-size:15px; margin-bottom:8px; color:var(--blue-deep);">${new Intl.NumberFormat('fr-FR').format(totalItem)}</div>
+            <button type="button" class="remove-btn" data-id="${item.id}" style="background:rgba(255,0,0,0.1); color:var(--red); border:none; border-radius:6px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:bold;">
+              <span data-fr>Retirer</span> ❌
+            </button>
+          </div>
+        </div>`;
+      });
+      tableHtml += `</div>`;
+      
+      const total = Cart.total();
+      tableHtml += `<div style="display:flex; justify-content:space-between; align-items:center; font-size:20px; font-family:'Archivo Black'; margin-bottom:24px;">
+        <span>Total:</span> <span style="color:var(--yellow);">${new Intl.NumberFormat('fr-FR').format(total)} ${currency}</span>
+      </div>`;
+    } else if (directService) {
+      document.getElementById('orderMainTitle').innerHTML = '<span data-fr>Demande de service</span>';
+      
+      let serviceNameDisplay = directService.replace(/-/g, ' ').toUpperCase();
+      if (directService === 'pompe-forage') serviceNameDisplay = 'INSTALLATION DE POMPE';
+      if (directService === 'vente-pompes') serviceNameDisplay = 'VENTE DE POMPES';
+
+      tableHtml += `<div style="padding:16px; background:rgba(0,86,210,0.05); border:1px solid rgba(0,86,210,0.1); border-radius:12px; margin-bottom:24px; text-align:center;">
+        <div style="font-size:14px; color:var(--text-light); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">
+          <span data-fr>Service sélectionné</span><span data-en>Selected service</span><span data-ar>الخدمة المحددة</span>
+        </div>
+        <div style="font-size:18px; font-weight:bold; font-family:'Space Grotesk', sans-serif; color:var(--blue-deep);">${escapeHtml(serviceNameDisplay)}</div>
+      </div>`;
+    }
+    
+    // Get user info if logged in
+    const user = Auth.getUser();
+    const prefillName = user ? user.full_name : '';
+    const prefillPhone = user ? (user.phone || '') : '';
+    const prefillEmail = user ? user.email : '';
+
+    const isServiceRequest = (!items.length && directService);
+
+    tableHtml += `<form id="checkoutForm">
+      <h3 style="font-size:16px; margin-bottom:16px; font-family:'Archivo Black'; text-transform:uppercase;">
+        <span data-fr>Vos informations</span><span data-en>Your information</span><span data-ar>معلوماتك</span>
+      </h3>
+      <div class="field">
+        <label><span data-fr>Nom complet</span><span data-en>Full name</span><span data-ar>الاسم الكامل</span> *</label>
+        <input type="text" name="full_name" required placeholder="Ex: Moustapha Adam" value="${escapeHtml(prefillName)}" ${user ? 'readonly style="opacity:0.7; cursor:not-allowed;"' : ''}>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label><span data-fr>Téléphone</span><span data-en>Phone</span><span data-ar>الهاتف</span> *</label>
+          <input type="tel" name="phone" required placeholder="Ex: +235 66 00 00 00" value="${escapeHtml(prefillPhone)}">
+        </div>
+        <div class="field">
+          <label><span data-fr>Email (optionnel)</span><span data-en>Email (optional)</span><span data-ar>البريد (اختياري)</span></label>
+          <input type="email" name="email" placeholder="Ex: email@exemple.com" value="${escapeHtml(prefillEmail)}" ${user ? 'readonly style="opacity:0.7; cursor:not-allowed;"' : ''}>
+        </div>
+      </div>`;
+
+    if (availablePumps && availablePumps.length > 0) {
+      tableHtml += `
+      <div class="field" style="background:#f0f9ff; padding:16px; border-radius:8px; border:1px solid #bae6fd; margin-bottom:16px;">
+        <label style="color:var(--blue-deep); font-weight:bold;"><span data-fr>Acheter une pompe avec l'installation (Optionnel)</span></label>
+        <p style="font-size:13px; color:var(--text-light); margin-bottom:8px;">Sélectionnez une pompe si vous souhaitez l'acheter directement. Laissez vide si vous avez déjà votre pompe.</p>
+        <select name="selected_pump" style="width:100%; border:1px solid #bae6fd; border-radius:8px; padding:12px; font-family:inherit;">
+          <option value="">-- Je fournis ma propre pompe --</option>
+          ${availablePumps.map(p => `<option value="${p.id}" data-name="${escapeHtml(p.name_fr)}" data-price="${p.price}">${escapeHtml(p.name_fr)} (+ ${new Intl.NumberFormat('fr-FR').format(p.price)} ${p.currency})</option>`).join('')}
+        </select>
+      </div>`;
+    }
+
+    tableHtml += `
+      <div class="field">
+        <label><span data-fr>Ville / Province d'installation ou livraison</span><span data-en>City / Province for installation or delivery</span><span data-ar>مدينة / مقاطعة التثبيت أو التوصيل</span> *</label>
+        <select name="city" style="width:100%; border:1px solid var(--line); border-radius:8px; padding:12px; font-family:inherit;" required>
+          <option value="Abéché (Ville)">Abéché (Ville)</option>
+          <option value="Autre ville / Province">Autre ville / Province (Préciser ci-dessous)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label><span data-fr>${isServiceRequest ? "Lieu d'installation exact" : "Adresse de livraison"}</span><span data-en>${isServiceRequest ? "Exact installation site" : "Delivery address"}</span><span data-ar>عنوان التوصيل / موقع التثبيت</span> *</label>
+        <input type="text" name="address" required placeholder="Ex: Quartier Am-Rigo, Abéché ou Nom de la province">
+      </div>`;
+
+    if (!isServiceRequest) {
+      tableHtml += `
+      <div class="field">
+        <label><span data-fr>Mode de livraison / retrait</span><span data-en>Delivery method</span><span data-ar>طريقة التوصيل</span> *</label>
+        <select name="delivery_method" style="width:100%; border:1px solid var(--line); border-radius:8px; padding:12px; font-family:inherit;" required>
+          <option value="Livraison à domicile (Abéché)">Livraison à domicile (Abéché)</option>
+          <option value="Livraison hors Abéché (Expédition)">Livraison hors Abéché (Expédition)</option>
+          <option value="Retrait en magasin">Retrait en magasin</option>
+        </select>
+      </div>`;
+    } else {
+      tableHtml += `<input type="hidden" name="delivery_method" value="Intervention sur site">`;
+    }
+
+    tableHtml += `
+      <div class="form-row">
+        <div class="field">
+          <label><span data-fr>${isServiceRequest ? "Date souhaitée pour l'intervention" : "Date de livraison/retrait souhaitée"}</span><span data-en>Preferred date</span><span data-ar>تاريخ التوصيل</span> *</label>
+          <input type="date" name="delivery_date" required style="width:100%; border:1px solid var(--line); border-radius:8px; padding:12px; font-family:inherit;">
+        </div>
+        <div class="field">
+          <label><span data-fr>Heure souhaitée</span><span data-en>Preferred time</span><span data-ar>الوقت المفضل</span> *</label>
+          <input type="time" name="delivery_time" required style="width:100%; border:1px solid var(--line); border-radius:8px; padding:12px; font-family:inherit;">
+        </div>
+      </div>
+      <div class="field">
+        <label><span data-fr>Notes / Description de la demande (optionnel)</span><span data-en>Notes / Request description (optional)</span><span data-ar>ملاحظات (اختياري)</span></label>
+        <textarea name="notes" placeholder="${isServiceRequest ? `Décrivez votre besoin d'installation en détail...` : `Détails supplémentaires...`}" rows="4" style="width:100%; border:1px solid var(--line); border-radius:8px; padding:12px; font-family:inherit;"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" style="margin-top:8px;" id="submitOrderBtn">
+        <span data-fr>✅ Confirmer la commande</span><span data-en>✅ Confirm order</span><span data-ar>✅ تأكيد الطلب</span>
+      </button>
+      <div class="form-msg" id="checkoutMsg"></div>
+    </form>`;
+    
+    container.innerHTML = tableHtml;
+    
+    if (!items.length && directService) {
+      document.getElementById('submitOrderBtn').innerHTML = '<span data-fr>✅ Envoyer la demande</span><span data-en>✅ Send request</span><span data-ar>✅ إرسال الطلب</span>';
+    }
+    
+    document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('checkoutMsg'); msg.className = 'form-msg';
+      const items = Cart.getItems();
+      const urlParams = new URLSearchParams(window.location.search);
+      const directService = urlParams.get('service');
+      
+      if (!items.length && !directService) return;
+      
+      const fd = new FormData(e.target);
+      const fullName = fd.get('full_name');
+      const phone = fd.get('phone');
+      const email = fd.get('email');
+      const address = fd.get('address');
+      const city = fd.get('city');
+      const deliveryMethod = fd.get('delivery_method');
+      const deliveryDate = fd.get('delivery_date');
+      const deliveryTime = fd.get('delivery_time');
+      const notes = fd.get('notes');
+      
+      const pumpSelect = document.querySelector('select[name="selected_pump"]');
+      let extraPurchase = '';
+      if (pumpSelect && pumpSelect.value) {
+        const option = pumpSelect.options[pumpSelect.selectedIndex];
+        extraPurchase = `[ACHAT MATÉRIEL]\n- Pompe : ${option.getAttribute('data-name')} (+ ${new Intl.NumberFormat('fr-FR').format(option.getAttribute('data-price'))} XAF)\n\n`;
+      }
+      
+      let details = '';
+      if (items.length > 0) {
+        details = items.map(i => `- ${i.quantity}x ${i.name} (${new Intl.NumberFormat('fr-FR').format(i.price)} ${i.currency})`).join('\n');
+      } else {
+        details = `- Demande de service: ${directService.replace(/-/g, ' ').toUpperCase()}\n\n${extraPurchase}`;
+      }
+      
+      details += `\n\nClient: ${fullName}\nTéléphone: ${phone}`;
+      if (email) details += `\nEmail: ${email}`;
+      details += `\nVille/Province: ${city}`;
+      details += `\nAdresse/Lieu: ${address}`;
+      details += `\n\n[LIVRAISON / INSTALLATION]\nMode: ${deliveryMethod}\nDate: ${deliveryDate} à ${deliveryTime}`;
+      if (notes) details += '\n\nNotes:\n' + notes;
+      
+      const serviceSlug = items.length ? (items[0].serviceSlug || 'commerce-general') : directService;
+      
+      let total = items.length ? Cart.total() : 0;
+      if (pumpSelect && pumpSelect.value) {
+         total += parseFloat(pumpSelect.options[pumpSelect.selectedIndex].getAttribute('data-price')) || 0;
+      }
+      const currency = items.length ? (items[0].currency || 'XAF') : 'XAF';
+      const quantity = items.length ? Cart.count() : 1;
+      
+      const orderPayload = { 
+        service: serviceSlug, 
+        details: details,
+        quantity: quantity,
+        total: total,
+        currency: currency
+      };
+      
+      try {
+        if (isLoggedIn) {
+          await apiFetch('/orders', { method: 'POST', body: JSON.stringify(orderPayload) });
+        } else {
+          orderPayload.guest_name = fullName;
+          orderPayload.guest_phone = phone;
+          orderPayload.guest_email = email || '';
+          await apiFetch('/orders/guest', { method: 'POST', body: JSON.stringify(orderPayload) });
+        }
+        msg.classList.add('show','ok'); 
+        msg.textContent = {fr:'Demande envoyée avec succès ! Nous vous contacterons bientôt.',en:'Request sent successfully! We will contact you soon.',ar:'تم إرسال الطلب بنجاح! سنتواصل معك قريباً.'}[currentLang()]||'OK';
+        if (items.length > 0) Cart.clear();
+        setTimeout(() => {
+          if (!items.length && directService) window.location.href = 'services.html';
+          else renderCart();
+        }, 3000);
+        if (isLoggedIn) loadMyOrders();
+      } catch(err){ msg.classList.add('show','err'); msg.textContent = err.data?.error||localizedText('loadError'); }
+    });
+  }
+
+  async function loadMyOrders(){
+    const table = document.getElementById('ordersBody');
+    renderTableLoading(table, 4);
+    try {
+      const d = await apiFetch('/orders/mine');
+      if (!d.orders.length) { renderTableEmpty(table, 4, 'emptyOrders'); return; }
+      table.innerHTML = d.orders.map(o => `<tr><td>${escapeHtml(o.service)}</td><td><pre style="font-family:inherit; white-space:pre-wrap; margin:0;">${escapeHtml(o.details||'')}</pre></td><td><span class="badge ${o.status}">${o.status.replace('_',' ')}</span></td><td>${o.created_at}</td></tr>`).join('');
+    } catch(e) { renderTableError(table, 4, loadMyOrders); }
+  }
+</script>
+</body>
+</html>

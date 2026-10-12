@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* Split Premium Booking Form */
+  .split-booking-container {
+    max-width: 1100px;
+    margin: -60px auto 80px auto;
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .booking-sidebar {
+    width: 42%;
+    background: #0f172a;
+    color: white;
+    padding: 48px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .booking-sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url('assets/img/lavage_bg.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.3;
+    z-index: 1;
+    mix-blend-mode: luminosity;
+  }
+  
+  .booking-sidebar::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,58,138,0.85) 100%);
+    z-index: 2;
+  }
+  
+  .sidebar-content {
+    position: relative;
+    z-index: 3;
+  }
+  
+  .sidebar-title {
+    font-size: 32px;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+  
+  .sidebar-features {
+    list-style: none;
+    padding: 0;
+    margin: 40px 0;
+  }
+  
+  .sidebar-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+    font-size: 15px;
+    color: #e2e8f0;
+    line-height: 1.5;
+  }
+  
+  .sidebar-features li .check-icon {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(4px);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #93c5fd;
+  }
+  
+  .booking-form-area {
+    width: 58%;
+    padding: 48px;
+    background: #ffffff;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+  
+  .form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .form-control {
+    width: 100%;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 15px;
+    color: #0f172a;
+    background-color: #f8fafc;
+    transition: all 0.2s ease;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  
+  .form-control:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+  }
+  
+  select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 1rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 3rem;
+    cursor: pointer;
+  }
+  
+  .btn-submit {
+    width: 100%;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px rgba(37, 99, 235, 0.3);
+  }
+  
+  .info-box-premium {
+    background: linear-gradient(to right, #eff6ff, #f8fafc);
+    border-left: 4px solid #3b82f6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 28px;
+  }
+  
+  @media (max-width: 900px) {
+    .split-booking-container { flex-direction: column; margin-top: -20px; }
+    .booking-sidebar { width: 100%; padding: 40px 24px; }
+    .booking-form-area { width: 100%; padding: 40px 24px; }
+  }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main style="background: #f1f5f9;">
+<div class="page-hero" style="padding: 120px 20px 180px 20px; text-align: center; background: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.95)), url('assets/img/lavage_bg.jpg'); background-size: cover; background-position: center;">
+  <h1 style="font-family: 'Outfit', sans-serif; font-size: 40px; color: white; margin-bottom: 16px; font-weight: 800;">Réservation de Lavage</h1>
+  <p style="font-size: 18px; color: #e2e8f0; max-width: 600px; margin: 0 auto; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Un service d'excellence pour vos véhicules et équipements.</p>
+</div>
+
+<section id="bookingSection" style="padding: 0 20px;">
+  <div class="split-booking-container">
+    <div class="booking-sidebar">
+      <div class="sidebar-content">
+        <h2 class="sidebar-title">Service<br><span style="color:#60a5fa;">Premium</span> sur mesure.</h2>
+        <p style="color: #cbd5e1; font-size: 16px; margin-bottom: 40px; line-height: 1.6;">Profitez du savoir-faire de l'équipe EAEPCG pour redonner de l'éclat à vos biens avec nos équipements haute pression professionnels.</p>
+        
+        <ul class="sidebar-features">
+          <li>
+            <div class="check-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></div>
+            <div>
+              <strong style="display:block; color:white; font-size:16px; margin-bottom:4px;">Lavage Voiture & Moto</strong>
+              <span style="font-size:14px; opacity:0.8;">Nettoyage intérieur et extérieur minutieux.</span>
+            </div>
+          </li>
+          <li>
+            <div class="check-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></div>
+            <div>
+              <strong style="display:block; color:white; font-size:16px; margin-bottom:4px;">Traitement Tapis & Moquettes</strong>
+              <span style="font-size:14px; opacity:0.8;">Dépoussiérage et lavage en profondeur.</span>
+            </div>
+          </li>
+          <li>
+            <div class="check-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></div>
+            <div>
+              <strong style="display:block; color:white; font-size:16px; margin-bottom:4px;">Équipements Industriels</strong>
+              <span style="font-size:14px; opacity:0.8;">Service adapté aux machines lourdes.</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="sidebar-content" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; margin-top: 20px;">
+        <div style="font-size: 14px; color: #94a3b8;">📍 Station EAEPCG, Abéché, Tchad</div>
+      </div>
+    </div>
+    
+    <div class="booking-form-area" id="bookingContent">
+      <!-- Form rendered by JS -->
+    </div>
+  </div>
+</section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/api.js?v=7"></script>
+<script src="assets/js/components.js?v=7"></script>
+<script>
+  renderHeader('services.html'); renderFooter();
+
+  if (Auth.getUser()?.role === 'admin') {
+    window.location.replace('admin.html');
+  }
+
+  function renderBooking() {
+    const container = document.getElementById('bookingContent');
+
+    if (!Auth.isLoggedIn()) {
+      container.innerHTML = `
+      <div style="text-align:center; padding:20px;">
+        <h3 style="margin-bottom:16px; color:#111827; font-weight:800; font-family:'Outfit', sans-serif;">Connexion requise</h3>
+        <p style="color:#64748b; margin-bottom:24px; font-size:15px;">
+          Vous devez avoir un compte client pour effectuer une réservation.
+        </p>
+        <a href="login.html" class="btn-submit" style="text-decoration:none; display:inline-block; width:auto;">
+          Se connecter pour réserver
+        </a>
+      </div>`;
+      return;
+    }
+
+    const user = Auth.getUser();
+    const prefillName = user ? user.full_name : '';
+    const prefillPhone = user ? (user.phone || '') : '';
+
+    container.innerHTML = `
+    <form id="lavageForm">
+      
+      <div class="form-group">
+        <label class="form-label">Type de service souhaité *</label>
+        <select name="lavage_type" class="form-control" required>
+          <option value="" disabled selected>Sélectionnez un service...</option>
+          <option value="Voiture (Complet)">Voiture - Lavage Complet (Int/Ext)</option>
+          <option value="Voiture (Extérieur uniquement)">Voiture - Extérieur uniquement</option>
+          <option value="Voiture (Intérieur uniquement)">Voiture - Intérieur uniquement</option>
+          <option value="Moto">Moto - Lavage complet</option>
+          <option value="Tapis / Moquettes">Tapis & Moquettes - Nettoyage</option>
+          <option value="Équipement Industriel">Équipement Industriel</option>
+          <option value="Autre">Autre (Précisez ci-dessous)</option>
+        </select>
+      </div>
+
+      <div class="info-box-premium">
+        <strong style="display:block; color:#1e3a8a; font-size:15px; margin-bottom:6px;">Service réalisé à la Station EAEPCG</strong>
+        <span style="color:#475569; font-size:14px; line-height:1.5; display:block;">Pour garantir un résultat optimal, tous nos lavages sont effectués exclusivement sur place à notre station professionnelle.</span>
+        <input type="hidden" name="lavage_location" value="À la station EAEPCG">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+        <div>
+          <label class="form-label">Date souhaitée *</label>
+          <input type="date" name="lavage_date" class="form-control" required>
+        </div>
+        <div>
+          <label class="form-label">Heure souhaitée *</label>
+          <input type="time" name="lavage_time" class="form-control" required>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+        <div>
+          <label class="form-label">Nom complet *</label>
+          <input type="text" name="full_name" class="form-control" value="${escapeHtml(prefillName)}" readonly style="background-color: #e2e8f0; color: #64748b; cursor: not-allowed;">
+        </div>
+        <div>
+          <label class="form-label">Téléphone *</label>
+          <input type="tel" name="phone" class="form-control" value="${escapeHtml(prefillPhone)}" required placeholder="+235 66 00 00 00">
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 32px;">
+        <label class="form-label">Détails ou précisions (Optionnel)</label>
+        <textarea name="notes" class="form-control" rows="3" placeholder="Ex: Modèle du véhicule, état des tapis..." style="resize:vertical;"></textarea>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        <span>Confirmer la réservation</span>
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+      </button>
+      <div class="form-msg" id="bookingMsg"></div>
+    </form>`;
+
+    document.getElementById('lavageForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('bookingMsg'); msg.className = 'form-msg';
+      const fd = new FormData(e.target);
+      
+      const lavageType = fd.get('lavage_type');
+      const lavageLocation = fd.get('lavage_location');
+      const lavageDate = fd.get('lavage_date');
+      const lavageTime = fd.get('lavage_time');
+      const fullName = fd.get('full_name');
+      const phone = fd.get('phone');
+      const address = fd.get('address');
+      const notes = fd.get('notes');
+
+      let details = `Demande de réservation : LAVAGE\n\n`;
+      details += `Type de lavage: ${lavageType}\n`;
+      details += `Lieu: ${lavageLocation}\n`;
+      details += `Rendez-vous: ${lavageDate} à ${lavageTime}\n\n`;
+      details += `Client: ${fullName}\n`;
+      details += `Téléphone: ${phone}\n`;
+      if (address) details += `Adresse: ${address}\n`;
+      if (notes) details += `Notes: ${notes}\n`;
+
+      const orderPayload = { 
+        service: 'lavage', 
+        details: details,
+        quantity: 1,
+        total: 0,
+        currency: 'XAF'
+      };
+
+      try {
+        await apiFetch('/orders', { method: 'POST', body: JSON.stringify(orderPayload) });
+        msg.classList.add('show','ok'); 
+        msg.textContent = {fr:'Réservation envoyée avec succès ! Nous vous contacterons pour confirmer.',en:'Booking sent successfully! We will contact you to confirm.',ar:'تم إرسال الحجز بنجاح! سنتواصل معك للتأكيد.'}[currentLang()]||'OK';
+        e.target.reset();
+        setTimeout(() => { window.location.href = 'order.html'; }, 3000); // redirect to order history
+      } catch(err){ 
+        msg.classList.add('show','err'); 
+        msg.textContent = err.data?.error||localizedText('loadError'); 
+      }
+    });
+  }
+
+  renderBooking();
+</script>
+</body>
+</html>

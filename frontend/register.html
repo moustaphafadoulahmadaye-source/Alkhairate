@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Créer un compte — Établissement Alkhaïrat Énergie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* ══════════════════════════════════════════════════════════════════
+     PREMIUM INTERNATIONAL DESIGN (MODERN CORPORATE AUTH)
+     ══════════════════════════════════════════════════════════════════ */
+  :root {
+    --brand-primary: #0A2540;
+    --brand-secondary: #00D4FF;
+    --brand-accent: #FF5A5F;
+    --text-main: #334155;
+    --text-muted: #64748b;
+    --bg-body: #F8FAFC;
+    --white: #FFFFFF;
+    --border-light: #E2E8F0;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 32px;
+    --shadow-lg: 0 20px 40px -10px rgba(10, 37, 64, 0.12);
+  }
+
+  body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Outfit', sans-serif;
+    margin: 0;
+  }
+
+  .auth-viewport {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Decorative background for the viewport */
+  .auth-viewport::before {
+    content: '';
+    position: absolute;
+    top: -20%; right: -10%;
+    width: 50%; height: 80%;
+    background: radial-gradient(circle, rgba(0, 212, 255, 0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .auth-viewport::after {
+    content: '';
+    position: absolute;
+    bottom: -20%; left: -10%;
+    width: 50%; height: 80%;
+    background: radial-gradient(circle, rgba(255, 90, 95, 0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .auth-split-card {
+    width: 100%;
+    max-width: 1140px;
+    background: var(--white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 700px;
+    position: relative;
+    z-index: 10;
+    overflow: hidden;
+  }
+
+  /* ── 1. LEFT PANEL: SHOWCASE ── */
+  .auth-showcase {
+    background: var(--brand-primary);
+    color: var(--white);
+    padding: 64px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Abstract glowing shapes */
+  .auth-showcase::before {
+    content: '';
+    position: absolute;
+    top: -20%; left: -20%;
+    width: 300px; height: 300px;
+    background: var(--brand-secondary);
+    filter: blur(150px);
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  .auth-showcase::after {
+    content: '';
+    position: absolute;
+    bottom: -10%; right: -20%;
+    width: 300px; height: 300px;
+    background: var(--brand-accent);
+    filter: blur(150px);
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  .showcase-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .badge-premium {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--white);
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 32px;
+  }
+  .badge-premium .pulse {
+    width: 8px;
+    height: 8px;
+    background-color: var(--brand-secondary);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--brand-secondary);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+  }
+
+  .showcase-headline {
+    font-size: clamp(32px, 4vw, 42px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+  }
+  .showcase-headline span.accent {
+    color: var(--brand-secondary);
+  }
+
+  .showcase-desc {
+    font-size: 16px;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin-bottom: 48px;
+    max-width: 90%;
+  }
+
+  /* Value Points Stack */
+  .showcase-points {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .point-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .point-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brand-secondary);
+    flex-shrink: 0;
+  }
+  .point-text h4 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 6px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .point-text p {
+    font-size: 14px;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .showcase-footer {
+    position: relative;
+    z-index: 2;
+    padding-top: 32px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 48px;
+  }
+
+  /* ── 2. RIGHT PANEL: FORM ── */
+  .auth-form-side {
+    padding: 64px 56px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--white);
+  }
+  
+  .form-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--brand-primary);
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .form-subtitle {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+  }
+
+  .auth-field {
+    margin-bottom: 24px;
+  }
+  .auth-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 8px;
+  }
+  
+  .auth-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .auth-input-icon {
+    position: absolute;
+    left: 16px;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    transition: color 0.3s ease;
+  }
+  .auth-input {
+    width: 100%;
+    padding: 14px 16px 14px 48px;
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text-main);
+    background: #f8fafc;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+  }
+  .auth-input:hover {
+    border-color: #cbd5e1;
+  }
+  .auth-input:focus {
+    outline: none;
+    background: var(--white);
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 4px rgba(10, 37, 64, 0.1);
+  }
+  .auth-input:focus + .auth-input-icon {
+    color: var(--brand-primary);
+  }
+
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--brand-primary);
+    color: var(--white);
+    padding: 16px 32px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(10, 37, 64, 0.2);
+    margin-top: 8px;
+  }
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(10, 37, 64, 0.3);
+    background: #11365e;
+  }
+  .btn-submit:active {
+    transform: translateY(0);
+  }
+
+  .auth-switch-note {
+    text-align: center;
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-top: 32px;
+  }
+  .auth-switch-note a {
+    color: var(--brand-primary);
+    font-weight: 700;
+    text-decoration: none;
+    position: relative;
+  }
+  .auth-switch-note a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+  }
+  .auth-switch-note a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .auth-security-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #94a3b8;
+    margin-top: 32px;
+  }
+
+  /* Form Message */
+  .form-msg {
+    display: none;
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .form-msg.show { display: block; }
+  .form-msg.err {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #f87171;
+  }
+
+  /* Multilingual Support */
+  [data-fr]{} [data-en]{display:none;} [data-ar]{display:none;}
+  html[lang="en"] [data-fr]{display:none;} html[lang="en"] [data-en]{display:inline;}
+  html[lang="ar"] [data-fr]{display:none;} html[lang="ar"] [data-ar]{display:inline;}
+  
+  html[lang="ar"] { direction: rtl; }
+  html[lang="ar"] .auth-split-card { direction: rtl; }
+  html[lang="ar"] .auth-input { padding: 14px 48px 14px 16px; }
+  html[lang="ar"] .auth-input-icon { left: auto; right: 16px; }
+
+  @media (max-width: 1024px) {
+    .auth-split-card { grid-template-columns: 1fr; }
+    .auth-showcase { display: none; }
+    .auth-form-side { padding: 48px 32px; }
+    .auth-viewport { padding: 32px 16px; }
+  }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="auth-viewport">
+  <div class="auth-split-card">
+    
+    <!-- LEFT PANEL: Premium Showcase -->
+    <div class="auth-showcase">
+      <div class="showcase-content">
+        <div class="badge-premium">
+          <span class="pulse"></span>
+          <span data-fr>Portail Professionnel EAEPCG</span>
+          <span data-en>EAEPCG Professional Portal</span>
+          <span data-ar>بوابة EAEPCG المهنية</span>
+        </div>
+
+        <h2 class="showcase-headline">
+          <span data-fr>Propulsez vos projets d'énergie <span class="accent">au Tchad.</span></span>
+          <span data-en>Empower your energy projects <span class="accent">in Chad.</span></span>
+          <span data-ar>طور مشاريعك في مجال الطاقة <span class="accent">في تشاد.</span></span>
+        </h2>
+
+        <p class="showcase-desc">
+          <span data-fr>Rejoignez le réseau exclusif de partenaires et clients de l'Établissement Alkhaïrat Énergie et bénéficiez d'un accès direct à nos équipements professionnels.</span>
+          <span data-en>Join the exclusive network of partners and clients of Alkhaïrat Energy and gain direct access to our professional equipment.</span>
+          <span data-ar>انضم إلى الشبكة الحصرية لعملاء وشركاء مؤسسة الخيرات للطاقة واستفد من الوصول المباشر لمعداتنا المهنية.</span>
+        </p>
+
+        <div class="showcase-points">
+          <div class="point-item">
+            <div class="point-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            </div>
+            <div class="point-text">
+              <h4>
+                <span data-fr>Commandes Directes</span>
+                <span data-en>Direct Orders</span>
+                <span data-ar>طلبات مباشرة</span>
+              </h4>
+              <p>
+                <span data-fr>Pompes solaires, panneaux monocristallins, et équipements certifiés avec facturation officielle.</span>
+                <span data-en>Solar pumps, monocrystalline panels, and certified hardware with official invoicing.</span>
+                <span data-ar>مضخات شمسية، ألواح كهروضوئية، ومعدات معتمدة بفواتير رسمية.</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="point-item">
+            <div class="point-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <div class="point-text">
+              <h4>
+                <span data-fr>Suivi des Devis Techniques</span>
+                <span data-en>Technical Quote Tracking</span>
+                <span data-ar>متابعة عروض الأسعار</span>
+              </h4>
+              <p>
+                <span data-fr>Accédez en permanence à l'historique de vos consultations et dossiers techniques.</span>
+                <span data-en>Permanent access to your past quotations and engineering consultations.</span>
+                <span data-ar>وصول دائم لسجل استشاراتك والملفات الفنية الخاصة بك.</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="point-item">
+            <div class="point-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <div class="point-text">
+              <h4>
+                <span data-fr>Garantie & Assistance</span>
+                <span data-en>Warranty & Support</span>
+                <span data-ar>ضمان ودعم فني</span>
+              </h4>
+              <p>
+                <span data-fr>Garantie pièces constructeur et assistance technique réactive.</span>
+                <span data-en>Manufacturer warranty and responsive technical support.</span>
+                <span data-ar>ضمان المصنع للقطع ودعم فني سريع الاستجابة.</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="showcase-footer">
+        <span data-fr>© Établissement Alkhaïrat Énergie (EAEPCG) · Abéché, Tchad</span>
+        <span data-en>© Alkhaïrat Energy (EAEPCG) · Abéché, Chad</span>
+        <span data-ar>© مؤسسة الخيرات للطاقة (EAEPCG) · أبشي، تشاد</span>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: Registration Form -->
+    <div class="auth-form-side">
+      <h1 class="form-title">
+        <span data-fr>Créer un compte</span>
+        <span data-en>Create an account</span>
+        <span data-ar>إنشاء حساب جديد</span>
+      </h1>
+      <p class="form-subtitle">
+        <span data-fr>Renseignez vos informations pour accéder à l'espace client sécurisé.</span>
+        <span data-en>Fill in your details to access the secure client portal.</span>
+        <span data-ar>أدخل بياناتك للوصول إلى بوابة العملاء الآمنة.</span>
+      </p>
+
+      <form id="registerForm">
+        
+        <div class="auth-field">
+          <label class="auth-label">
+            <span data-fr>Nom complet / Raison sociale</span>
+            <span data-en>Full name / Company</span>
+            <span data-ar>الاسم الكامل / اسم الشركة</span>
+          </label>
+          <div class="auth-input-wrap">
+            <input type="text" name="full_name" class="auth-input" placeholder="Ex: Mahamat Fadoul" required>
+            <span class="auth-input-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label">
+            <span data-fr>Adresse email</span>
+            <span data-en>Email address</span>
+            <span data-ar>البريد الإلكتروني</span>
+          </label>
+          <div class="auth-input-wrap">
+            <input type="email" name="email" class="auth-input" placeholder="nom@exemple.com" required>
+            <span class="auth-input-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label">
+            <span data-fr>Numéro de téléphone</span>
+            <span data-en>Phone number</span>
+            <span data-ar>رقم الهاتف</span>
+          </label>
+          <div class="auth-input-wrap">
+            <input type="tel" name="phone" class="auth-input" placeholder="+235 66 34 10 78">
+            <span class="auth-input-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label">
+            <span data-fr>Mot de passe (min. 6 caractères)</span>
+            <span data-en>Password (min. 6 characters)</span>
+            <span data-ar>كلمة المرور (6 أحرف على الأقل)</span>
+          </label>
+          <div class="auth-input-wrap">
+            <input type="password" name="password" class="auth-input" placeholder="••••••••" minlength="6" maxlength="128" required>
+            <span class="auth-input-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label">
+            <span data-fr>Confirmer le mot de passe</span>
+            <span data-en>Confirm password</span>
+            <span data-ar>تأكيد كلمة المرور</span>
+          </label>
+          <div class="auth-input-wrap">
+            <input type="password" name="password_confirmation" class="auth-input" placeholder="••••••••" minlength="6" maxlength="128" required>
+            <span class="auth-input-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
+          </div>
+        </div>
+
+        <button type="submit" id="regSubmitBtn" class="btn-submit">
+          <span data-fr>Créer mon compte</span>
+          <span data-en>Create My Account</span>
+          <span data-ar>إنشاء حسابي</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+
+        <div class="form-msg" id="formMsg"></div>
+      </form>
+
+      <p class="auth-switch-note">
+        <span data-fr>Vous avez déjà un compte ?</span>
+        <span data-en>Already have an account?</span>
+        <span data-ar>هل لديك حساب بالفعل؟</span>
+        <a href="login.html">
+          <span data-fr>Se connecter</span>
+          <span data-en>Log in</span>
+          <span data-ar>تسجيل الدخول</span>
+        </a>
+      </p>
+
+      <div class="auth-security-footer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <span data-fr>Connexion sécurisée SSL</span>
+        <span data-en>Secure SSL connection</span>
+        <span data-ar>اتصال مشفر وآمن</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/components.js"></script>
+<script>
+  renderHeader('register.html');
+  renderFooter();
+
+  if (Auth.isLoggedIn()) window.location.href = 'account.html';
+
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('regSubmitBtn');
+    const msg = document.getElementById('formMsg');
+    msg.className = 'form-msg';
+    msg.textContent = '';
+    
+    btn.disabled = true;
+    const origText = btn.innerHTML;
+    btn.textContent = { fr: 'Création en cours...', en: 'Creating account...', ar: 'جاري إنشاء الحساب...' }[currentLang()] || 'En cours...';
+
+    const fd = new FormData(e.target);
+    try {
+      const data = await apiFetch('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({
+          full_name: fd.get('full_name'),
+          email: fd.get('email'),
+          phone: fd.get('phone'),
+          password: fd.get('password'),
+          password_confirmation: fd.get('password_confirmation')
+        })
+      });
+      Auth.setSession(data.token, data.user);
+      window.location.href = 'account.html';
+    } catch (err) {
+      msg.classList.add('show', 'err');
+      msg.textContent = err.data && err.data.error ? err.data.error : 'Erreur lors de la création du compte';
+      btn.disabled = false;
+      btn.innerHTML = origText;
+    }
+  });
+</script>
+</body>
+</html>
