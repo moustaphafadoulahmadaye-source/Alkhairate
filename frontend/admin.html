@@ -895,9 +895,343 @@
       height: 160px;
     }
   }
+
+  /* ══════════════════════════════════════════════════════════════════
+     NOTIFICATIONS, BADGES & REAL-TIME ALERTS
+     ══════════════════════════════════════════════════════════════════ */
+  .btn-bell {
+    background: #FFFFFF;
+    border: 1px solid var(--border-light);
+    color: var(--text-main);
+    box-shadow: var(--shadow-sm);
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-bell:hover {
+    background: #F8FAFC;
+    border-color: var(--border-dark);
+    color: var(--brand-primary);
+  }
+  .notif-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #EF4444;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.45);
+    border: 2px solid #FFFFFF;
+    animation: badge-pulse 2s infinite ease-in-out;
+  }
+  @keyframes badge-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.18); box-shadow: 0 0 10px rgba(239, 68, 68, 0.7); }
+  }
+  .sidebar-counter-badge {
+    margin-left: auto;
+    background: #EEF2FF;
+    color: var(--brand-primary);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    line-height: 1.2;
+    transition: all 0.2s ease;
+  }
+  .sidebar-counter-badge.msg {
+    background: #FEE2E2;
+    color: #DC2626;
+  }
+  .notif-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 340px;
+    max-width: calc(100vw - 32px);
+    background: #FFFFFF;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    z-index: 1000;
+    overflow: hidden;
+    animation: fadeInDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .notif-dropdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-light);
+    background: #F8FAFC;
+  }
+  .notif-pill {
+    background: #EF4444;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .notif-action-sm {
+    background: #FFFFFF;
+    border: 1px solid var(--border-light);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .notif-action-sm:hover {
+    background: #F1F5F9;
+    color: var(--text-heading);
+  }
+  .notif-permission-banner {
+    background: #EEF2FF;
+    border-bottom: 1px solid #E0E7FF;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 12px;
+    color: #3730A3;
+  }
+  .btn-enable-push {
+    background: var(--brand-primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .notif-dropdown-list {
+    max-height: 280px;
+    overflow-y: auto;
+  }
+  .notif-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .notif-item:hover {
+    background: #F8FAFC;
+  }
+  .notif-item-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: #EFF6FF;
+    color: #2563EB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .notif-item-icon.msg {
+    background: #FEE2E2;
+    color: #DC2626;
+  }
+  .notif-item-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin-bottom: 2px;
+  }
+  .notif-item-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .notif-dropdown-footer {
+    display: flex;
+    border-top: 1px solid var(--border-light);
+    background: #F8FAFC;
+  }
+  .notif-footer-link {
+    flex: 1;
+    padding: 11px 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--brand-primary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: center;
+    transition: background 0.15s;
+  }
+  .notif-footer-link:hover {
+    background: #EEF2FF;
+  }
+  .notif-footer-link:first-child {
+    border-right: 1px solid var(--border-light);
+  }
+  .toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 400px;
+    width: calc(100vw - 32px);
+    pointer-events: none;
+  }
+  .notif-toast {
+    pointer-events: auto;
+    background: #FFFFFF;
+    border-radius: var(--radius-md);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--border-light);
+    border-left: 4px solid var(--brand-primary);
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .notif-toast.toast-msg {
+    border-left-color: #EF4444;
+  }
+  .notif-toast.toast-order {
+    border-left-color: #3B82F6;
+  }
+  @keyframes toastSlideIn {
+    from { opacity: 0; transform: translateX(40px) scale(0.96); }
+    to { opacity: 1; transform: translateX(0) scale(1); }
+  }
+  .notif-toast.fade-out {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  .notif-toast-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #EEF2FF;
+    color: var(--brand-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .notif-toast.toast-msg .notif-toast-icon {
+    background: #FEE2E2;
+    color: #DC2626;
+  }
+  .notif-toast.toast-order .notif-toast-icon {
+    background: #DBEAFE;
+    color: #2563EB;
+  }
+  .notif-toast-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .notif-toast-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin-bottom: 2px;
+  }
+  .notif-toast-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .notif-toast-text {
+    font-size: 13px;
+    color: var(--text-main);
+    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .notif-toast-close {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0 4px;
+    margin-top: -2px;
+    transition: color 0.15s;
+  }
+  .notif-toast-close:hover {
+    color: var(--text-heading);
+  }
+  .row-unread-msg {
+    background: #F8FAFC !important;
+  }
+  .row-unread-msg:hover {
+    background: #EEF2FF !important;
+  }
+  .unread-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #EF4444;
+    display: inline-block;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+  }
+  .b-red { background: #FEE2E2; color: #DC2626; }
+  @media (max-width: 600px) {
+    .toast-container {
+      top: 16px;
+      right: 16px;
+      left: 16px;
+      width: auto;
+    }
+    .notif-dropdown {
+      right: -50px;
+      width: 310px;
+    }
+  }
 </style>
 </head>
 <body>
+
+<div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
@@ -918,15 +1252,17 @@
     </button>
     <button class="nav-item" data-target="view-orders">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-      Commandes
+      <span style="flex:1;">Commandes</span>
+      <span id="sidebarOrdersBadge" class="sidebar-counter-badge" style="display:none;">0</span>
     </button>
     <button class="nav-item" data-target="view-clients">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-      Clients
+      <span>Clients</span>
     </button>
     <button class="nav-item" data-target="view-messages">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-      Messages
+      <span style="flex:1;">Messages</span>
+      <span id="sidebarMsgBadge" class="sidebar-counter-badge msg" style="display:none;">0</span>
     </button>
     
     <div style="height:1px; background:var(--border-dark); margin:8px 16px;"></div>
@@ -947,6 +1283,40 @@
       <div class="mobile-topbar-title">EAEPCG Manager</div>
     </div>
     <div style="display:flex; align-items:center; gap:8px;">
+      <!-- NOTIFICATION BELL & DROPDOWN -->
+      <div class="notif-wrapper" style="position:relative;">
+        <button id="notifBellBtn" class="topbar-btn btn-bell" aria-label="Notifications" title="Notifications" type="button">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span id="notifBadge" class="notif-badge" style="display:none;">0</span>
+        </button>
+
+        <div id="notifDropdown" class="notif-dropdown" style="display:none;">
+          <div class="notif-dropdown-header">
+            <div style="font-weight:700; font-size:13.5px; color:var(--text-heading); display:flex; align-items:center; gap:8px;">
+              <span>🔔 Notifications</span>
+              <span id="notifDropdownCounter" class="notif-pill" style="display:none;">0</span>
+            </div>
+            <button id="testSoundBtn" type="button" class="notif-action-sm" title="Tester le son">🔊 Son</button>
+          </div>
+          <div id="notifPermissionBanner" class="notif-permission-banner" style="display:none;">
+            <span>Activer les alertes sur téléphone / PC :</span>
+            <button id="enablePushBtn" type="button" class="btn-enable-push">Activer</button>
+          </div>
+          <div id="notifDropdownList" class="notif-dropdown-list">
+            <div style="padding:24px; text-align:center; color:var(--text-muted); font-size:13px;">
+              Aucune notification en attente
+            </div>
+          </div>
+          <div class="notif-dropdown-footer">
+            <button id="viewAllMsgsBtn" type="button" class="notif-footer-link">📩 Messages</button>
+            <button id="viewAllOrdersBtn" type="button" class="notif-footer-link">📦 Commandes</button>
+          </div>
+        </div>
+      </div>
+
       <a href="index.html" class="topbar-btn btn-site">🌐 <span class="hide-on-mobile">Voir le site</span></a>
       <button id="logoutBtn" class="topbar-btn btn-logout"><span class="hide-on-mobile">Déconnexion</span><span class="show-mobile-only">Quitter</span></button>
     </div>
@@ -1304,6 +1674,146 @@
 <script src="assets/js/components.js"></script>
 <script>
   let lastPendingOrdersCount = null;
+  let lastNewMessagesCount = null;
+  let audioCtx = null;
+  let soundEnabled = true;
+
+  // Web Audio Chime generator (Dual-tone melodic chime)
+  function getAudioContext() {
+    try {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioCtx = new AudioContextClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    } catch(e) {}
+    return audioCtx;
+  }
+
+  // Pre-unlock AudioContext on first user interaction
+  ['click', 'touchstart', 'keydown'].forEach(evt => {
+    window.addEventListener(evt, () => { getAudioContext(); }, { once: true, passive: true });
+  });
+
+  function playNotificationChime(type = 'message') {
+    if (!soundEnabled) return;
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const playTone = (freq, start, duration) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, start);
+        gain.gain.setValueAtTime(0.001, start);
+        gain.gain.exponentialRampToValueAtTime(0.24, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(start);
+        osc.stop(start + duration);
+      };
+
+      if (type === 'message') {
+        // Melodic dual-tone chime: D5 (587.33Hz) -> A5 (880.00Hz)
+        playTone(587.33, now, 0.28);
+        playTone(880.00, now + 0.12, 0.45);
+      } else {
+        // Order chime: C5 (523.25Hz) -> E5 (659.25Hz) -> G5 (783.99Hz)
+        playTone(523.25, now, 0.2);
+        playTone(659.25, now + 0.1, 0.2);
+        playTone(783.99, now + 0.2, 0.45);
+      }
+    } catch(e) {
+      console.warn('Audio chime failed:', e);
+    }
+  }
+
+  // Native Browser Web Push Notification
+  function triggerNativePushNotification(title, body, tag = 'eaepcg-notif') {
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'granted') {
+      try {
+        const notif = new Notification(title, {
+          body: body,
+          icon: 'assets/img/logo.jpg',
+          badge: 'assets/img/logo.jpg',
+          tag: tag,
+          renotify: true
+        });
+        notif.onclick = () => {
+          window.focus();
+          switchToView(tag.includes('order') ? 'view-orders' : 'view-messages');
+          notif.close();
+        };
+      } catch(e) {
+        console.warn('Native notification failed:', e);
+      }
+    }
+  }
+
+  // Floating In-App Toast Notification
+  function showToastNotification({ type = 'msg', title, meta, body, targetView = 'view-messages' }) {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `notif-toast ${type === 'msg' ? 'toast-msg' : 'toast-order'}`;
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `
+      <div class="notif-toast-icon">${type === 'msg' ? '📩' : '📦'}</div>
+      <div class="notif-toast-body">
+        <div class="notif-toast-title">${escapeHtml(title || 'Notification')}</div>
+        ${meta ? `<div class="notif-toast-meta">${escapeHtml(meta)}</div>` : ''}
+        ${body ? `<div class="notif-toast-text">${escapeHtml(body)}</div>` : ''}
+      </div>
+      <button class="notif-toast-close" type="button" aria-label="Fermer">&times;</button>
+    `;
+
+    toast.addEventListener('click', (e) => {
+      if (e.target.closest('.notif-toast-close')) return;
+      switchToView(targetView);
+      toast.remove();
+    });
+
+    const closeBtn = toast.querySelector('.notif-toast-close');
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toast.classList.add('fade-out');
+      setTimeout(() => toast.remove(), 250);
+    });
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      if (toast.parentElement) {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 250);
+      }
+    }, 8000);
+  }
+
+  // Generic View Switcher
+  function switchToView(viewId) {
+    closeMobileSidebar();
+    const navItems = document.querySelectorAll('.nav-item');
+    const views = document.querySelectorAll('.view-section');
+    navItems.forEach(b => {
+      b.classList.toggle('active', b.dataset.target === viewId);
+    });
+    views.forEach(v => {
+      v.classList.toggle('active', v.id === viewId);
+    });
+    if (viewId === 'view-settings') loadSiteSettingsManager();
+    if (viewId === 'view-messages') loadMessages();
+    if (viewId === 'view-orders') loadOrders();
+    if (viewId === 'view-products') loadProducts();
+    if (viewId === 'view-clients') loadUsers();
+    if (viewId === 'view-dashboard') loadSummary();
+  }
 
   // Mobile Drawer Elements & Helpers (defined globally so usable anywhere)
   const adminSidebar = document.getElementById('adminSidebar');
@@ -1327,6 +1837,161 @@
   if (sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeMobileSidebar);
   if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeMobileSidebar);
 
+  // Notification Topbar Dropdown Wiring
+  const notifBellBtn = document.getElementById('notifBellBtn');
+  const notifDropdown = document.getElementById('notifDropdown');
+  const testSoundBtn = document.getElementById('testSoundBtn');
+  const viewAllMsgsBtn = document.getElementById('viewAllMsgsBtn');
+  const viewAllOrdersBtn = document.getElementById('viewAllOrdersBtn');
+  const enablePushBtn = document.getElementById('enablePushBtn');
+
+  function checkPushPermissionBanner() {
+    const banner = document.getElementById('notifPermissionBanner');
+    if (!banner || !('Notification' in window)) return;
+    if (Notification.permission === 'default') {
+      banner.style.display = 'flex';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+
+  if (notifBellBtn && notifDropdown) {
+    notifBellBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isVisible = notifDropdown.style.display === 'block';
+      notifDropdown.style.display = isVisible ? 'none' : 'block';
+      checkPushPermissionBanner();
+      getAudioContext();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.notif-wrapper')) {
+        notifDropdown.style.display = 'none';
+      }
+    });
+  }
+
+  if (testSoundBtn) {
+    testSoundBtn.addEventListener('click', () => {
+      getAudioContext();
+      playNotificationChime('message');
+    });
+  }
+
+  if (enablePushBtn) {
+    enablePushBtn.addEventListener('click', async () => {
+      if ('Notification' in window) {
+        const res = await Notification.requestPermission();
+        checkPushPermissionBanner();
+        if (res === 'granted') {
+          playNotificationChime('message');
+          triggerNativePushNotification('🔔 Notifications activées', 'Vous recevrez désormais les alertes de messages et commandes !');
+        }
+      }
+    });
+  }
+
+  if (viewAllMsgsBtn) {
+    viewAllMsgsBtn.addEventListener('click', () => {
+      if (notifDropdown) notifDropdown.style.display = 'none';
+      switchToView('view-messages');
+    });
+  }
+
+  if (viewAllOrdersBtn) {
+    viewAllOrdersBtn.addEventListener('click', () => {
+      if (notifDropdown) notifDropdown.style.display = 'none';
+      switchToView('view-orders');
+    });
+  }
+
+  function updateNotificationUI(d) {
+    const unreadMsgs = Number(d.newMessages) || 0;
+    const pendingOrders = Number(d.pendingOrders) || 0;
+    const totalAlerts = unreadMsgs + pendingOrders;
+
+    // Topbar Badge
+    const bellBadge = document.getElementById('notifBadge');
+    if (bellBadge) {
+      if (totalAlerts > 0) {
+        bellBadge.textContent = totalAlerts > 99 ? '99+' : totalAlerts;
+        bellBadge.style.display = 'inline-flex';
+      } else {
+        bellBadge.style.display = 'none';
+      }
+    }
+
+    // Dropdown Counter
+    const dropdownCounter = document.getElementById('notifDropdownCounter');
+    if (dropdownCounter) {
+      if (totalAlerts > 0) {
+        dropdownCounter.textContent = `${totalAlerts} en attente`;
+        dropdownCounter.style.display = 'inline-block';
+      } else {
+        dropdownCounter.style.display = 'none';
+      }
+    }
+
+    // Sidebar Badges
+    const sidebarMsgBadge = document.getElementById('sidebarMsgBadge');
+    if (sidebarMsgBadge) {
+      if (unreadMsgs > 0) {
+        sidebarMsgBadge.textContent = unreadMsgs;
+        sidebarMsgBadge.style.display = 'inline-block';
+      } else {
+        sidebarMsgBadge.style.display = 'none';
+      }
+    }
+
+    const sidebarOrdersBadge = document.getElementById('sidebarOrdersBadge');
+    if (sidebarOrdersBadge) {
+      if (pendingOrders > 0) {
+        sidebarOrdersBadge.textContent = pendingOrders;
+        sidebarOrdersBadge.style.display = 'inline-block';
+      } else {
+        sidebarOrdersBadge.style.display = 'none';
+      }
+    }
+
+    // Dropdown List Items
+    const notifDropdownList = document.getElementById('notifDropdownList');
+    if (notifDropdownList) {
+      if (totalAlerts === 0) {
+        notifDropdownList.innerHTML = `
+          <div style="padding:24px 16px; text-align:center; color:var(--text-muted); font-size:13px;">
+            <div style="font-size:24px; margin-bottom:6px;">✅</div>
+            Tout est à jour ! Aucune notification en attente.
+          </div>
+        `;
+      } else {
+        let itemsHtml = '';
+        if (unreadMsgs > 0) {
+          itemsHtml += `
+            <div class="notif-item unread" onclick="if(document.getElementById('notifDropdown')) document.getElementById('notifDropdown').style.display='none'; switchToView('view-messages');">
+              <div class="notif-item-icon msg">📩</div>
+              <div style="flex:1;">
+                <div class="notif-item-title">${unreadMsgs} message${unreadMsgs > 1 ? 's' : ''} non lu${unreadMsgs > 1 ? 's' : ''}</div>
+                <div class="notif-item-desc">Nouveaux messages clients reçus sur le site. Cliquez pour ouvrir la boîte.</div>
+              </div>
+            </div>
+          `;
+        }
+        if (pendingOrders > 0) {
+          itemsHtml += `
+            <div class="notif-item unread" onclick="if(document.getElementById('notifDropdown')) document.getElementById('notifDropdown').style.display='none'; switchToView('view-orders');">
+              <div class="notif-item-icon">📦</div>
+              <div style="flex:1;">
+                <div class="notif-item-title">${pendingOrders} commande${pendingOrders > 1 ? 's' : ''} en attente</div>
+                <div class="notif-item-desc">Des commandes attendent votre validation. Cliquez pour traiter.</div>
+              </div>
+            </div>
+          `;
+        }
+        notifDropdownList.innerHTML = itemsHtml;
+      }
+    }
+  }
+
   if (!Auth.isLoggedIn() || !Auth.isAdmin()) {
     document.getElementById('lockedSection').hidden = false;
   } else {
@@ -1334,29 +1999,19 @@
     
     // Sidebar Navigation Logic
     const navItems = document.querySelectorAll('.nav-item');
-    const views = document.querySelectorAll('.view-section');
-    
     navItems.forEach(btn => {
       btn.addEventListener('click', () => {
-        closeMobileSidebar();
-        navItems.forEach(b => b.classList.remove('active'));
-        views.forEach(v => v.classList.remove('active'));
-        
-        btn.classList.add('active');
-        document.getElementById(btn.dataset.target).classList.add('active');
-        if (btn.dataset.target === 'view-settings') {
-          loadSiteSettingsManager();
-        }
+        switchToView(btn.dataset.target);
       });
     });
 
     // Check URL parameters for explicit tabs
     const params = new URLSearchParams(window.location.search);
     if (params.get('filter') === 'pending') {
-      document.querySelector('.nav-item[data-target="view-orders"]').click();
+      switchToView('view-orders');
     }
 
-    // Load data
+    // Load initial data
     loadSummary();
     loadOrders();
     loadProducts();
@@ -1390,72 +2045,154 @@
     const container = document.getElementById('statGrid');
     try {
       const d = await apiFetch('/admin/summary');
-      if (lastPendingOrdersCount !== null && d.pendingOrders > lastPendingOrdersCount) {
-        showNotification('Nouvelle commande reçue !');
+
+      // Check for incoming new messages
+      if (lastNewMessagesCount !== null && d.newMessages > lastNewMessagesCount) {
+        const diff = d.newMessages - lastNewMessagesCount;
+        playNotificationChime('message');
+        triggerNativePushNotification(
+          '📩 Nouveau message client',
+          diff === 1 ? 'Vous avez reçu un nouveau message sur le site.' : `Vous avez reçu ${diff} nouveaux messages.`
+        );
+
+        // Fetch latest message to display rich notification details
+        try {
+          const mData = await apiFetch('/admin/messages');
+          if (mData && mData.messages && mData.messages.length) {
+            const m = mData.messages[0];
+            showToastNotification({
+              type: 'msg',
+              title: `📩 Nouveau message : ${m.full_name || 'Client'}`,
+              meta: m.subject || m.email || m.phone || 'Visiteur web',
+              body: m.body || '',
+              targetView: 'view-messages'
+            });
+          } else {
+            showToastNotification({
+              type: 'msg',
+              title: '📩 Nouveau message reçu !',
+              body: 'Un client vient de vous envoyer un message.',
+              targetView: 'view-messages'
+            });
+          }
+        } catch(err) {
+          showToastNotification({
+            type: 'msg',
+            title: '📩 Nouveau message reçu !',
+            body: 'Un client vient de vous envoyer un message.',
+            targetView: 'view-messages'
+          });
+        }
+
+        // Auto-refresh messages table if currently viewed
+        const msgView = document.getElementById('view-messages');
+        if (msgView && msgView.classList.contains('active')) {
+          loadMessages();
+        }
       }
-      lastPendingOrdersCount = d.pendingOrders;
 
-      container.innerHTML = `
-        <!-- Revenu (Placeholder) -->
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon c-green">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            </div>
-            <div class="stat-title">Chiffre d'Affaires</div>
-          </div>
-          <div class="stat-val">0 <small>FCFA</small></div>
-          <div class="stat-footer">
-            <span class="stat-badge b-green">0 FCFA</span> par commande
-          </div>
-        </div>
+      // Check for incoming new orders
+      if (lastPendingOrdersCount !== null && d.pendingOrders > lastPendingOrdersCount) {
+        playNotificationChime('order');
+        triggerNativePushNotification('📦 Nouvelle commande reçue !', 'Une nouvelle commande est en attente de traitement.');
+        showToastNotification({
+          type: 'order',
+          title: '📦 Nouvelle commande reçue !',
+          body: 'Une nouvelle commande vient d\'être passée sur votre boutique.',
+          targetView: 'view-orders'
+        });
 
-        <!-- Commandes -->
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon c-blue">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-            </div>
-            <div class="stat-title">Commandes</div>
-          </div>
-          <div class="stat-val">${d.ordersCount}</div>
-          <div class="stat-footer">
-            <span class="stat-badge b-blue">${d.pendingOrders} en attente</span>
-          </div>
-        </div>
+        // Auto-refresh orders table if currently viewed
+        const orderView = document.getElementById('view-orders');
+        if (orderView && orderView.classList.contains('active')) {
+          loadOrders();
+        }
+      }
 
-        <!-- Clients -->
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon c-purple">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            </div>
-            <div class="stat-title">Clients</div>
-          </div>
-          <div class="stat-val">${d.usersCount}</div>
-          <div class="stat-footer">
-            <span class="stat-badge b-purple">Membres inscrits</span>
-          </div>
-        </div>
+      lastPendingOrdersCount = Number(d.pendingOrders) || 0;
+      lastNewMessagesCount = Number(d.newMessages) || 0;
 
-        <!-- Produits -->
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon c-orange">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+      // Update Topbar bell, dropdown, and sidebar badges
+      updateNotificationUI(d);
+
+      if (container) {
+        container.innerHTML = `
+          <!-- Chiffre d'Affaires -->
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon c-green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              </div>
+              <div class="stat-title">Chiffre d'Affaires</div>
             </div>
-            <div class="stat-title">Produits</div>
+            <div class="stat-val">0 <small>FCFA</small></div>
+            <div class="stat-footer">
+              <span class="stat-badge b-green">0 FCFA</span> par commande
+            </div>
           </div>
-          <div class="stat-val">${d.productsCount}</div>
-          <div class="stat-footer">
-            En catalogue
+
+          <!-- Commandes -->
+          <div class="stat-card" style="cursor:pointer;" onclick="switchToView('view-orders')">
+            <div class="stat-header">
+              <div class="stat-icon c-blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+              </div>
+              <div class="stat-title">Commandes</div>
+            </div>
+            <div class="stat-val">${d.ordersCount}</div>
+            <div class="stat-footer">
+              <span class="stat-badge b-blue">${d.pendingOrders} en attente</span>
+            </div>
           </div>
-        </div>
-      `;
+
+          <!-- Clients -->
+          <div class="stat-card" style="cursor:pointer;" onclick="switchToView('view-clients')">
+            <div class="stat-header">
+              <div class="stat-icon c-purple">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </div>
+              <div class="stat-title">Clients</div>
+            </div>
+            <div class="stat-val">${d.usersCount}</div>
+            <div class="stat-footer">
+              <span class="stat-badge b-purple">Membres inscrits</span>
+            </div>
+          </div>
+
+          <!-- Produits -->
+          <div class="stat-card" style="cursor:pointer;" onclick="switchToView('view-products')">
+            <div class="stat-header">
+              <div class="stat-icon c-orange">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+              </div>
+              <div class="stat-title">Produits</div>
+            </div>
+            <div class="stat-val">${d.productsCount}</div>
+            <div class="stat-footer">
+              En catalogue
+            </div>
+          </div>
+
+          <!-- Messages -->
+          <div class="stat-card" style="cursor:pointer;" onclick="switchToView('view-messages')">
+            <div class="stat-header">
+              <div class="stat-icon" style="background:#FEE2E2; color:#DC2626;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              </div>
+              <div class="stat-title">Messages</div>
+            </div>
+            <div class="stat-val">${d.messagesCount || 0}</div>
+            <div class="stat-footer">
+              <span class="stat-badge ${d.newMessages > 0 ? 'b-red' : 'b-blue'}">${d.newMessages || 0} non lu${(d.newMessages || 0) > 1 ? 's' : ''}</span>
+            </div>
+          </div>
+        `;
+      }
     } catch(e) { if(e.status===401||e.status===403) { Auth.clear(); window.location.href='login.html'; } }
   }
 
-  setInterval(() => { if (Auth.isLoggedIn() && Auth.isAdmin()) loadSummary(true); }, 15000);
+  // Real-time polling every 10 seconds
+  setInterval(() => { if (Auth.isLoggedIn() && Auth.isAdmin()) loadSummary(true); }, 10000);
 
   function getStatusClass(s) {
     if(s==='pending'||s==='new') return 's-pending';
@@ -1637,21 +2374,33 @@
         return;
       }
       table.innerHTML = d.messages.map(m => {
+        const isNew = m.status === 'new';
         const opts = ['new', 'read', 'replied'];
         const optionsHtml = opts.map(s=>`<option value="${s}" ${s===m.status?'selected':''}>${s}</option>`).join('');
         return `
-        <tr>
-          <td><strong>${escapeHtml(m.full_name)}</strong></td>
-          <td>${escapeHtml(m.email)}<br><small style="color:var(--text-muted);">${escapeHtml(m.phone||'')}</small></td>
+        <tr class="${isNew ? 'row-unread-msg' : ''}" data-msg-id="${m.id}">
+          <td>
+            <div style="display:flex; align-items:center; gap:8px;">
+              ${isNew ? '<span class="unread-dot" title="Nouveau message non lu"></span>' : ''}
+              <strong>${escapeHtml(m.full_name || 'Client')}</strong>
+            </div>
+          </td>
+          <td>${escapeHtml(m.email || '—')}<br><small style="color:var(--text-muted);">${escapeHtml(m.phone||'')}</small></td>
           <td><strong>${escapeHtml(m.subject||'—')}</strong></td>
-          <td style="font-size:13px; max-width:250px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(m.body)}</td>
+          <td style="font-size:13px; max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHtml(m.body)}">${escapeHtml(m.body)}</td>
           <td><select data-id="${m.id}" class="status-select ${getStatusClass(m.status)}">${optionsHtml}</select></td>
-        </tr>`
+        </tr>`;
       }).join('');
       
       table.querySelectorAll('.status-select').forEach(sel => {
         sel.addEventListener('change', async()=>{
           sel.className = 'status-select ' + getStatusClass(sel.value);
+          const row = sel.closest('tr');
+          if (row && sel.value !== 'new') {
+            row.classList.remove('row-unread-msg');
+            const dot = row.querySelector('.unread-dot');
+            if (dot) dot.remove();
+          }
           await apiFetch('/admin/messages/'+sel.dataset.id,{method:'PATCH',body:JSON.stringify({status:sel.value})});
           loadSummary();
         });
