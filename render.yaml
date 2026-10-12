@@ -1,9 +1,11 @@
 services:
   - type: web
-    name: alkhairate-backend
+    name: alkhairate
     runtime: node
     plan: free
     region: frankfurt
+    autoDeploy: true
+    branch: main
     buildCommand: npm run build
     startCommand: npm start
     envVars:

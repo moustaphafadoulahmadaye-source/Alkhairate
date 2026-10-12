@@ -50,6 +50,14 @@ ul{list-style:none;}
   display:none !important;
 }
 
+/* Full-width wrappers for injected components */
+#site-header, #site-footer {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  box-sizing: border-box;
+}
+
 /* ═══════════════════════════════════════════════
    TOPBAR – slim dark utility bar 
    ═══════════════════════════════════════════════ */
