@@ -152,6 +152,7 @@ const settingsCount = db.prepare('SELECT COUNT(*) AS c FROM site_settings').get(
 if (settingsCount === 0) {
   const insSetting = db.prepare('INSERT OR IGNORE INTO site_settings (key, value) VALUES (?, ?)');
   const defaultSettings = [
+    ['site_logo', 'assets/img/logo.jpg'],
     ['hero', 'assets/img/hero-solar.jpg'],
     ['contact', 'assets/img/pompe.jpg'],
     ['about', 'assets/img/materiels.jpg'],
@@ -166,6 +167,8 @@ if (settingsCount === 0) {
     ['service_vente-pompes', 'assets/img/vente-pompes.jpg']
   ];
   defaultSettings.forEach(([k, v]) => insSetting.run(k, v));
+} else {
+  db.prepare('INSERT OR IGNORE INTO site_settings (key, value) VALUES (?, ?)').run('site_logo', 'assets/img/logo.jpg');
 }
 
 // Ensure service default images are set

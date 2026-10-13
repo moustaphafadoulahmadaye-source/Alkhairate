@@ -301,6 +301,113 @@
   }
 
 
+  /* Enterprise Identity & Brands Ribbon */
+  .intl-brand-strip {
+    background: #061436;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 22px 32px;
+    position: relative;
+    z-index: 10;
+  }
+  .intl-brand-strip-container {
+    max-width: 1380px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .intl-brand-badge {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: 10px 18px;
+    backdrop-filter: blur(8px);
+  }
+  .intl-brand-badge img {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    object-fit: contain;
+    background: #ffffff;
+    padding: 3px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    border: 1.5px solid rgba(245, 197, 24, 0.5);
+  }
+  .intl-brand-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+  }
+  .intl-brand-sub {
+    font-size: 11.5px;
+    color: #f59e0b;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+  }
+  .intl-partners-group {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .intl-partners-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .dot-live {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 8px #10B981;
+  }
+  .intl-partner-tags {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .intl-partner-tag {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #e2e8f0;
+    letter-spacing: 0.02em;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .intl-partner-tag:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(245, 158, 11, 0.5);
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+  @media (max-width: 992px) {
+    .intl-brand-strip { padding: 18px 16px; }
+    .intl-brand-strip-container { flex-direction: column; align-items: stretch; gap: 16px; }
+    .intl-partners-group { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .intl-partner-tags { gap: 8px; }
+  }
 </style>
 </head>
 <body>
@@ -330,7 +437,8 @@
   <!-- Hero Content Center Stage -->
   <div class="intl-hero-container">
     <div class="intl-hero-content">
-      <div class="intl-hero-eyebrow">
+      <div class="intl-hero-eyebrow" style="display:inline-flex; align-items:center; gap:12px; padding:6px 18px 6px 10px;">
+        <img id="siteLogoHero" src="assets/img/logo.jpg" alt="Logo Entreprise EAEPCG" style="width:28px; height:28px; border-radius:6px; object-fit:contain; background:#ffffff; box-shadow:0 2px 6px rgba(0,0,0,0.35);">
         <span class="intl-beacon-dot"></span>
         <span data-fr>Établissement Alkhaïrat Énergie · Groupe EAEPCG Tchad</span>
         <span data-en>Alkhaïrat Energy · EAEPCG Group Chad</span>
@@ -374,30 +482,61 @@
   <div class="intl-hero-tabs" id="intlHeroTabs">
     <div class="intl-tab active" data-index="0">
       <div class="intl-tab-bar"></div>
-      <div class="intl-tab-num">01 / SOLAIRE</div>
+      <div class="intl-tab-num">☀️ 01 / SOLAIRE</div>
       <div class="intl-tab-title"><span data-fr>Ingénierie Solaire</span><span data-en>Solar Engineering</span><span data-ar>هندسة الطاقة الشمسية</span></div>
       <div class="intl-tab-desc"><span data-fr>Centrales & mini-réseaux PV</span><span data-en>PV plants & mini-grids</span><span data-ar>محطات وأنظمة طاقة شمسية</span></div>
     </div>
     <div class="intl-tab" data-index="1">
       <div class="intl-tab-bar"></div>
-      <div class="intl-tab-num">02 / HYDRAULIQUE</div>
+      <div class="intl-tab-num">💧 02 / HYDRAULIQUE</div>
       <div class="intl-tab-title"><span data-fr>Forages & Pompage</span><span data-en>Boreholes & Pumping</span><span data-ar>آبار وضخ المياه</span></div>
       <div class="intl-tab-desc"><span data-fr>Adduction d'eau potable</span><span data-en>Drinking water supply</span><span data-ar>إمدادات مياه الشرب والري</span></div>
     </div>
     <div class="intl-tab" data-index="2">
       <div class="intl-tab-bar"></div>
-      <div class="intl-tab-num">03 / ÉLECTRICITÉ</div>
+      <div class="intl-tab-num">⚡ 03 / ÉLECTRICITÉ</div>
       <div class="intl-tab-title"><span data-fr>Matériels Industriels</span><span data-en>Industrial Materials</span><span data-ar>معدات صناعية</span></div>
       <div class="intl-tab-desc"><span data-fr>Câblage armé & quincaillerie</span><span data-en>Armored cables & fittings</span><span data-ar>كابلات وأجهزة كهربائية</span></div>
     </div>
     <div class="intl-tab" data-index="3">
       <div class="intl-tab-bar"></div>
-      <div class="intl-tab-num">04 / COMMERCE</div>
+      <div class="intl-tab-num">📦 04 / COMMERCE</div>
       <div class="intl-tab-title"><span data-fr>Commerce & Logistique</span><span data-en>Trade & Logistics</span><span data-ar>تجارة ولوجستيات</span></div>
       <div class="intl-tab-desc"><span data-fr>Distribution sur tout le Tchad</span><span data-en>Nationwide distribution</span><span data-ar>توزيع عبر أنحاء تشاد</span></div>
     </div>
   </div>
 </div>
+
+<!-- BANDEAU OFFICIEL LOGO ENTREPRISE & MARQUES PARTENAIRES -->
+<section class="intl-brand-strip">
+  <div class="intl-brand-strip-container">
+    <!-- Logo Officiel et Identité Entreprise -->
+    <div class="intl-brand-badge">
+      <img id="homeEnterpriseLogo" src="assets/img/logo.jpg" alt="Logo Officiel Alkhaïrat Énergie EAEPCG">
+      <div>
+        <div class="intl-brand-title">Établissement Alkhaïrat Énergie</div>
+        <div class="intl-brand-sub">Groupe EAEPCG · Leader de l'Énergie & Quincaillerie au Tchad</div>
+      </div>
+    </div>
+
+    <!-- Logos et Marques Certifiées de l'Entreprise -->
+    <div class="intl-partners-group">
+      <div class="intl-partners-label">
+        <span class="dot-live"></span>
+        <span data-fr>Marques & Équipements de référence :</span>
+        <span data-en>Certified Brands & Equipment:</span>
+        <span data-ar>العلامات والمعدات المعتمدة:</span>
+      </div>
+      <div class="intl-partner-tags">
+        <span class="intl-partner-tag">☀️ LORENTZ Solar</span>
+        <span class="intl-partner-tag">⚡ SCHNEIDER Electric</span>
+        <span class="intl-partner-tag">🔋 HUAWEI Solar Fusion</span>
+        <span class="intl-partner-tag">💧 GRUNDFOS Pumps</span>
+        <span class="intl-partner-tag">⚙️ LEGRAND France</span>
+      </div>
+    </div>
+  </div>
+</section>
 
 
 <main>
@@ -538,6 +677,11 @@
   async function loadSiteSettings() {
     try {
       const settings = await apiFetch('/settings');
+      if (settings.site_logo) {
+        document.querySelectorAll('#siteLogoHero, #homeEnterpriseLogo, .brand img').forEach(img => {
+          img.src = settings.site_logo;
+        });
+      }
       if (settings.hero) {
         document.getElementById('heroSlide1').src = settings.hero;
       }

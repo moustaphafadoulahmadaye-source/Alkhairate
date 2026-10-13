@@ -113,6 +113,29 @@ function renderHeader(activePage){
 
   renderNavActions();
   updateCartBadge();
+  syncGlobalLogo();
+}
+
+function syncGlobalLogo() {
+  try {
+    const cachedLogo = localStorage.getItem('eaepcg_site_logo');
+    if (cachedLogo) {
+      document.querySelectorAll('.brand img, .site-logo-img, #headerSiteLogo, #homeEnterpriseLogo, #siteLogoHero, #footerSiteLogo').forEach(img => {
+        img.src = cachedLogo;
+      });
+    }
+    fetch((window.location.protocol === 'file:' ? 'http://localhost:4000/api' : '/api') + '/settings')
+      .then(r => r.json())
+      .then(s => {
+        if (s && s.site_logo) {
+          localStorage.setItem('eaepcg_site_logo', s.site_logo);
+          document.querySelectorAll('.brand img, .site-logo-img, #headerSiteLogo, #homeEnterpriseLogo, #siteLogoHero, #footerSiteLogo').forEach(img => {
+            img.src = s.site_logo;
+          });
+        }
+      })
+      .catch(() => {});
+  } catch(e) {}
 }
 
 const Cart = {

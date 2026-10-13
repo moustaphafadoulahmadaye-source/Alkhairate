@@ -1671,8 +1671,11 @@
               1. Emplacement de l'image sur le site
             </label>
             <select id="settingsImageKey" name="imageKey" class="search-bar" style="width:100%; border-radius:10px; padding:12px 16px; margin-bottom:12px; background-image:none; border:1.5px solid var(--border-dark); font-weight:600; font-size:14px; color:var(--text-heading);">
+              <optgroup label="LOGO & IDENTITÉ DE L'ENTREPRISE">
+                <option value="site_logo" selected>Logo Officiel de l'Entreprise (EAEPCG)</option>
+              </optgroup>
               <optgroup label="PAGE D'ACCUEIL (Diaporama Hero)">
-                <option value="hero" selected>Accueil — Bannière Principale (Slide 1)</option>
+                <option value="hero">Accueil — Bannière Principale (Slide 1)</option>
                 <option value="contact">Accueil — Bannière Contact / Diapo (Slide 2)</option>
                 <option value="about">Accueil — Bannière À Propos / Diapo (Slide 3)</option>
               </optgroup>
@@ -2702,6 +2705,15 @@
   // ── SITE IMAGES DEFINITIONS & MANAGER ──
   const SITE_IMAGES = [
     {
+      key: 'site_logo',
+      category: 'accueil',
+      name: "Logo Officiel de l'Entreprise (EAEPCG)",
+      page: "Toutes les pages (Accueil, En-tête, Pied de page)",
+      section: "Identité Visuelle & Logo Entreprise",
+      defaultUrl: "assets/img/logo.jpg",
+      desc: "Logo officiel de votre entreprise affiché en haut, sur la page d'accueil, dans la navigation et le pied de page."
+    },
+    {
       key: 'hero',
       category: 'accueil',
       name: "Accueil — Bannière Principale (Slide 1)",
@@ -3035,6 +3047,10 @@
             body: JSON.stringify({ key, value: uploadedUrl })
           });
           currentSiteSettingsCache[key] = uploadedUrl;
+          if (key === 'site_logo') {
+            document.querySelectorAll('.sidebar-header img, #siteLogoHero, #homeEnterpriseLogo, .brand img').forEach(img => img.src = uploadedUrl);
+            try { localStorage.setItem('eaepcg_site_logo', uploadedUrl); } catch(e) {}
+          }
           resetFileInput();
           updateActivePreview(key);
           renderImagesGallery();
@@ -3070,6 +3086,10 @@
         try {
           await apiFetch(`/admin/settings/${key}`, { method: 'DELETE' });
           delete currentSiteSettingsCache[key];
+          if (key === 'site_logo') {
+            document.querySelectorAll('.sidebar-header img, #siteLogoHero, #homeEnterpriseLogo, .brand img').forEach(img => img.src = 'assets/img/logo.jpg');
+            try { localStorage.removeItem('eaepcg_site_logo'); } catch(e) {}
+          }
           resetFileInput();
           updateActivePreview(key);
           renderImagesGallery();
