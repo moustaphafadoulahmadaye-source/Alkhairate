@@ -301,60 +301,6 @@
   }
 
 
-  /* Enterprise Identity Ribbon */
-  .intl-brand-strip {
-    background: #061436;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 16px 24px;
-    position: relative;
-    z-index: 10;
-  }
-  .intl-brand-strip-container {
-    max-width: 1380px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .intl-brand-badge {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 14px;
-    padding: 10px 24px;
-    backdrop-filter: blur(8px);
-  }
-  .intl-brand-badge img {
-    width: 48px;
-    height: 48px;
-    border-radius: 10px;
-    object-fit: contain;
-    background: #ffffff;
-    padding: 3px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-    border: 1.5px solid rgba(245, 197, 24, 0.5);
-  }
-  .intl-brand-title {
-    font-family: 'Outfit', sans-serif;
-    font-weight: 800;
-    font-size: 15px;
-    color: #ffffff;
-    letter-spacing: -0.01em;
-  }
-  .intl-brand-sub {
-    font-size: 11.5px;
-    color: #f59e0b;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-top: 2px;
-  }
-  @media (max-width: 992px) {
-    .intl-brand-strip { padding: 14px 16px; }
-  }
 </style>
 </head>
 <body>
@@ -384,12 +330,20 @@
   <!-- Hero Content Center Stage -->
   <div class="intl-hero-container">
     <div class="intl-hero-content">
-      <div class="intl-hero-eyebrow" style="display:inline-flex; align-items:center; gap:12px; padding:6px 18px 6px 10px;">
-        <img id="siteLogoHero" src="assets/img/logo.jpg" alt="Logo Entreprise EAEPCG" style="width:28px; height:28px; border-radius:6px; object-fit:contain; background:#ffffff; box-shadow:0 2px 6px rgba(0,0,0,0.35);">
-        <span class="intl-beacon-dot"></span>
-        <span data-fr>Établissement Alkhaïrat Énergie · Groupe EAEPCG Tchad</span>
-        <span data-en>Alkhaïrat Energy · EAEPCG Group Chad</span>
-        <span data-ar>مؤسسة الخيرات للطاقة · مجموعة EAEPCG تشاد</span>
+      <!-- Badge Officiel Logo Entreprise sur le Panneau Hero -->
+      <div class="intl-hero-eyebrow" style="display:inline-flex; align-items:center; gap:14px; padding:8px 20px 8px 10px; border-radius:50px; background:rgba(6,20,54,0.85); border:1.5px solid rgba(245,197,24,0.6); box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+        <img id="siteLogoHero" src="assets/img/logo.jpg" alt="Logo Entreprise EAEPCG" style="width:48px; height:48px; border-radius:50%; object-fit:contain; background:#ffffff; padding:2px; box-shadow:0 3px 10px rgba(0,0,0,0.4); border:2px solid rgba(245,197,24,0.7);">
+        <div style="text-align:left;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="intl-beacon-dot"></span>
+            <span style="font-weight:800; font-size:14px; color:#ffffff;">Établissement Alkhaïrat Énergie</span>
+          </div>
+          <div style="font-size:11px; color:#f59e0b; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; margin-top:2px;">
+            <span data-fr>Groupe EAEPCG Tchad · Énergie & Quincaillerie</span>
+            <span data-en>EAEPCG Group Chad · Energy & Hardware</span>
+            <span data-ar>مجموعة EAEPCG تشاد · طاقة ومعدات</span>
+          </div>
+        </div>
       </div>
 
       <h1 class="intl-hero-title">
@@ -429,44 +383,31 @@
   <div class="intl-hero-tabs" id="intlHeroTabs">
     <div class="intl-tab active" data-index="0">
       <div class="intl-tab-bar"></div>
-      <div class="intl-tab-num">☀️ 01 / SOLAIRE</div>
+      <div class="intl-tab-num">01 / SOLAIRE</div>
       <div class="intl-tab-title"><span data-fr>Ingénierie Solaire</span><span data-en>Solar Engineering</span><span data-ar>هندسة الطاقة الشمسية</span></div>
       <div class="intl-tab-desc"><span data-fr>Centrales & mini-réseaux PV</span><span data-en>PV plants & mini-grids</span><span data-ar>محطات وأنظمة طاقة شمسية</span></div>
     </div>
     <div class="intl-tab" data-index="1">
       <div class="intl-tab-bar"></div>
-      <div class="intl-tab-num">💧 02 / HYDRAULIQUE</div>
+      <div class="intl-tab-num">02 / HYDRAULIQUE</div>
       <div class="intl-tab-title"><span data-fr>Forages & Pompage</span><span data-en>Boreholes & Pumping</span><span data-ar>آبار وضخ المياه</span></div>
       <div class="intl-tab-desc"><span data-fr>Adduction d'eau potable</span><span data-en>Drinking water supply</span><span data-ar>إمدادات مياه الشرب والري</span></div>
     </div>
     <div class="intl-tab" data-index="2">
       <div class="intl-tab-bar"></div>
-      <div class="intl-tab-num">⚡ 03 / ÉLECTRICITÉ</div>
+      <div class="intl-tab-num">03 / ÉLECTRICITÉ</div>
       <div class="intl-tab-title"><span data-fr>Matériels Industriels</span><span data-en>Industrial Materials</span><span data-ar>معدات صناعية</span></div>
       <div class="intl-tab-desc"><span data-fr>Câblage armé & quincaillerie</span><span data-en>Armored cables & fittings</span><span data-ar>كابلات وأجهزة كهربائية</span></div>
     </div>
     <div class="intl-tab" data-index="3">
       <div class="intl-tab-bar"></div>
-      <div class="intl-tab-num">📦 04 / COMMERCE</div>
+      <div class="intl-tab-num">04 / COMMERCE</div>
       <div class="intl-tab-title"><span data-fr>Commerce & Logistique</span><span data-en>Trade & Logistics</span><span data-ar>تجارة ولوجستيات</span></div>
       <div class="intl-tab-desc"><span data-fr>Distribution sur tout le Tchad</span><span data-en>Nationwide distribution</span><span data-ar>توزيع عبر أنحاء تشاد</span></div>
     </div>
   </div>
 </div>
 
-<!-- BANDEAU OFFICIEL LOGO ENTREPRISE -->
-<section class="intl-brand-strip">
-  <div class="intl-brand-strip-container">
-    <!-- Logo Officiel et Identité Entreprise -->
-    <div class="intl-brand-badge">
-      <img id="homeEnterpriseLogo" src="assets/img/logo.jpg" alt="Logo Officiel Alkhaïrat Énergie EAEPCG">
-      <div>
-        <div class="intl-brand-title">Établissement Alkhaïrat Énergie</div>
-        <div class="intl-brand-sub">Groupe EAEPCG · Leader de l'Énergie & Quincaillerie au Tchad</div>
-      </div>
-    </div>
-  </div>
-</section>
 
 
 <main>
