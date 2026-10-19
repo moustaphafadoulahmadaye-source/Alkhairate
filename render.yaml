@@ -25,6 +25,18 @@ services:
         sync: false
       - key: DATA_DIR
         sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_SECURE
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
     # To attach a persistent disk on Render (requires Starter plan or higher):
     # disk:
     #   name: alkhairate-data

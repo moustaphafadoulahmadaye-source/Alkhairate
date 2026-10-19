@@ -11,6 +11,7 @@
     "seed-admin": "npm --prefix backend run seed-admin",
     "reset-admin-password": "npm --prefix backend run reset-admin-password",
     "backup": "npm --prefix backend run backup",
-    "restore": "npm --prefix backend run restore"
+    "restore": "npm --prefix backend run restore",
+    "test-email": "npm --prefix backend run test-email"
   }
 }

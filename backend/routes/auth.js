@@ -74,8 +74,16 @@ router.post('/forgot-password', (req, res) => {
     const expiresAt = Math.floor(Date.now() / 1000) + 60 * 60;
     db.prepare('INSERT INTO password_reset_tokens (token_hash, user_id, expires_at) VALUES (?, ?, ?)')
       .run(tokenHash, user.id, expiresAt);
-    const baseUrl = process.env.FRONTEND_URL || `http://localhost:${process.env.PORT || 4000}`;
-    notify(() => sendPasswordReset(user, `${baseUrl}/reset-password.html?token=${rawToken}`), 'password reset email');
+    const defaultUrl = process.env.NODE_ENV === 'production'
+      ? 'https://alkhairate.onrender.com'
+      : `http://localhost:${process.env.PORT || 4000}`;
+    const baseUrl = (process.env.FRONTEND_URL || defaultUrl).replace(/\/+$/, '');
+    const resetUrl = `${baseUrl}/reset-password.html?token=${rawToken}`;
+    const { isSmtpConfigured } = require('../services/email');
+    if (!isSmtpConfigured()) {
+      console.log(`[Password Reset Notice] SMTP non configuré. Lien de réinitialisation pour ${user.email} : ${resetUrl}`);
+    }
+    notify(() => sendPasswordReset(user, resetUrl), 'password reset email');
   }
   res.json(genericResponse);
 });
