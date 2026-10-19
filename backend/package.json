@@ -8,6 +8,8 @@
     "test": "node --test tests/**/*.test.js",
     "seed-admin": "node seedAdmin.js",
     "reset-admin-password": "node scripts/resetAdminPassword.js",
+    "backup": "node scripts/backup.js",
+    "restore": "node scripts/restore.js",
     "db:init": "node seedAdmin.js"
   },
   "dependencies": {

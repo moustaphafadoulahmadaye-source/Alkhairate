@@ -3,11 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 const { validateAndProcessImage } = require('../utils/imageSecurity');
+const { UPLOADS_DIR, AVATARS_DIR } = require('../utils/storage');
 
 const router = express.Router();
-
-const UPLOADS_DIR = path.join(__dirname, '..', '..', 'frontend', 'assets', 'uploads');
-const AVATARS_DIR = path.join(__dirname, '..', '..', 'frontend', 'assets', 'avatars');
 
 // General image upload (products, site settings, services) — Admin only
 router.post('/', requireAuth, requireAdmin, (req, res) => {

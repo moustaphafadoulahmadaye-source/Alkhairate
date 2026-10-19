@@ -1,9 +1,6 @@
-const path = require('path');
-const fs = require('fs');
 const Database = require('better-sqlite3');
+const { DB_PATH } = require('./utils/storage');
 
-const DB_PATH = process.env.DB_PATH || (process.env.DATA_DIR ? path.join(process.env.DATA_DIR, 'eaepcg.db') : path.join(__dirname, 'data', 'eaepcg.db'));
-fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
 const db = new Database(DB_PATH);
 
 db.pragma('journal_mode = WAL');

@@ -9,6 +9,8 @@
     "backend": "npm --prefix backend start",
     "db:init": "npm --prefix backend run db:init",
     "seed-admin": "npm --prefix backend run seed-admin",
-    "reset-admin-password": "npm --prefix backend run reset-admin-password"
+    "reset-admin-password": "npm --prefix backend run reset-admin-password",
+    "backup": "npm --prefix backend run backup",
+    "restore": "npm --prefix backend run restore"
   }
 }

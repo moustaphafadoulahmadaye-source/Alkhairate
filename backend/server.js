@@ -104,8 +104,41 @@ app.use('/api/products', productsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', express.json({ limit: '8mb' }), uploadRoutes);
 
-// Optionally serve the frontend as static files too (same-origin deployment)
+// Serve uploads and avatars from persistent storage (e.g. /var/data on Render disk)
 const FRONTEND_DIR = path.join(__dirname, '..', 'frontend');
+const { UPLOADS_DIR, AVATARS_DIR } = require('./utils/storage');
+
+app.use('/assets/uploads', express.static(UPLOADS_DIR, {
+  etag: true,
+  maxAge: '1d',
+  setHeaders: (res) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self'");
+  }
+}));
+
+const REPO_UPLOADS_DIR = path.join(FRONTEND_DIR, 'assets', 'uploads');
+if (path.resolve(REPO_UPLOADS_DIR) !== path.resolve(UPLOADS_DIR)) {
+  app.use('/assets/uploads', express.static(REPO_UPLOADS_DIR, {
+    etag: true,
+    maxAge: '1d',
+    setHeaders: (res) => {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self'");
+    }
+  }));
+}
+
+app.use('/assets/avatars', express.static(AVATARS_DIR, {
+  etag: true,
+  maxAge: '1d',
+  setHeaders: (res) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self'");
+  }
+}));
+
+// Serve frontend static files
 app.use(express.static(FRONTEND_DIR, {
   etag: true,
   maxAge: 0,
