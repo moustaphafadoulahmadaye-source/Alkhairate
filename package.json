@@ -8,6 +8,7 @@
     "test": "npm --prefix backend test",
     "backend": "npm --prefix backend start",
     "db:init": "npm --prefix backend run db:init",
-    "seed-admin": "npm --prefix backend run seed-admin"
+    "seed-admin": "npm --prefix backend run seed-admin",
+    "reset-admin-password": "npm --prefix backend run reset-admin-password"
   }
 }

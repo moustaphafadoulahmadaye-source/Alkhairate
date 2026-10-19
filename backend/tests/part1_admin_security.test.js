@@ -32,6 +32,8 @@ test('Part 1: render.yaml does not contain plaintext admin password and uses syn
   assert.ok(!content.includes('value: Mast'), 'render.yaml must not contain password values');
   assert.match(content, /key:\s*ADMIN_PASSWORD\s+sync:\s*false/, 'ADMIN_PASSWORD should have sync: false');
   assert.match(content, /key:\s*ADMIN_EMAIL\s+sync:\s*false/, 'ADMIN_EMAIL should have sync: false');
+  assert.match(content, /key:\s*CORS_ORIGIN\s+sync:\s*false/, 'CORS_ORIGIN should have sync: false');
+  assert.match(content, /key:\s*FRONTEND_URL\s+sync:\s*false/, 'FRONTEND_URL should have sync: false');
 });
 
 test('Part 1: seedAdmin rejects invalid or weak passwords', () => {

@@ -38,6 +38,11 @@ function seedAdmin(db = defaultDb, options = {}) {
   const existing = db.prepare('SELECT id, role, password_hash FROM users WHERE email = ?').get(email);
   if (existing) {
     if (existing.role === 'admin') {
+      if (process.env.FORCE_ADMIN_PASSWORD_RESET === 'true' || options.forceReset) {
+        const hash = bcrypt.hashSync(password, 10);
+        db.prepare('UPDATE users SET full_name = ?, password_hash = ? WHERE id = ?').run(full_name, hash, existing.id);
+        return { status: 'reset', message: `Admin password successfully reset for: ${email}.` };
+      }
       // Existing admin account: preserve their custom password (e.g. changed via dashboard)
       db.prepare('UPDATE users SET full_name = ? WHERE id = ?').run(full_name, existing.id);
       return { status: 'confirmed', message: `Admin account confirmed: ${email}.` };
