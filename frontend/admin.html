@@ -1896,10 +1896,10 @@
 
         <div class="pwd-input-group">
           <label for="newPasswordInput">
-            Nouveau mot de passe * <small style="font-weight:400; color:var(--text-muted);">(min. 6 caractères)</small>
+            Nouveau mot de passe * <small style="font-weight:400; color:var(--text-muted);">(min. 10 caractères)</small>
           </label>
           <div style="position:relative;">
-            <input type="password" id="newPasswordInput" required minlength="6" autocomplete="new-password" placeholder="Votre nouveau mot de passe">
+            <input type="password" id="newPasswordInput" required minlength="10" autocomplete="new-password" placeholder="Votre nouveau mot de passe">
             <button type="button" class="pwd-toggle-btn" data-target="newPasswordInput" title="Afficher le mot de passe">👁️</button>
           </div>
         </div>
@@ -1909,7 +1909,7 @@
             Confirmer le nouveau mot de passe *
           </label>
           <div style="position:relative;">
-            <input type="password" id="confirmPasswordInput" required minlength="6" autocomplete="new-password" placeholder="Retapez le nouveau mot de passe">
+            <input type="password" id="confirmPasswordInput" required minlength="10" autocomplete="new-password" placeholder="Retapez le nouveau mot de passe">
             <button type="button" class="pwd-toggle-btn" data-target="confirmPasswordInput" title="Afficher le mot de passe">👁️</button>
           </div>
         </div>
@@ -3176,8 +3176,8 @@
         showPwdAlert('Veuillez renseigner tous les champs obligatoires.', 'error');
         return;
       }
-      if (new_password.length < 6) {
-        showPwdAlert('Le nouveau mot de passe doit comporter au moins 6 caractères.', 'error');
+      if (new_password.length < 10) {
+        showPwdAlert('Le nouveau mot de passe doit comporter au moins 10 caractères.', 'error');
         return;
       }
       if (new_password !== new_password_confirmation) {

@@ -1,7 +1,9 @@
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const db = require('../db');
 
 const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRES_IN = '24h';
 const WEAK_SECRETS = new Set([
   'change_this_secret_in_production',
   'your-strong-random-secret',
@@ -16,6 +18,21 @@ function isStrongJwtSecret(secret) {
 
 if (!isStrongJwtSecret(JWT_SECRET)) {
   throw new Error('JWT_SECRET must be set to a strong random value of at least 32 characters.');
+}
+
+function signToken(user) {
+  const payload = {
+    id: user.id,
+    full_name: user.full_name,
+    email: user.email,
+    role: user.role,
+    avatar_url: user.avatar_url || null,
+    token_version: Number(user.token_version) || 1
+  };
+  return jwt.sign(payload, JWT_SECRET, {
+    expiresIn: JWT_EXPIRES_IN,
+    jwtid: crypto.randomUUID()
+  });
 }
 
 function requireAuth(req, res, next) {
@@ -37,9 +54,15 @@ function requireAuth(req, res, next) {
     }
 
     const user = db.prepare(
-      'SELECT id, full_name, email, phone, role, created_at FROM users WHERE id = ?'
+      'SELECT id, full_name, email, phone, role, avatar_url, token_version, created_at FROM users WHERE id = ?'
     ).get(userId);
     if (!user) return res.status(401).json({ error: 'User account no longer exists' });
+
+    const currentVersion = Number(user.token_version) || 1;
+    const tokenVersion = typeof payload.token_version === 'number' ? payload.token_version : 0;
+    if (tokenVersion !== currentVersion) {
+      return res.status(401).json({ error: 'Token has been invalidated. Please log in again.' });
+    }
 
     req.user = user;
     req.authToken = token;
@@ -48,6 +71,41 @@ function requireAuth(req, res, next) {
   } catch (e) {
     return res.status(401).json({ error: 'Invalid or expired token' });
   }
+}
+
+function optionalAuth(req, res, next) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!token) return next();
+  try {
+    const payload = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
+    if (typeof payload.jti !== 'string' || !payload.jti) return next();
+
+    // Check revocation
+    const isRevoked = db.prepare('SELECT 1 FROM revoked_tokens WHERE jti = ?').get(payload.jti);
+    if (isRevoked) return next();
+
+    const userId = Number(payload.id);
+    if (!Number.isInteger(userId) || userId < 1) return next();
+
+    const user = db.prepare(
+      'SELECT id, full_name, email, phone, role, avatar_url, token_version, created_at FROM users WHERE id = ?'
+    ).get(userId);
+    if (!user) return next();
+
+    const currentVersion = Number(user.token_version) || 1;
+    const tokenVersion = typeof payload.token_version === 'number' ? payload.token_version : 0;
+    if (tokenVersion !== currentVersion) {
+      return next();
+    }
+
+    req.user = user;
+    req.authToken = token;
+    req.authPayload = payload;
+  } catch (e) {
+    // If token is invalid or expired, continue as guest
+  }
+  next();
 }
 
 function requireAdmin(req, res, next) {
@@ -64,4 +122,11 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-module.exports = { requireAuth, requireAdmin, JWT_SECRET };
+module.exports = {
+  requireAuth,
+  optionalAuth,
+  requireAdmin,
+  signToken,
+  JWT_SECRET,
+  JWT_EXPIRES_IN
+};

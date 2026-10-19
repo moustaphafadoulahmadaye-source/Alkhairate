@@ -29,7 +29,7 @@ function updateAdminPassword(newPassword) {
   }
 
   const hash = bcrypt.hashSync(newPassword.trim(), 10);
-  db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(hash, admin.id);
+  db.prepare('UPDATE users SET password_hash = ?, token_version = COALESCE(token_version, 1) + 1 WHERE id = ?').run(hash, admin.id);
 
   // Verification step
   const updated = db.prepare('SELECT password_hash FROM users WHERE id = ?').get(admin.id);

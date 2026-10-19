@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const db = require('../db');
-const { requireAuth, JWT_SECRET } = require('../middleware/auth');
+const { requireAuth, signToken, JWT_SECRET } = require('../middleware/auth');
 const { sanitizeText } = require('../utils/sanitize');
 const { notify, sendWelcome, sendAdminNotification, sendPasswordReset } = require('../services/email');
 
@@ -23,8 +23,8 @@ router.post('/register', (req, res) => {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) || normalizedEmail.length > 254) {
     return res.status(400).json({ error: 'email must be valid' });
   }
-  if (typeof password !== 'string' || password.length < 6 || password.length > 128) {
-    return res.status(400).json({ error: 'password must be between 6 and 128 characters' });
+  if (typeof password !== 'string' || password.length < 10 || password.length > 128) {
+    return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 10 caractères (et maximum 128).' });
   }
   if (password !== password_confirmation) {
     return res.status(400).json({ error: 'password confirmation does not match' });
@@ -44,8 +44,8 @@ router.post('/register', (req, res) => {
   let info;
   try {
     info = db.prepare(
-      'INSERT INTO users (full_name, email, phone, password_hash, role) VALUES (?,?,?,?,?)'
-    ).run(normalizedName, normalizedEmail, normalizedPhone || null, hash, 'customer');
+      'INSERT INTO users (full_name, email, phone, password_hash, role, token_version) VALUES (?,?,?,?,?,?)'
+    ).run(normalizedName, normalizedEmail, normalizedPhone || null, hash, 'customer', 1);
   } catch (error) {
     if (String(error.message).includes('UNIQUE')) {
       return res.status(409).json({ error: 'An account with this email already exists' });
@@ -53,8 +53,9 @@ router.post('/register', (req, res) => {
     throw error;
   }
 
+  const userForToken = { id: info.lastInsertRowid, full_name: normalizedName, email: normalizedEmail, role: 'customer', token_version: 1 };
   const user = { id: info.lastInsertRowid, full_name: normalizedName, email: normalizedEmail, role: 'customer' };
-  const token = jwt.sign(user, JWT_SECRET, { expiresIn: '7d', jwtid: crypto.randomUUID() });
+  const token = signToken(userForToken);
   notify(() => sendWelcome(user), 'welcome email');
   notify(() => sendAdminNotification('New customer registration', `New customer: ${user.full_name} <${user.email}>`), 'new customer email');
   res.status(201).json({ token, user });
@@ -93,8 +94,8 @@ router.post('/reset-password', (req, res) => {
   if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token)) {
     return res.status(400).json({ error: 'Invalid or expired reset token' });
   }
-  if (typeof password !== 'string' || password.length < 6 || password.length > 128) {
-    return res.status(400).json({ error: 'password must be between 6 and 128 characters' });
+  if (typeof password !== 'string' || password.length < 10 || password.length > 128) {
+    return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 10 caractères (et maximum 128).' });
   }
   if (password !== password_confirmation) return res.status(400).json({ error: 'password confirmation does not match' });
   const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
@@ -107,7 +108,8 @@ router.post('/reset-password', (req, res) => {
 
   const hash = bcrypt.hashSync(password, 10);
   const update = db.transaction(() => {
-    db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(hash, row.user_id);
+    db.prepare('UPDATE users SET password_hash = ?, token_version = COALESCE(token_version, 1) + 1 WHERE id = ?')
+      .run(hash, row.user_id);
     db.prepare('UPDATE password_reset_tokens SET used_at = datetime(\'now\') WHERE token_hash = ?').run(tokenHash);
   });
   update();
@@ -127,7 +129,7 @@ router.post('/login', (req, res) => {
   db.prepare('INSERT INTO sessions_log (user_id) VALUES (?)').run(row.id);
 
   const user = { id: row.id, full_name: row.full_name, email: row.email, role: row.role, avatar_url: row.avatar_url };
-  const token = jwt.sign(user, JWT_SECRET, { expiresIn: '7d', jwtid: crypto.randomUUID() });
+  const token = signToken(row);
   res.json({ token, user });
 });
 
@@ -188,8 +190,8 @@ router.post('/change-password', requireAuth, (req, res) => {
     return res.status(400).json({ error: 'Le mot de passe actuel et le nouveau mot de passe sont requis.' });
   }
 
-  if (typeof new_password !== 'string' || new_password.length < 6 || new_password.length > 128) {
-    return res.status(400).json({ error: 'Le nouveau mot de passe doit contenir au moins 6 caractères.' });
+  if (typeof new_password !== 'string' || new_password.length < 10 || new_password.length > 128) {
+    return res.status(400).json({ error: 'Le nouveau mot de passe doit contenir au moins 10 caractères.' });
   }
 
   if (new_password !== new_password_confirmation) {
@@ -206,16 +208,27 @@ router.post('/change-password', requireAuth, (req, res) => {
   }
 
   const newHash = bcrypt.hashSync(new_password, 10);
-  db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(newHash, req.user.id);
+  const update = db.transaction(() => {
+    db.prepare('UPDATE users SET password_hash = ?, token_version = COALESCE(token_version, 1) + 1 WHERE id = ?')
+      .run(newHash, req.user.id);
+    if (req.authPayload?.jti) {
+      db.prepare('INSERT OR REPLACE INTO revoked_tokens (jti, expires_at) VALUES (?, ?)').run(
+        req.authPayload.jti,
+        Number.isInteger(Number(req.authPayload.exp)) ? Number(req.authPayload.exp) : Math.floor(Date.now() / 1000) + 86400
+      );
+    }
+  });
+  update();
 
+  const updatedRow = db.prepare('SELECT id, full_name, email, role, avatar_url, token_version FROM users WHERE id = ?').get(req.user.id);
   const updatedUser = {
-    id: userRow.id,
-    full_name: userRow.full_name,
-    email: userRow.email,
-    role: userRow.role,
-    avatar_url: userRow.avatar_url
+    id: updatedRow.id,
+    full_name: updatedRow.full_name,
+    email: updatedRow.email,
+    role: updatedRow.role,
+    avatar_url: updatedRow.avatar_url
   };
-  const token = jwt.sign(updatedUser, JWT_SECRET, { expiresIn: '7d', jwtid: crypto.randomUUID() });
+  const token = signToken(updatedRow);
 
   res.json({
     ok: true,

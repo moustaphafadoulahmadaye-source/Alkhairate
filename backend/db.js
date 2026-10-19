@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
   phone TEXT,
   password_hash TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT 'customer', -- 'customer' or 'admin'
+  token_version INTEGER NOT NULL DEFAULT 1,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -294,6 +295,17 @@ try {
   const cols = db.prepare("PRAGMA table_info(users)").all().map(c => c.name);
   if (!cols.includes('avatar_url')) db.exec("ALTER TABLE users ADD COLUMN avatar_url TEXT");
 } catch(e) {}
+
+// Migration: add token_version to users table
+try {
+  const cols = db.prepare("PRAGMA table_info(users)").all().map(c => c.name);
+  if (!cols.includes('token_version')) {
+    db.exec("ALTER TABLE users ADD COLUMN token_version INTEGER NOT NULL DEFAULT 1");
+  }
+  db.exec("UPDATE users SET token_version = 1 WHERE token_version IS NULL OR token_version < 1");
+} catch(e) {
+  console.error("Migration error token_version:", e);
+}
 
 // Migration: Add vente-pompes service and move products from pompe-forage
 try {

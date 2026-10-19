@@ -35,12 +35,19 @@ function seedAdmin(db = defaultDb, options = {}) {
     throw new Error('ADMIN_PASSWORD must be configured with a strong password of at least 12 characters.');
   }
 
+  const userCols = db.prepare('PRAGMA table_info(users)').all().map(c => c.name);
+  const hasTokenVersion = userCols.includes('token_version');
+
   const existing = db.prepare('SELECT id, role, password_hash FROM users WHERE email = ?').get(email);
   if (existing) {
     if (existing.role === 'admin') {
       if (process.env.FORCE_ADMIN_PASSWORD_RESET === 'true' || options.forceReset) {
         const hash = bcrypt.hashSync(password, 10);
-        db.prepare('UPDATE users SET full_name = ?, password_hash = ? WHERE id = ?').run(full_name, hash, existing.id);
+        if (hasTokenVersion) {
+          db.prepare('UPDATE users SET full_name = ?, password_hash = ?, token_version = COALESCE(token_version, 1) + 1 WHERE id = ?').run(full_name, hash, existing.id);
+        } else {
+          db.prepare('UPDATE users SET full_name = ?, password_hash = ? WHERE id = ?').run(full_name, hash, existing.id);
+        }
         return { status: 'reset', message: `Admin password successfully reset for: ${email}.` };
       }
       // Existing admin account: preserve their custom password (e.g. changed via dashboard)
@@ -50,14 +57,24 @@ function seedAdmin(db = defaultDb, options = {}) {
       // Security fix: previously this promoted customers to admin without updating password,
       // which allowed account takeover if a customer registered the admin email first.
       const hash = bcrypt.hashSync(password, 10);
-      db.prepare("UPDATE users SET full_name = ?, role = 'admin', password_hash = ? WHERE id = ?")
-        .run(full_name, hash, existing.id);
+      if (hasTokenVersion) {
+        db.prepare("UPDATE users SET full_name = ?, role = 'admin', password_hash = ?, token_version = COALESCE(token_version, 1) + 1 WHERE id = ?")
+          .run(full_name, hash, existing.id);
+      } else {
+        db.prepare("UPDATE users SET full_name = ?, role = 'admin', password_hash = ? WHERE id = ?")
+          .run(full_name, hash, existing.id);
+      }
       return { status: 'promoted', message: `Account ${email} promoted to admin with updated password hash.` };
     }
   } else {
     const hash = bcrypt.hashSync(password, 10);
-    db.prepare('INSERT INTO users (full_name, email, password_hash, role) VALUES (?,?,?,?)')
-      .run(full_name, email, hash, 'admin');
+    if (hasTokenVersion) {
+      db.prepare('INSERT INTO users (full_name, email, password_hash, role, token_version) VALUES (?,?,?,?,?)')
+        .run(full_name, email, hash, 'admin', 1);
+    } else {
+      db.prepare('INSERT INTO users (full_name, email, password_hash, role) VALUES (?,?,?,?)')
+        .run(full_name, email, hash, 'admin');
+    }
     return { status: 'created', message: `Admin account created: ${email}.` };
   }
 }

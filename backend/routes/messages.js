@@ -1,22 +1,9 @@
 const express = require('express');
 const db = require('../db');
-const { requireAuth, JWT_SECRET } = require('../middleware/auth');
-const jwt = require('jsonwebtoken');
+const { requireAuth, optionalAuth } = require('../middleware/auth');
 const { sanitizeText } = require('../utils/sanitize');
 const { notify, sendMessageConfirmation, sendAdminNotification } = require('../services/email');
 const router = express.Router();
-
-function optionalAuth(req, res, next) {
-  const header = req.headers.authorization || '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-  if (!token) return next();
-  try {
-    const payload = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
-    const user = db.prepare('SELECT id, full_name, email, phone FROM users WHERE id = ?').get(payload.id);
-    if (user) req.user = user;
-  } catch (e) {}
-  next();
-}
 
 // Send a message - optional login
 router.post('/', optionalAuth, (req, res) => {
