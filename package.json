@@ -5,6 +5,7 @@
   "scripts": {
     "build": "npm --prefix backend install --no-audit --fund=false",
     "start": "node backend/server.js",
+    "test": "npm --prefix backend test",
     "backend": "npm --prefix backend start",
     "db:init": "npm --prefix backend run db:init",
     "seed-admin": "npm --prefix backend run seed-admin"

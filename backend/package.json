@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "test": "node --test tests/**/*.test.js",
     "seed-admin": "node seedAdmin.js",
     "db:init": "node seedAdmin.js"
   },

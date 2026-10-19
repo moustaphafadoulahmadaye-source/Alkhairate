@@ -141,11 +141,13 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`EAEPCG backend running on port ${PORT}`);
-  if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
-    try {
-      require('./seedAdmin');
-    } catch (e) {
-      console.warn('Admin seed notice:', e.message);
+  try {
+    const seedAdmin = require('./seedAdmin');
+    const result = seedAdmin();
+    if (result && result.message) {
+      console.log(`[Admin Seed] ${result.message}`);
     }
+  } catch (e) {
+    console.warn('[Admin Seed Notice]', e.message);
   }
 });

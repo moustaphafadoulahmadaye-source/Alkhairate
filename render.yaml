@@ -16,8 +16,8 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: ADMIN_EMAIL
-        value: alhabibfadoul@gmail.com
+        sync: false
       - key: ADMIN_PASSWORD
-        value: Mast@66341078@
+        sync: false
       - key: CORS_ORIGIN
-        value: "http://localhost:4000,http://localhost:8080"
+        sync: false

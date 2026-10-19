@@ -50,11 +50,27 @@ router.get('/users', (req, res) => {
   res.json({ users: rows });
 });
 
-// Delete a user (cannot delete yourself)
+// Delete a user (cannot delete yourself, primary admin, or sole remaining admin)
 router.delete('/users/:id', (req, res) => {
   const userId = Number(req.params.id);
   if (!Number.isInteger(userId) || userId < 1) return res.status(400).json({ error: 'Invalid user id' });
   if (userId === req.user.id) return res.status(400).json({ error: 'Cannot delete your own account' });
+
+  const targetUser = db.prepare('SELECT id, email, role FROM users WHERE id = ?').get(userId);
+  if (!targetUser) return res.status(404).json({ error: 'User not found' });
+
+  const configuredAdminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+  if (configuredAdminEmail && targetUser.email.toLowerCase() === configuredAdminEmail) {
+    return res.status(400).json({ error: 'Cannot delete the primary administrator account defined by system configuration' });
+  }
+
+  if (targetUser.role === 'admin') {
+    const adminCount = db.prepare("SELECT COUNT(*) AS c FROM users WHERE role = 'admin'").get().c;
+    if (adminCount <= 1) {
+      return res.status(400).json({ error: 'Cannot delete the sole administrator account' });
+    }
+  }
+
   const result = db.prepare('DELETE FROM users WHERE id = ?').run(userId);
   if (!result.changes) return res.status(404).json({ error: 'User not found' });
   res.json({ ok: true });

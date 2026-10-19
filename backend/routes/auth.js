@@ -32,6 +32,11 @@ router.post('/register', (req, res) => {
   if (normalizedPhone !== null && normalizedPhone.length > 40) {
     return res.status(400).json({ error: 'phone must be 40 characters or fewer' });
   }
+  const configuredAdminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+  if (configuredAdminEmail && normalizedEmail === configuredAdminEmail) {
+    return res.status(400).json({ error: 'This email address is reserved for administrative use.' });
+  }
+
   const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(normalizedEmail);
   if (existing) return res.status(409).json({ error: 'An account with this email already exists' });
 
@@ -149,6 +154,10 @@ router.patch('/me', requireAuth, (req, res) => {
     return res.status(400).json({ error: 'phone must be 40 characters or fewer' });
   }
   if (normalizedEmail) {
+    const configuredAdminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+    if (configuredAdminEmail && normalizedEmail === configuredAdminEmail && req.user.role !== 'admin') {
+      return res.status(400).json({ error: 'This email address is reserved for administrative use.' });
+    }
     const duplicate = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(normalizedEmail, req.user.id);
     if (duplicate) return res.status(409).json({ error: 'An account with this email already exists' });
   }
