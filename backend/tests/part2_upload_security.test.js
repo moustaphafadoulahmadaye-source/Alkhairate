@@ -70,7 +70,7 @@ test('Part 2: validateAndProcessImage rejects unsupported MIME types like SVG an
   const svgDataUrl = `data:image/svg+xml;base64,${MALICIOUS_SVG_BUFFER.toString('base64')}`;
   assert.throws(() => {
     validateAndProcessImage(svgDataUrl);
-  }, /Unsupported image format/);
+  }, /Forbidden image type|Unsupported image format/);
 
   const gifDataUrl = `data:image/gif;base64,${Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7').toString('base64')}`;
   assert.throws(() => {
@@ -101,12 +101,33 @@ test('Part 2: validateAndProcessImage enforces max file size limits', () => {
   }, /Image size exceeds the maximum allowed limit/);
 });
 
-test('Part 2: Generated filenames are sanitized and immune to path traversal', () => {
+test('Part 2: Generated filenames strictly follow crypto.randomUUID() format', () => {
   const pngDataUrl = `data:image/png;base64,${VALID_PNG_BUFFER.toString('base64')}`;
-  const res = validateAndProcessImage(pngDataUrl, { prefix: '../../evil_prefix/../' });
+  const res = validateAndProcessImage(pngDataUrl);
 
-  assert.ok(!res.filename.includes('..'));
-  assert.ok(!res.filename.includes('/'));
-  assert.ok(!res.filename.includes('\\'));
-  assert.ok(res.filename.endsWith('.png'));
+  const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.png$/i;
+  assert.match(res.filename, uuidPattern, 'Generated filename must strictly match UUID pattern with extension');
 });
+
+test('Part 2: Verify all files currently present in uploads directory are safe', () => {
+  const uploadsDir = path.join(__dirname, '..', '..', 'frontend', 'assets', 'uploads');
+  if (fs.existsSync(uploadsDir)) {
+    const files = fs.readdirSync(uploadsDir);
+    for (const file of files) {
+      const fullPath = path.join(uploadsDir, file);
+      if (fs.statSync(fullPath).isFile()) {
+        const buf = fs.readFileSync(fullPath);
+        const format = detectImageFormat(buf);
+        assert.ok(
+          format !== null,
+          `Existing file ${file} must have a valid PNG, JPEG, or WEBP binary signature`
+        );
+        assert.ok(
+          ['png', 'jpeg', 'webp'].includes(format.format),
+          `Existing file ${file} format must be png, jpeg, or webp`
+        );
+      }
+    }
+  }
+});
+

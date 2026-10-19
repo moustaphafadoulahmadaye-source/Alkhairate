@@ -71,6 +71,7 @@ app.use('/api/auth/forgot-password', rateLimit({ windowMs: 60 * 60 * 1000, limit
 app.use('/api/auth/reset-password', rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false }));
 app.use('/api/orders', rateLimit({ windowMs: 15 * 60 * 1000, limit: 30, standardHeaders: true, legacyHeaders: false }));
 app.use('/api/messages', rateLimit({ windowMs: 15 * 60 * 1000, limit: 30, standardHeaders: true, legacyHeaders: false }));
+app.use('/api/upload', rateLimit({ windowMs: 15 * 60 * 1000, limit: 30, standardHeaders: true, legacyHeaders: false }));
 
 app.get('/api/health', (req, res) => res.json({ ok: true, name: 'EAEPCG API' }));
 app.get('/api/settings', (req, res) => {
@@ -101,7 +102,7 @@ app.use('/api/orders', ordersRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/upload', express.json({ limit: '5mb' }), uploadRoutes);
+app.use('/api/upload', express.json({ limit: '8mb' }), uploadRoutes);
 
 // Optionally serve the frontend as static files too (same-origin deployment)
 const FRONTEND_DIR = path.join(__dirname, '..', 'frontend');
@@ -109,6 +110,10 @@ app.use(express.static(FRONTEND_DIR, {
   etag: true,
   maxAge: 0,
   setHeaders: (res, filePath) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    if (filePath.includes('uploads') || filePath.includes('avatars')) {
+      res.setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self'");
+    }
     if (filePath.endsWith('.html') || filePath.endsWith('.css') || filePath.endsWith('.js')) {
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       res.setHeader('Pragma', 'no-cache');

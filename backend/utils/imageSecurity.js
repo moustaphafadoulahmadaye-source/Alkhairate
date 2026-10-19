@@ -3,11 +3,26 @@ const crypto = require('crypto');
 /**
  * Detect image format from binary buffer using magic numbers.
  * Strictly permits only PNG, JPEG, and WEBP.
+ * Explicitly rejects SVG, HTML, and all other non-allowed formats.
  * @param {Buffer} buffer
  * @returns {{ format: 'png'|'jpeg'|'webp', mime: string, ext: string } | null}
  */
 function detectImageFormat(buffer) {
   if (!Buffer.isBuffer(buffer) || buffer.length < 12) {
+    return null;
+  }
+
+  // Quick check: if the file starts with text/markup (like <svg, <?xml, <!DOCTYPE, <html, etc.), reject immediately!
+  const headStr = buffer.subarray(0, Math.min(buffer.length, 120)).toString('utf8').trim().toLowerCase();
+  if (
+    headStr.startsWith('<svg') ||
+    headStr.startsWith('<?xml') ||
+    headStr.startsWith('<!doctype') ||
+    headStr.startsWith('<html') ||
+    headStr.startsWith('<script') ||
+    headStr.includes('<svg') ||
+    headStr.includes('xmlns="http://www.w3.org/2000/svg"')
+  ) {
     return null;
   }
 
@@ -48,6 +63,8 @@ function detectImageFormat(buffer) {
 /**
  * Validate and sanitize base64 image upload.
  * Strictly enforces PNG, JPEG, and WEBP formats and file size limits.
+ * Filename is generated strictly with crypto.randomUUID().
+ * Client-provided filename and extension are completely ignored.
  *
  * @param {string} imageBase64 - The data URL (e.g. data:image/png;base64,...)
  * @param {object} options
@@ -57,7 +74,7 @@ function detectImageFormat(buffer) {
  */
 function validateAndProcessImage(imageBase64, options = {}) {
   const maxSize = options.maxSize || 5 * 1024 * 1024;
-  const prefix = options.prefix ? String(options.prefix).replace(/[^a-zA-Z0-9_-]/g, '') + '_' : '';
+  const prefix = options.prefix ? String(options.prefix).replace(/[^a-zA-Z0-9_-]/g, '') : '';
 
   if (typeof imageBase64 !== 'string' || !imageBase64.trim()) {
     throw new Error('Image data is required.');
@@ -69,6 +86,17 @@ function validateAndProcessImage(imageBase64, options = {}) {
   }
 
   const declaredMime = match[1].toLowerCase();
+
+  // Reject SVG, HTML, and scripts immediately even if declared with image/ prefix
+  if (
+    declaredMime.includes('svg') ||
+    declaredMime.includes('html') ||
+    declaredMime.includes('xml') ||
+    declaredMime.includes('javascript')
+  ) {
+    throw new Error('Forbidden image type: SVG and HTML files are strictly disallowed.');
+  }
+
   const allowedMimes = new Set(['image/png', 'image/jpeg', 'image/jpg', 'image/webp']);
   if (!allowedMimes.has(declaredMime)) {
     throw new Error('Unsupported image format. Only PNG, JPEG, and WEBP are allowed.');
@@ -100,7 +128,9 @@ function validateAndProcessImage(imageBase64, options = {}) {
     throw new Error('Image MIME type does not match actual binary format (expected WEBP).');
   }
 
-  const safeFilename = `${prefix}${Date.now()}_${crypto.randomBytes(8).toString('hex')}${detected.ext}`;
+  // Generate filename strictly with crypto.randomUUID()
+  const uuid = crypto.randomUUID();
+  const safeFilename = prefix ? `${prefix}_${uuid}${detected.ext}` : `${uuid}${detected.ext}`;
 
   return {
     buffer,
