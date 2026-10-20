@@ -254,7 +254,8 @@ function escapeHtml(str) {
 
 function sanitizeImageSrc(url, defaultFallback = '') {
   if (!url || typeof url !== 'string') return defaultFallback;
-  const trimmed = url.trim();
+  const resolved = typeof assetUrl === 'function' ? assetUrl(url) : url;
+  const trimmed = resolved.trim();
   if (!trimmed) return defaultFallback;
 
   // Block dangerous pseudo-protocols like javascript: or vbscript: or data:text/html
@@ -267,6 +268,9 @@ function sanitizeImageSrc(url, defaultFallback = '') {
     trimmed.startsWith('assets/') ||
     trimmed.startsWith('/assets/') ||
     trimmed.startsWith('./assets/') ||
+    trimmed.startsWith('uploads/') ||
+    trimmed.startsWith('/uploads/') ||
+    trimmed.startsWith('./uploads/') ||
     /^data:image\/(png|jpe?g|webp|gif);base64,/i.test(trimmed) ||
     /^https?:\/\//i.test(trimmed)
   ) {

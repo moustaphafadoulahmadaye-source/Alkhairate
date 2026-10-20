@@ -35,6 +35,14 @@ function getAllowedOrigins() {
     }
   }
 
+  // Capacitor mobile app origins (Android & iOS)
+  const capacitorOrigins = ['capacitor://localhost', 'https://localhost', 'http://localhost'];
+  for (const capOrigin of capacitorOrigins) {
+    if (!configured.includes(capOrigin)) {
+      configured.push(capOrigin);
+    }
+  }
+
   // Safe fallback in production if not explicitly configured
   if (configured.length === 0 && process.env.NODE_ENV === 'production') {
     configured.push('https://alkhairate.onrender.com');

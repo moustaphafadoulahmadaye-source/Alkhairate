@@ -1,8 +1,47 @@
-// The backend serves the frontend in normal use. When a page is opened directly
-// from disk, use the local backend instead of resolving /api as a file URL.
-const API_BASE = window.location.protocol === 'file:'
-  ? 'http://localhost:4000/api'
-  : '/api';
+const BACKEND_URL = 'https://alkhairate.onrender.com';
+
+const isNativeApp = () => {
+  return typeof window !== 'undefined' && !!(
+    window.Capacitor &&
+    typeof window.Capacitor.isNativePlatform === 'function' &&
+    window.Capacitor.isNativePlatform()
+  );
+};
+
+// Use remote backend when running inside native mobile app (Capacitor).
+// When opened locally via file:, point to local port 4000.
+// On normal web deployments, use relative /api.
+const API_BASE = isNativeApp()
+  ? `${BACKEND_URL}/api`
+  : (typeof window !== 'undefined' && window.location && window.location.protocol === 'file:'
+      ? 'http://localhost:4000/api'
+      : '/api');
+
+/**
+ * Prefixes relative upload asset URLs with BACKEND_URL when running inside native mobile app.
+ * Keeps local static assets and web relative URLs intact.
+ */
+function assetUrl(path) {
+  if (!path || typeof path !== 'string') return '';
+  const trimmed = path.trim();
+  if (trimmed.startsWith('data:') || trimmed.startsWith('blob:') || /^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+  if (isNativeApp()) {
+    const cleanPath = trimmed.startsWith('/') ? trimmed.slice(1) : trimmed;
+    // Uploaded content that only lives on the remote server
+    if (cleanPath.startsWith('uploads/') || cleanPath.startsWith('assets/uploads/') || cleanPath.startsWith('assets/avatars/')) {
+      return `${BACKEND_URL}/${cleanPath}`;
+    }
+  }
+  return trimmed;
+}
+
+if (typeof window !== 'undefined') {
+  window.BACKEND_URL = BACKEND_URL;
+  window.isNativeApp = isNativeApp;
+  window.assetUrl = assetUrl;
+}
 
 const Auth = {
   getToken(){ return localStorage.getItem('eaepcg_token'); },
