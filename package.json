@@ -12,6 +12,25 @@
     "reset-admin-password": "npm --prefix backend run reset-admin-password",
     "backup": "npm --prefix backend run backup",
     "restore": "npm --prefix backend run restore",
-    "test-email": "npm --prefix backend run test-email"
+    "test-email": "npm --prefix backend run test-email",
+    "prepare:mobile": "node scripts/prepare-mobile.js",
+    "build:mobile": "node scripts/prepare-mobile.js && npx cap copy",
+    "cap:sync": "node scripts/prepare-mobile.js && npx cap sync"
+  },
+  "dependencies": {
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/camera": "^8.2.6",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/network": "^8.0.1",
+    "@capacitor/preferences": "^8.0.1",
+    "@capacitor/push-notifications": "^8.1.3",
+    "@capacitor/share": "^8.0.3",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.4"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/ios": "^8.5.3"
   }
 }
