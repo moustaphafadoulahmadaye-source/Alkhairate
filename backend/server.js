@@ -13,32 +13,56 @@ const messagesRoutes = require('./routes/messages');
 const productsRoutes = require('./routes/products');
 const adminRoutes = require('./routes/admin');
 const uploadRoutes = require('./routes/upload');
+const { UPLOADS_DIR, AVATARS_DIR } = require('./utils/storage');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const allowedOrigins = (process.env.CORS_ORIGIN || `http://localhost:${PORT}`)
-  .split(',')
-  .map(origin => origin.trim())
-  .filter(Boolean);
-if (process.env.TRUST_PROXY === 'true') app.set('trust proxy', 1);
+
+if (process.env.TRUST_PROXY === 'true') {
+  app.set('trust proxy', 1);
+}
+
+function getAllowedOrigins() {
+  const configured = (process.env.CORS_ORIGIN || '')
+    .split(',')
+    .map(origin => origin.trim().replace(/\/+$/, ''))
+    .filter(Boolean);
+
+  if (process.env.FRONTEND_URL) {
+    const fe = process.env.FRONTEND_URL.trim().replace(/\/+$/, '');
+    if (fe && !configured.includes(fe)) {
+      configured.push(fe);
+    }
+  }
+
+  // Safe fallback in production if not explicitly configured
+  if (configured.length === 0 && process.env.NODE_ENV === 'production') {
+    configured.push('https://alkhairate.onrender.com');
+  }
+
+  return configured;
+}
 
 function isAllowedOrigin(origin) {
+  // Allow requests with no origin header (same-origin, curl, server-to-server, mobile apps)
   if (!origin) return true;
-  if (allowedOrigins.includes(origin)) return true;
-  try {
-    const url = new URL(origin);
-    const hostname = url.hostname;
-    if (
-      hostname === 'localhost' ||
-      hostname === '127.0.0.1' ||
-      hostname.endsWith('.onrender.com') ||
-      /^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
-      /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
-      /^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(hostname)
-    ) {
-      return true;
-    }
-  } catch (e) {}
+
+  const normalized = origin.trim().replace(/\/+$/, '');
+  const allowed = getAllowedOrigins();
+
+  if (allowed.includes(normalized)) return true;
+
+  // Development mode only: allow localhost and 127.0.0.1 on any local port
+  const isDev = process.env.NODE_ENV !== 'production';
+  if (isDev) {
+    try {
+      const url = new URL(normalized);
+      if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+        return true;
+      }
+    } catch (e) {}
+  }
+
   return false;
 }
 
@@ -46,25 +70,58 @@ app.use(cors({
   origin(origin, callback) {
     if (isAllowedOrigin(origin)) return callback(null, true);
     return callback(new Error('Origin is not allowed by CORS'));
-  }
+  },
+  credentials: true
 }));
+
+// Progressive Content Security Policy configuration
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
+      // Keep 'unsafe-inline' for now to preserve inline handlers while planning module migration
       scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
       fontSrc: ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
-      connectSrc: ["'self'", "http:", "https:"],
+      // Tighter connectSrc: only self and explicit allowed origins (removed dangerous "http:" and "https:" catch-all)
+      connectSrc: ["'self'", ...getAllowedOrigins()],
+      mediaSrc: ["'self'", 'data:'],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],
-      frameAncestors: ["'none'"]
+      formAction: ["'self'"],
+      frameAncestors: ["'none'"],
+      ...(process.env.NODE_ENV === 'production' ? { upgradeInsecureRequests: [] } : {})
     }
-  }
+  },
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginEmbedderPolicy: false
 }));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Body parser separation:
+// - /api/upload accepts base64 payloads up to 8MB (for 5MB binary images)
+// - All other routes strictly limited to 100kb to prevent body-parsing denial of service
+const uploadJsonParser = express.json({ limit: '8mb' });
+const uploadUrlencodedParser = express.urlencoded({ extended: true, limit: '8mb' });
+
+const standardJsonParser = express.json({ limit: '100kb' });
+const standardUrlencodedParser = express.urlencoded({ extended: true, limit: '100kb' });
+
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/upload')) {
+    uploadJsonParser(req, res, (err) => {
+      if (err) return next(err);
+      uploadUrlencodedParser(req, res, next);
+    });
+  } else {
+    standardJsonParser(req, res, (err) => {
+      if (err) return next(err);
+      standardUrlencodedParser(req, res, next);
+    });
+  }
+});
+
+// Rate limiting
 app.use('/api/auth/login', rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false }));
 app.use('/api/auth/register', rateLimit({ windowMs: 60 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false }));
 app.use('/api/auth/forgot-password', rateLimit({ windowMs: 60 * 60 * 1000, limit: 5, standardHeaders: true, legacyHeaders: false }));
@@ -102,19 +159,26 @@ app.use('/api/orders', ordersRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/upload', express.json({ limit: '8mb' }), uploadRoutes);
+app.use('/api/upload', uploadRoutes);
 
-// Serve uploads and avatars from persistent storage (e.g. /var/data on Render disk)
+// Reinforced security headers for uploaded assets
+function setUploadSecurityHeaders(res) {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'none'; img-src 'self'; style-src 'none'; script-src 'none'; frame-ancestors 'none'; sandbox"
+  );
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+}
+
+// Serve uploads and avatars from persistent storage
 const FRONTEND_DIR = path.join(__dirname, '..', 'frontend');
-const { UPLOADS_DIR, AVATARS_DIR } = require('./utils/storage');
 
 app.use('/assets/uploads', express.static(UPLOADS_DIR, {
   etag: true,
   maxAge: '1d',
-  setHeaders: (res) => {
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self'");
-  }
+  setHeaders: setUploadSecurityHeaders
 }));
 
 const REPO_UPLOADS_DIR = path.join(FRONTEND_DIR, 'assets', 'uploads');
@@ -122,20 +186,14 @@ if (path.resolve(REPO_UPLOADS_DIR) !== path.resolve(UPLOADS_DIR)) {
   app.use('/assets/uploads', express.static(REPO_UPLOADS_DIR, {
     etag: true,
     maxAge: '1d',
-    setHeaders: (res) => {
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-      res.setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self'");
-    }
+    setHeaders: setUploadSecurityHeaders
   }));
 }
 
 app.use('/assets/avatars', express.static(AVATARS_DIR, {
   etag: true,
   maxAge: '1d',
-  setHeaders: (res) => {
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self'");
-  }
+  setHeaders: setUploadSecurityHeaders
 }));
 
 // Serve frontend static files
@@ -145,7 +203,7 @@ app.use(express.static(FRONTEND_DIR, {
   setHeaders: (res, filePath) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     if (filePath.includes('uploads') || filePath.includes('avatars')) {
-      res.setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self'");
+      setUploadSecurityHeaders(res);
     }
     if (filePath.endsWith('.html') || filePath.endsWith('.css') || filePath.endsWith('.js')) {
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -154,6 +212,7 @@ app.use(express.static(FRONTEND_DIR, {
     }
   }
 }));
+
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api/')) return next();
   res.sendFile(path.join(FRONTEND_DIR, 'index.html'), (err) => { if (err) next(); });
@@ -162,6 +221,10 @@ app.get('*', (req, res, next) => {
 app.use((err, req, res, next) => {
   if (err.message === 'Origin is not allowed by CORS') {
     return res.status(403).json({ error: 'Origin is not allowed' });
+  }
+
+  if (err.type === 'entity.too.large' || err.status === 413) {
+    return res.status(413).json({ error: 'Payload too large. Maximum allowed size exceeded.' });
   }
 
   const isDbFailure = err && (
@@ -177,15 +240,24 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`EAEPCG backend running on port ${PORT}`);
-  try {
-    const seedAdmin = require('./seedAdmin');
-    const result = seedAdmin();
-    if (result && result.message) {
-      console.log(`[Admin Seed] ${result.message}`);
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`EAEPCG backend running on port ${PORT}`);
+    try {
+      const seedAdmin = require('./seedAdmin');
+      const result = seedAdmin();
+      if (result && result.message) {
+        console.log(`[Admin Seed] ${result.message}`);
+      }
+    } catch (e) {
+      console.warn('[Admin Seed Notice]', e.message);
     }
-  } catch (e) {
-    console.warn('[Admin Seed Notice]', e.message);
-  }
-});
+  });
+}
+
+module.exports = {
+  app,
+  isAllowedOrigin,
+  getAllowedOrigins,
+  setUploadSecurityHeaders
+};
