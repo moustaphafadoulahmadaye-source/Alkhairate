@@ -50,7 +50,7 @@ function renderHeader(activePage){
         <span></span>
       </button>
       <nav class="links" id="navLinks">${linkHtml}
-        ${Auth.getUser()?.role === 'admin' ? `
+        ${(Auth.getUser()?.role === 'admin' && !(typeof isNativeApp === 'function' && isNativeApp())) ? `
         <a href="admin.html?filter=pending" class="nav-cart-link" style="background:var(--yellow); color:var(--ink); padding:8px 12px; margin-right:8px;" title="Notifications">
           <span data-fr>Notifications</span><span data-en>Notifications</span><span data-ar>إشعارات</span><span class="nav-cart-badge" id="adminNotifBadge" style="display:none; background:var(--red); color:white; border:2px solid var(--yellow); right:-6px; top:-6px;"></span>
         </a>
@@ -177,7 +177,8 @@ function renderNavActions(){
   const user = Auth.getUser();
 
   if (user){
-    const dash = user.role === 'admin' ? 'admin.html' : 'account.html';
+    const isNative = typeof isNativeApp === 'function' && isNativeApp();
+    const dash = (!isNative && user.role === 'admin') ? 'admin.html' : 'account.html';
     el.innerHTML = `
       <a class="topbar-link" href="${dash}">👤 ${escapeHtml(user.full_name.split(' ')[0])}</a>
       <span class="topbar-divider">|</span>
@@ -454,4 +455,124 @@ function showModal(title, content, options = {}) {
       overlay.classList.add('show');
     });
   });
+}
+
+/**
+ * Initializes native mobile UX features (status bar, splash screen, back button, network status).
+ * Only executes when running inside Capacitor native platform.
+ */
+function initMobileExperience() {
+  if (typeof window === 'undefined') return;
+  const isNative = typeof isNativeApp === 'function' && isNativeApp();
+  if (!isNative) return;
+
+  if (document.body) {
+    document.body.classList.add('is-native-mobile');
+  }
+
+  // 1. Status Bar Styling
+  const StatusBar = window.Capacitor?.Plugins?.StatusBar;
+  if (StatusBar) {
+    try {
+      StatusBar.setBackgroundColor({ color: '#0F172A' }).catch(() => {});
+      StatusBar.setStyle({ style: 'DARK' }).catch(() => {});
+    } catch(e){}
+  }
+
+  // 2. Hide Splash Screen after layout initialization
+  const SplashScreen = window.Capacitor?.Plugins?.SplashScreen;
+  if (SplashScreen) {
+    try {
+      setTimeout(() => {
+        SplashScreen.hide().catch(() => {});
+      }, 350);
+    } catch(e){}
+  }
+
+  // 3. Android Hardware Back Button listener
+  const App = window.Capacitor?.Plugins?.App;
+  if (App && typeof App.addListener === 'function') {
+    try {
+      App.addListener('backButton', () => {
+        // If a custom modal is active, close it
+        const activeModal = document.querySelector('.custom-modal-overlay.show, .custom-modal-overlay[style*="display: flex"], .custom-modal-overlay[style*="display:flex"]');
+        if (activeModal) {
+          activeModal.classList.remove('show');
+          activeModal.style.display = 'none';
+          return;
+        }
+
+        const path = window.location.pathname.toLowerCase();
+        const isHome = path.endsWith('/index.html') || path.endsWith('/') || path === '';
+        if (isHome) {
+          App.exitApp();
+        } else if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = 'index.html';
+        }
+      });
+    } catch(e){}
+  }
+
+  // 4. Network offline detection & banner
+  const Network = window.Capacitor?.Plugins?.Network;
+  if (Network) {
+    const showOfflineBanner = () => {
+      let banner = document.getElementById('offlineBanner');
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'offlineBanner';
+        banner.className = 'offline-banner';
+        banner.innerHTML = `
+          <div class="offline-content">
+            <span style="font-size:22px;">📡</span>
+            <div>
+              <strong>Mode hors ligne</strong><br>
+              <span style="font-size:12.5px; opacity:0.85;">Connexion Internet interrompue.</span>
+            </div>
+          </div>
+          <button type="button" class="offline-retry-btn" id="btnRetryNetwork">Réessayer</button>
+        `;
+        document.body.appendChild(banner);
+        document.getElementById('btnRetryNetwork').addEventListener('click', async () => {
+          try {
+            const status = await Network.getStatus();
+            if (status.connected) {
+              banner.remove();
+            } else {
+              banner.style.animation = 'none';
+              banner.offsetHeight;
+              banner.style.animation = 'slideUpOffline 0.2s ease-out';
+            }
+          } catch(e){}
+        });
+      }
+    };
+
+    const hideOfflineBanner = () => {
+      const banner = document.getElementById('offlineBanner');
+      if (banner) banner.remove();
+    };
+
+    try {
+      Network.getStatus().then(status => {
+        if (!status.connected) showOfflineBanner();
+      }).catch(() => {});
+
+      Network.addListener('networkStatusChange', status => {
+        if (status.connected) hideOfflineBanner();
+        else showOfflineBanner();
+      });
+    } catch(e){}
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.initMobileExperience = initMobileExperience;
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMobileExperience);
+  } else {
+    initMobileExperience();
+  }
 }

@@ -1137,3 +1137,88 @@ html[lang="ar"] .lang-dropdown{right:auto; left:0;}
   .card, .feature-btn, nav.links { transition: none; animation: none; }
 }
 
+/* ═══════════════════════════════════════════════
+   CAPACITOR MOBILE ADAPTATIONS (UX, NOTCH, OFFLINE)
+   ═══════════════════════════════════════════════ */
+body {
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+}
+
+.topbar {
+  padding-top: max(6px, env(safe-area-inset-top, 0));
+}
+
+footer, #site-footer {
+  padding-bottom: max(24px, env(safe-area-inset-bottom, 0));
+}
+
+/* Prevent auto-zoom on inputs in mobile WebViews */
+@media screen and (max-width: 900px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Minimum 44px touch targets on mobile */
+@media screen and (max-width: 900px) {
+  .btn, .btn-primary, .btn-secondary, .btn-outline,
+  .nav-hamburger, .topbar-link, .lang-btn, .whatsapp-fab,
+  .account-nav-btn, .btn-acc-primary, .custom-modal-btn {
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+  .nav-hamburger {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Offline Banner for network loss */
+.offline-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 14px 20px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom, 14px));
+  box-shadow: 0 -10px 25px rgba(0,0,0,0.3);
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  animation: slideUpOffline 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border-top: 3px solid #ef4444;
+}
+@keyframes slideUpOffline {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.offline-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+.offline-retry-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.offline-retry-btn:hover {
+  background: #1d4ed8;
+}
+
