@@ -43,25 +43,110 @@ if (typeof window !== 'undefined') {
   window.assetUrl = assetUrl;
 }
 
-const Auth = {
-  getToken(){ return localStorage.getItem('eaepcg_token'); },
-  getUser(){
-    try { return JSON.parse(localStorage.getItem('eaepcg_user') || 'null'); }
-    catch(e){ return null; }
-  },
-  setSession(token, user){
-    localStorage.setItem('eaepcg_token', token);
-    localStorage.setItem('eaepcg_user', JSON.stringify(user));
-  },
-  clear(){
-    localStorage.removeItem('eaepcg_token');
-    localStorage.removeItem('eaepcg_user');
-  },
-  isLoggedIn(){ return !!this.getToken(); },
-  isAdmin(){ const u = this.getUser(); return u && u.role === 'admin'; }
+let _cachedToken = (typeof localStorage !== 'undefined' ? localStorage.getItem('eaepcg_token') : null);
+let _cachedUser = null;
+try {
+  _cachedUser = typeof localStorage !== 'undefined' ? JSON.parse(localStorage.getItem('eaepcg_user') || 'null') : null;
+} catch(e) {
+  _cachedUser = null;
+}
+
+const getPreferencesPlugin = () => {
+  if (typeof window === 'undefined') return null;
+  return window.Capacitor?.Plugins?.Preferences || window.Capacitor?.Plugins?.Storage || null;
 };
 
-async function apiFetch(path, options = {}){
+const Auth = {
+  initPromise: null,
+
+  async init() {
+    const Prefs = getPreferencesPlugin();
+    if (Prefs) {
+      try {
+        const { value: token } = await Prefs.get({ key: 'eaepcg_token' });
+        const { value: userStr } = await Prefs.get({ key: 'eaepcg_user' });
+        if (token) {
+          _cachedToken = token;
+          try { localStorage.setItem('eaepcg_token', token); } catch(e){}
+        }
+        if (userStr) {
+          try {
+            _cachedUser = JSON.parse(userStr);
+            localStorage.setItem('eaepcg_user', userStr);
+          } catch(e){}
+        }
+      } catch(e) {
+        console.warn('[Auth] Error reading from Capacitor Preferences:', e);
+      }
+    }
+  },
+
+  getToken() {
+    return _cachedToken || (typeof localStorage !== 'undefined' ? localStorage.getItem('eaepcg_token') : null);
+  },
+
+  getUser() {
+    if (_cachedUser) return _cachedUser;
+    try {
+      return typeof localStorage !== 'undefined' ? JSON.parse(localStorage.getItem('eaepcg_user') || 'null') : null;
+    } catch(e) {
+      return null;
+    }
+  },
+
+  setSession(token, user) {
+    _cachedToken = token;
+    _cachedUser = user;
+    try {
+      localStorage.setItem('eaepcg_token', token);
+      localStorage.setItem('eaepcg_user', JSON.stringify(user));
+    } catch(e){}
+
+    const Prefs = getPreferencesPlugin();
+    if (Prefs) {
+      Prefs.set({ key: 'eaepcg_token', value: token }).catch(console.error);
+      Prefs.set({ key: 'eaepcg_user', value: JSON.stringify(user) }).catch(console.error);
+    }
+  },
+
+  clear() {
+    _cachedToken = null;
+    _cachedUser = null;
+    try {
+      localStorage.removeItem('eaepcg_token');
+      localStorage.removeItem('eaepcg_user');
+    } catch(e){}
+
+    const Prefs = getPreferencesPlugin();
+    if (Prefs) {
+      Prefs.remove({ key: 'eaepcg_token' }).catch(console.error);
+      Prefs.remove({ key: 'eaepcg_user' }).catch(console.error);
+    }
+  },
+
+  isLoggedIn() {
+    return !!this.getToken();
+  },
+
+  isAdmin() {
+    const u = this.getUser();
+    return u && u.role === 'admin';
+  }
+};
+
+// Bootstrap preferences if on native platform
+Auth.initPromise = Auth.init();
+
+if (typeof window !== 'undefined') {
+  window.Auth = Auth;
+}
+
+async function apiFetch(path, options = {}) {
+  // Ensure native preferences are read before making first network call
+  if (Auth.initPromise) {
+    try { await Auth.initPromise; } catch(e){}
+  }
+
   const headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
   const token = Auth.getToken();
   if (token) headers['Authorization'] = 'Bearer ' + token;
