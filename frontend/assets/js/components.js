@@ -159,7 +159,9 @@ const Cart = {
   total: () => Cart.getItems().reduce((a, b) => a + (b.price * b.quantity), 0)
 };
 
-window.addEventListener('cartUpdated', () => { renderNavActions(); updateCartBadge(); });
+if (typeof window !== 'undefined') {
+  window.addEventListener('cartUpdated', () => { renderNavActions(); updateCartBadge(); });
+}
 
 function updateCartBadge(){
   const badge = document.getElementById('navCartBadge');
@@ -239,10 +241,56 @@ function renderFooter(){
   </footer>`;
 }
 
-function escapeHtml(str){
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  const s = String(str);
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function sanitizeImageSrc(url, defaultFallback = '') {
+  if (!url || typeof url !== 'string') return defaultFallback;
+  const trimmed = url.trim();
+  if (!trimmed) return defaultFallback;
+
+  // Block dangerous pseudo-protocols like javascript: or vbscript: or data:text/html
+  if (/^(javascript|vbscript|data:(?!image\/))/i.test(trimmed)) {
+    return defaultFallback;
+  }
+
+  // Safe relative paths, data:image URLs, or http/https URLs
+  if (
+    trimmed.startsWith('assets/') ||
+    trimmed.startsWith('/assets/') ||
+    trimmed.startsWith('./assets/') ||
+    /^data:image\/(png|jpe?g|webp|gif);base64,/i.test(trimmed) ||
+    /^https?:\/\//i.test(trimmed)
+  ) {
+    return escapeHtml(trimmed);
+  }
+
+  return defaultFallback;
+}
+
+function formatPrice(price, currency) {
+  const numeric = Number(price);
+  if (!Number.isFinite(numeric) || numeric === 0) return '—';
+  const safeCurrency = escapeHtml(currency || 'XAF');
+  const formatted = new Intl.NumberFormat('fr-FR').format(numeric);
+  return `${formatted} ${safeCurrency}`;
+}
+
+if (typeof window !== 'undefined') {
+  window.escapeHtml = escapeHtml;
+  window.sanitizeImageSrc = sanitizeImageSrc;
+  window.formatPrice = formatPrice;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { escapeHtml, sanitizeImageSrc, formatPrice };
 }
 
 function currentLang(){
@@ -310,7 +358,9 @@ function renderTableError(tbody, colspan, retry){
   tbody.querySelector('.async-retry').addEventListener('click', retry);
 }
 
-initLangToggle();
+if (typeof document !== 'undefined') {
+  initLangToggle();
+}
 
 /**
  * Shows a custom modal dialog.

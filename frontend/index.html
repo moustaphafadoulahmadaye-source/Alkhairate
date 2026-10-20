@@ -480,9 +480,9 @@
         const numStr = (idx + 1).toString().padStart(2, '0');
         
         return `
-          <a class="premium-service-card ${isEven ? 'alt' : ''}" href="${href}">
+          <a class="premium-service-card ${isEven ? 'alt' : ''}" href="${escapeHtml(href)}">
             <div class="psc-bg">
-              <img src="${imgUrl}" alt="${escapeHtml(s.name_fr)}">
+              <img src="${typeof sanitizeImageSrc === 'function' ? sanitizeImageSrc(imgUrl) : escapeHtml(imgUrl)}" alt="${escapeHtml(s.name_fr)}">
             </div>
             <div class="psc-content">
               <div class="psc-num">SERVICE ${numStr}</div>

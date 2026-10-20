@@ -558,13 +558,14 @@
   renderHeader('account.html'); renderFooter();
   function updateAvatarDisplay(user) {
     const avatarUrl = user.avatar_url;
+    const safeAvatar = typeof sanitizeImageSrc === 'function' ? sanitizeImageSrc(avatarUrl) : (avatarUrl || '');
     const initial = user.full_name ? user.full_name.charAt(0).toUpperCase() : 'U';
     
     // Main header avatar
     const headerAvatar = document.getElementById('dashAvatar');
     if (headerAvatar) {
-      if (avatarUrl) {
-        headerAvatar.style.background = `url(${avatarUrl}) center/cover no-repeat`;
+      if (safeAvatar) {
+        headerAvatar.style.background = `url("${safeAvatar}") center/cover no-repeat`;
         headerAvatar.textContent = '';
       } else {
         headerAvatar.style.background = `linear-gradient(135deg, #0f172a 0%, #1e293b 100%)`;
@@ -576,8 +577,11 @@
     const formPreview = document.getElementById('formAvatarPreview');
     const formInitials = document.getElementById('formAvatarInitials');
     if (formPreview) {
-      if (avatarUrl) {
-        formPreview.style.backgroundImage = `url(${avatarUrl})`;
+      if (safeAvatar) {
+        formPreview.style.backgroundImage = `url("${safeAvatar}")`;
+        formPreview.style.backgroundPosition = 'center';
+        formPreview.style.backgroundSize = 'cover';
+        formPreview.style.backgroundRepeat = 'no-repeat';
         if (formInitials) formInitials.style.display = 'none';
       } else {
         formPreview.style.backgroundImage = `none`;
@@ -657,8 +661,9 @@
         const base64 = ev.target.result;
         // Preview locally first
         const formPreview = document.getElementById('formAvatarPreview');
-        if (formPreview) {
-          formPreview.style.backgroundImage = `url(${base64})`;
+        const safeBase64 = typeof sanitizeImageSrc === 'function' ? sanitizeImageSrc(base64) : base64;
+        if (formPreview && safeBase64) {
+          formPreview.style.backgroundImage = `url("${safeBase64}")`;
           const fi = document.getElementById('formAvatarInitials');
           if (fi) fi.style.display = 'none';
         }
@@ -675,8 +680,11 @@
             // Also optionally update header
             const headerAvatar = document.getElementById('dashAvatar');
             if (headerAvatar) {
-              headerAvatar.style.background = `url(${res.url}) center/cover no-repeat`;
-              headerAvatar.textContent = '';
+              const safeResUrl = typeof sanitizeImageSrc === 'function' ? sanitizeImageSrc(res.url) : res.url;
+              if (safeResUrl) {
+                headerAvatar.style.background = `url("${safeResUrl}") center/cover no-repeat`;
+                headerAvatar.textContent = '';
+              }
             }
           }
         } catch (error) {
@@ -731,7 +739,7 @@
     try {
       const d = await apiFetch('/orders/mine');
       if (!d.orders.length) { renderTableEmpty(table, 4, 'emptyOrders'); return; }
-      table.innerHTML = d.orders.map(o=>`<tr><td>${escapeHtml(o.service)}</td><td>${escapeHtml(o.details||'')}</td><td><span class="status-badge ${o.status}">${o.status.replace('_',' ')}</span></td><td>${o.created_at}</td></tr>`).join('');
+      table.innerHTML = d.orders.map(o=>`<tr><td>${escapeHtml(o.service)}</td><td>${escapeHtml(o.details||'')}</td><td><span class="status-badge ${escapeHtml(o.status)}">${escapeHtml(o.status.replace('_',' '))}</span></td><td>${escapeHtml(o.created_at)}</td></tr>`).join('');
     } catch(e) { renderTableError(table, 4, loadOrders); }
   }
   async function loadMessages(){
@@ -740,7 +748,7 @@
     try {
       const d = await apiFetch('/messages/mine');
       if (!d.messages.length) { renderTableEmpty(table, 4, 'emptyMessages'); return; }
-      table.innerHTML = d.messages.map(m=>`<tr><td>${escapeHtml(m.subject||'—')}</td><td>${escapeHtml(m.body)}</td><td><span class="status-badge ${m.status}">${m.status}</span></td><td>${m.created_at}</td></tr>`).join('');
+      table.innerHTML = d.messages.map(m=>`<tr><td>${escapeHtml(m.subject||'—')}</td><td>${escapeHtml(m.body)}</td><td><span class="status-badge ${escapeHtml(m.status)}">${escapeHtml(m.status)}</span></td><td>${escapeHtml(m.created_at)}</td></tr>`).join('');
     } catch(e) { renderTableError(table, 4, loadMessages); }
   }
   document.getElementById('profileForm').addEventListener('submit', async (e) => {

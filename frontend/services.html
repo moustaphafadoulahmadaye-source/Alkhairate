@@ -67,9 +67,9 @@
         const isAlt = index % 2 !== 0 ? 'alt' : '';
         
         return `
-          <a class="premium-service-card ${isAlt}" href="${href}" id="${s.slug}">
+          <a class="premium-service-card ${isAlt}" href="${escapeHtml(href)}" id="${escapeHtml(s.slug)}">
             <div class="psc-bg">
-              <img src="${imgUrl}" alt="${escapeHtml(s.name_fr)}">
+              <img src="${typeof sanitizeImageSrc === 'function' ? sanitizeImageSrc(imgUrl) : escapeHtml(imgUrl)}" alt="${escapeHtml(s.name_fr)}">
             </div>
             <div class="psc-content">
               <div class="psc-num">SERVICE ${num}</div>

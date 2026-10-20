@@ -2513,8 +2513,8 @@
           <td>${escapeHtml(o.email||'')}<br><small style="color:var(--text-muted);">${escapeHtml(o.phone||'')}</small></td>
           <td><span style="background:#F1F5F9; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:700;">${escapeHtml(o.service)}</span></td>
           <td>${escapeHtml(o.details||'')}</td>
-          <td><select data-id="${o.id}" class="status-select ${getStatusClass(o.status)}">${optionsHtml}</select></td>
-          <td style="color:var(--text-muted); font-size:13px;">${o.created_at}</td>
+          <td><select data-id="${escapeHtml(o.id)}" class="status-select ${escapeHtml(getStatusClass(o.status))}">${optionsHtml}</select></td>
+          <td style="color:var(--text-muted); font-size:13px;">${escapeHtml(o.created_at)}</td>
         </tr>`
       }).join('');
       
@@ -2541,7 +2541,7 @@
           <tr>
             <td>
               <div style="display:flex; align-items:center; gap:12px;">
-                <img src="${it.image_url ? escapeHtml(it.image_url) : 'assets/img/placeholder.png'}" alt="Produit" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1px solid var(--border-light); background:#F8FAFC;">
+                <img src="${typeof sanitizeImageSrc === 'function' ? sanitizeImageSrc(it.image_url, 'assets/img/placeholder.png') : (it.image_url ? escapeHtml(it.image_url) : 'assets/img/placeholder.png')}" alt="Produit" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1px solid var(--border-light); background:#F8FAFC;">
                 <div>
                   <strong>${escapeHtml(it.name_fr)}</strong><br>
                   <small style="color:var(--text-muted);">${escapeHtml(it.name_en)}</small>
@@ -2549,10 +2549,10 @@
               </div>
             </td>
             <td><span style="background:#F1F5F9; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:700;">${escapeHtml(p.name_fr)}</span></td>
-            <td><strong>${new Intl.NumberFormat('fr-FR').format(it.price)} ${it.currency}</strong></td>
+            <td><strong>${new Intl.NumberFormat('fr-FR').format(it.price)} ${escapeHtml(it.currency || 'XAF')}</strong></td>
             <td>${it.in_stock ? '<span style="color:#10B981; font-weight:700;">En stock</span>' : '<span style="color:#EF4444; font-weight:700;">Rupture</span>'}</td>
             <td style="text-align:right;">
-              <button class="btn-danger deleteItem" data-item-id="${it.id}">Supprimer</button>
+              <button class="btn-danger deleteItem" data-item-id="${escapeHtml(it.id)}">Supprimer</button>
             </td>
           </tr>
         `).join('');
@@ -2611,9 +2611,9 @@
         <tr>
           <td><strong>${escapeHtml(u.full_name)}</strong></td>
           <td>${escapeHtml(u.email)}<br><small style="color:var(--text-muted);">${escapeHtml(u.phone||'')}</small></td>
-          <td><span style="background:${u.role==='admin'?'var(--brand-primary)':'#F1F5F9'}; color:${u.role==='admin'?'white':'#475569'}; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:700; text-transform:uppercase;">${u.role}</span></td>
-          <td style="color:var(--text-muted); font-size:13px;">${u.created_at}</td>
-          <td style="text-align:right;">${u.id !== me.id ? `<button class="btn-danger deleteUser" data-user-id="${u.id}">Supprimer</button>` : '<span style="color:var(--text-muted);">(Vous)</span>'}</td>
+          <td><span style="background:${u.role==='admin'?'var(--brand-primary)':'#F1F5F9'}; color:${u.role==='admin'?'white':'#475569'}; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:700; text-transform:uppercase;">${escapeHtml(u.role)}</span></td>
+          <td style="color:var(--text-muted); font-size:13px;">${escapeHtml(u.created_at)}</td>
+          <td style="text-align:right;">${u.id !== me.id ? `<button class="btn-danger deleteUser" data-user-id="${escapeHtml(u.id)}">Supprimer</button>` : '<span style="color:var(--text-muted);">(Vous)</span>'}</td>
         </tr>`).join('');
         
       table.querySelectorAll('.deleteUser').forEach(btn => {
@@ -2655,7 +2655,7 @@
           <td>${escapeHtml(m.email || '—')}<br><small style="color:var(--text-muted);">${escapeHtml(m.phone||'')}</small></td>
           <td><strong>${escapeHtml(m.subject||'—')}</strong></td>
           <td style="font-size:13px; max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHtml(m.body)}">${escapeHtml(m.body)}</td>
-          <td><select data-id="${m.id}" class="status-select ${getStatusClass(m.status)}">${optionsHtml}</select></td>
+          <td><select data-id="${escapeHtml(m.id)}" class="status-select ${escapeHtml(getStatusClass(m.status))}">${optionsHtml}</select></td>
         </tr>`;
       }).join('');
       

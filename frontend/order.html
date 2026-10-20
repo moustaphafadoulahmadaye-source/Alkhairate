@@ -122,17 +122,17 @@
         tableHtml += `
         <div class="cart-item" style="display:flex; justify-content:space-between; align-items:center; padding:16px; background:#f9fafc; border-radius:12px; margin-bottom:12px; border:1px solid rgba(0,0,0,0.05);">
           <div style="flex:1; display:flex; align-items:center; gap:16px;">
-            ${item.imageUrl ? `<img src="${escapeHtml(item.imageUrl)}" style="width:56px; height:56px; object-fit:cover; border-radius:8px;">` : ''}
+            ${item.imageUrl ? `<img src="${typeof sanitizeImageSrc === 'function' ? sanitizeImageSrc(item.imageUrl) : escapeHtml(item.imageUrl)}" style="width:56px; height:56px; object-fit:cover; border-radius:8px;">` : ''}
             <div>
               <div style="font-weight:700; font-size:15px; margin-bottom:6px; font-family:'Space Grotesk', sans-serif;">${escapeHtml(item.name)}</div>
               <div style="font-size:13px; color:var(--text-light);">
-                ${new Intl.NumberFormat('fr-FR').format(item.price)} ${currency} x <strong style="color:var(--ink);">${item.quantity}</strong>
+                ${new Intl.NumberFormat('fr-FR').format(item.price)} ${escapeHtml(currency)} x <strong style="color:var(--ink);">${Number(item.quantity) || 1}</strong>
               </div>
             </div>
           </div>
           <div style="text-align:right; margin-left:16px;">
             <div style="font-weight:700; font-family:'Archivo Black'; font-size:15px; margin-bottom:8px; color:var(--blue-deep);">${new Intl.NumberFormat('fr-FR').format(totalItem)}</div>
-            <button type="button" class="remove-btn" data-id="${item.id}" style="background:rgba(255,0,0,0.1); color:var(--red); border:none; border-radius:6px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:bold;">
+            <button type="button" class="remove-btn" data-id="${escapeHtml(item.id)}" style="background:rgba(255,0,0,0.1); color:var(--red); border:none; border-radius:6px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:bold;">
               <span data-fr>Retirer</span> ❌
             </button>
           </div>
@@ -142,7 +142,7 @@
       
       const total = Cart.total();
       tableHtml += `<div style="display:flex; justify-content:space-between; align-items:center; font-size:20px; font-family:'Archivo Black'; margin-bottom:24px;">
-        <span>Total:</span> <span style="color:var(--yellow);">${new Intl.NumberFormat('fr-FR').format(total)} ${currency}</span>
+        <span>Total:</span> <span style="color:var(--yellow);">${new Intl.NumberFormat('fr-FR').format(total)} ${escapeHtml(currency)}</span>
       </div>`;
     } else if (directService) {
       document.getElementById('orderMainTitle').innerHTML = '<span data-fr>Demande de service</span>';
@@ -193,7 +193,7 @@
         <p style="font-size:13px; color:var(--text-light); margin-bottom:8px;">Sélectionnez une pompe si vous souhaitez l'acheter directement. Laissez vide si vous avez déjà votre pompe.</p>
         <select name="selected_pump" style="width:100%; border:1px solid #bae6fd; border-radius:8px; padding:12px; font-family:inherit;">
           <option value="">-- Je fournis ma propre pompe --</option>
-          ${availablePumps.map(p => `<option value="${p.id}" data-name="${escapeHtml(p.name_fr)}" data-price="${p.price}">${escapeHtml(p.name_fr)} (+ ${new Intl.NumberFormat('fr-FR').format(p.price)} ${p.currency})</option>`).join('')}
+          ${availablePumps.map(p => `<option value="${escapeHtml(p.id)}" data-name="${escapeHtml(p.name_fr)}" data-price="${Number(p.price) || 0}">${escapeHtml(p.name_fr)} (+ ${new Intl.NumberFormat('fr-FR').format(p.price)} ${escapeHtml(p.currency || 'XAF')})</option>`).join('')}
         </select>
       </div>`;
     }
@@ -337,7 +337,7 @@
     try {
       const d = await apiFetch('/orders/mine');
       if (!d.orders.length) { renderTableEmpty(table, 4, 'emptyOrders'); return; }
-      table.innerHTML = d.orders.map(o => `<tr><td>${escapeHtml(o.service)}</td><td><pre style="font-family:inherit; white-space:pre-wrap; margin:0;">${escapeHtml(o.details||'')}</pre></td><td><span class="badge ${o.status}">${o.status.replace('_',' ')}</span></td><td>${o.created_at}</td></tr>`).join('');
+      table.innerHTML = d.orders.map(o => `<tr><td>${escapeHtml(o.service)}</td><td><pre style="font-family:inherit; white-space:pre-wrap; margin:0;">${escapeHtml(o.details||'')}</pre></td><td><span class="badge ${escapeHtml(o.status)}">${escapeHtml(o.status.replace('_',' '))}</span></td><td>${escapeHtml(o.created_at)}</td></tr>`).join('');
     } catch(e) { renderTableError(table, 4, loadMyOrders); }
   }
 </script>
