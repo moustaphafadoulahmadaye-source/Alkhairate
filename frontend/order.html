@@ -307,7 +307,9 @@
         details: details,
         quantity: quantity,
         total: total,
-        currency: currency
+        currency: currency,
+        items: items.map(i => ({ id: i.id, quantity: Number(i.quantity) || 1 })),
+        selected_pump_id: (pumpSelect && pumpSelect.value) ? pumpSelect.value : null
       };
       
       try {
