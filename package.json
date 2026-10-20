@@ -16,7 +16,9 @@
     "prepare:mobile": "node scripts/prepare-mobile.js",
     "assets:generate": "node scripts/prepare-assets-and-images.js",
     "build:mobile": "node scripts/prepare-mobile.js && npx cap copy",
-    "cap:sync": "node scripts/prepare-mobile.js && npx cap sync"
+    "cap:sync": "node scripts/prepare-mobile.js && npx cap sync",
+    "android:sync": "node scripts/prepare-mobile.js && npx cap sync android",
+    "android:open": "npx cap open android"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.2",
@@ -34,6 +36,7 @@
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.5.3",
     "@capacitor/ios": "^8.5.3",
-    "sharp": "^0.35.5"
+    "sharp": "^0.35.5",
+    "typescript": "^7.0.2"
   }
 }

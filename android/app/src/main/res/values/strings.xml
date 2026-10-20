@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Alkhaïrat Énergie</string>
+    <string name="title_activity_main">Alkhaïrat Énergie</string>
+    <string name="package_name">com.alkhairat.energie</string>
+    <string name="custom_url_scheme">com.alkhairat.energie</string>
+</resources>
