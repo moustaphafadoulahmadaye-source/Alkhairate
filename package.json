@@ -2,6 +2,9 @@
   "name": "eaepcg-webapp",
   "version": "1.0.1",
   "private": true,
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "build": "npm --prefix backend install --no-audit --fund=false",
     "start": "node backend/server.js",
