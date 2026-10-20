@@ -72,9 +72,12 @@
 </div>
 <section style="padding-top:0;">
   <div class="section-inner" id="itemsContainer"><p><span data-fr>Chargement…</span><span data-en>Loading…</span><span data-ar>جاري التحميل…</span></p></div>
-  <div class="order-cta">
+  <div class="order-cta" style="display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap;">
     <a class="btn btn-primary" href="order.html"><span data-fr>Commander ce produit</span><span data-en>Order this product</span><span data-ar>اطلب هذا المنتج</span></a>
-    <a class="btn btn-outline" href="https://wa.me/23566341078?text=Bonjour%2C%20je%20vous%20contacte%20depuis%20votre%20site%20web%20EAEPCG.%20Je%20souhaite%20avoir%20des%20informations." target="_blank" rel="noopener" style="margin-left:10px;">WhatsApp</a>
+    <button type="button" class="btn btn-outline" id="btnShareProduct" style="display:inline-flex; align-items:center; gap:8px; cursor:pointer;">
+      <span>📤</span> <span data-fr>Partager</span><span data-en>Share</span><span data-ar>مشاركة</span>
+    </button>
+    <a class="btn btn-outline" id="btnProductWhatsApp" href="#" target="_blank" rel="noopener">WhatsApp</a>
   </div>
 </section>
 </main>
@@ -83,6 +86,21 @@
 <script src="assets/js/components.js"></script>
 <script>
   renderHeader('products.html'); renderFooter();
+
+  const shareBtn = document.getElementById('btnShareProduct');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', () => {
+      const title = document.getElementById('heroTitle')?.textContent || 'Alkhaïrat Énergie';
+      const desc = document.getElementById('heroDesc')?.textContent || '';
+      if (typeof shareProduct === 'function') {
+        shareProduct(title, desc, window.location.href);
+      }
+    });
+  }
+  const waBtn = document.getElementById('btnProductWhatsApp');
+  if (waBtn && typeof getWhatsAppUrl === 'function') {
+    waBtn.href = getWhatsAppUrl();
+  }
   const slug = new URLSearchParams(window.location.search).get('slug');
   if (!slug) window.location.href = 'products.html';
   function formatPrice(p,c){if(!p||p===0)return'—';return new Intl.NumberFormat('fr-FR').format(p)+' '+(c||'XAF');}

@@ -114,6 +114,14 @@ router.patch('/orders/:id', (req, res) => {
   const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
   const customer = order.user_id ? db.prepare('SELECT full_name, email FROM users WHERE id = ?').get(order.user_id) : null;
   if (customer) notify(() => sendOrderStatus({ ...order, ...customer }), 'order status email');
+  if (order.user_id) {
+    try {
+      const { sendOrderStatusPushNotification } = require('../services/push');
+      sendOrderStatusPushNotification(order.user_id, order, normalizedStatus).catch(e => {
+        console.error('[Push Notification Error]:', e.message);
+      });
+    } catch(e) {}
+  }
   res.json({ order });
 });
 

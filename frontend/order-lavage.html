@@ -355,6 +355,12 @@
         msg.classList.add('show','ok'); 
         msg.textContent = {fr:'Réservation envoyée avec succès ! Nous vous contacterons pour confirmer.',en:'Booking sent successfully! We will contact you to confirm.',ar:'تم إرسال الحجز بنجاح! سنتواصل معك للتأكيد.'}[currentLang()]||'OK';
         e.target.reset();
+
+        // Prompt for push notification permission on mobile after order
+        if (typeof requestPushNotifications === 'function') {
+          setTimeout(requestPushNotifications, 1000);
+        }
+
         setTimeout(() => { window.location.href = 'order.html'; }, 3000); // redirect to order history
       } catch(err){ 
         msg.classList.add('show','err'); 

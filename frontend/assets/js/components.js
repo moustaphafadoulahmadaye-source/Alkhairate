@@ -1,3 +1,119 @@
+const COMPANY_CONFIG = {
+  phone: '+235 66 34 10 78',
+  phoneRaw: '23566341078',
+  email: 'contact@alkheyrat.com',
+  address: 'Quartier Am-Rigo, Abéché, Tchad'
+};
+
+function getWhatsAppUrl(customMessage = '') {
+  const msg = customMessage || "Bonjour, je vous contacte depuis l'application Alkhaïrat Énergie (EAEPCG).";
+  return `https://wa.me/${COMPANY_CONFIG.phoneRaw}?text=${encodeURIComponent(msg)}`;
+}
+
+function openWhatsApp(customMessage = '') {
+  const url = getWhatsAppUrl(customMessage);
+  if (typeof window !== 'undefined') window.open(url, '_blank');
+}
+
+function callCompany() {
+  if (typeof window !== 'undefined') window.location.href = `tel:+${COMPANY_CONFIG.phoneRaw}`;
+}
+
+async function shareProduct(productName, productDescription, productUrl) {
+  const title = productName || 'Alkhaïrat Énergie';
+  const text = productDescription ? `${productName} — ${productDescription}` : productName;
+  const url = productUrl || (typeof window !== 'undefined' ? window.location.href : '');
+
+  const Share = (typeof window !== 'undefined') ? window.Capacitor?.Plugins?.Share : null;
+  if (Share) {
+    try {
+      await Share.share({
+        title,
+        text,
+        url,
+        dialogTitle: 'Partager ce produit'
+      });
+      return;
+    } catch(err) {
+      if (err && err.message !== 'Share canceled') console.warn('Share error:', err);
+      return;
+    }
+  }
+
+  if (typeof navigator !== 'undefined' && navigator.share) {
+    try {
+      await navigator.share({ title, text, url });
+      return;
+    } catch(err) { return; }
+  }
+
+  // Clipboard fallback
+  try {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      await navigator.clipboard.writeText(url);
+      if (typeof showModal === 'function') {
+        showModal('Lien copié !', 'Le lien a été copié dans votre presse-papier.', { cancelText: null });
+      } else {
+        alert('Lien copié dans le presse-papier !');
+      }
+    }
+  } catch(e) {
+    prompt('Copiez le lien :', url);
+  }
+}
+
+const CatalogCache = {
+  get(key) {
+    if (typeof localStorage === 'undefined') return null;
+    try {
+      const item = localStorage.getItem('catalog_cache_' + key);
+      if (!item) return null;
+      const parsed = JSON.parse(item);
+      if (Date.now() - (parsed.timestamp || 0) < 7 * 24 * 60 * 60 * 1000) {
+        return parsed.data;
+      }
+    } catch(e){}
+    return null;
+  },
+  set(key, data) {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      localStorage.setItem('catalog_cache_' + key, JSON.stringify({
+        timestamp: Date.now(),
+        data
+      }));
+    } catch(e){}
+  }
+};
+
+async function requestPushNotifications() {
+  if (typeof window === 'undefined') return;
+  const PushNotifications = window.Capacitor?.Plugins?.PushNotifications;
+  if (!PushNotifications) return;
+
+  try {
+    let permStatus = await PushNotifications.checkPermissions();
+    if (permStatus.receive === 'prompt' || permStatus.receive === 'prompt-with-rationale') {
+      permStatus = await PushNotifications.requestPermissions();
+    }
+    if (permStatus.receive !== 'granted') return;
+
+    await PushNotifications.register();
+
+    PushNotifications.addListener('registration', async (token) => {
+      try {
+        const platform = window.Capacitor.getPlatform() === 'ios' ? 'ios' : 'android';
+        await apiFetch('/push/register', {
+          method: 'POST',
+          body: JSON.stringify({ token: token.value, platform })
+        });
+      } catch(e){}
+    });
+  } catch(err) {
+    console.warn('[Push] Registration notice:', err.message);
+  }
+}
+
 function renderHeader(activePage){
   const links = [
     ['index.html',    'Accueil',           'Home',      'الرئيسية'],
@@ -20,7 +136,7 @@ function renderHeader(activePage){
       <div class="topbar-left">
         <a href="https://maps.google.com/?q=Abéché,+Tchad" target="_blank" class="topbar-info">📍 Abéché, Tchad</a>
         <span class="topbar-divider">|</span>
-        <a href="tel:+23566341078" class="topbar-info">📞 +235 66 34 10 78</a>
+        <a href="tel:+${COMPANY_CONFIG.phoneRaw}" class="topbar-info">📞 ${COMPANY_CONFIG.phone}</a>
       </div>
       <div class="topbar-right">
         <div class="lang-toggle" id="langToggle">
@@ -201,7 +317,7 @@ function renderNavActions(){
 }
 
 function renderFooter(){
-  const waUrl = 'https://wa.me/23566341078?text=Bonjour%2C%20je%20vous%20contacte%20depuis%20votre%20site%20web%20EAEPCG.%20Je%20souhaite%20avoir%20des%20informations.';
+  const waUrl = getWhatsAppUrl();
   document.getElementById('site-footer').innerHTML = `
   <a class="whatsapp-fab" href="${waUrl}" target="_blank" rel="noopener" aria-label="WhatsApp">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
@@ -569,10 +685,28 @@ function initMobileExperience() {
 }
 
 if (typeof window !== 'undefined') {
+  window.COMPANY_CONFIG = COMPANY_CONFIG;
+  window.getWhatsAppUrl = getWhatsAppUrl;
+  window.openWhatsApp = openWhatsApp;
+  window.callCompany = callCompany;
+  window.shareProduct = shareProduct;
+  window.CatalogCache = CatalogCache;
+  window.requestPushNotifications = requestPushNotifications;
   window.initMobileExperience = initMobileExperience;
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initMobileExperience);
   } else {
     initMobileExperience();
   }
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    COMPANY_CONFIG,
+    getWhatsAppUrl,
+    escapeHtml,
+    sanitizeImageSrc,
+    formatPrice,
+    CatalogCache
+  };
 }

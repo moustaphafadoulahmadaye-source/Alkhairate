@@ -168,6 +168,7 @@ app.use('/api/messages', messagesRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/push', require('./routes/push'));
 
 // Reinforced security headers for uploaded assets
 function setUploadSecurityHeaders(res) {

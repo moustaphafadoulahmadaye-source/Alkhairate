@@ -324,6 +324,12 @@
         msg.classList.add('show','ok'); 
         msg.textContent = {fr:'Demande envoyée avec succès ! Nous vous contacterons bientôt.',en:'Request sent successfully! We will contact you soon.',ar:'تم إرسال الطلب بنجاح! سنتواصل معك قريباً.'}[currentLang()]||'OK';
         if (items.length > 0) Cart.clear();
+
+        // Prompt for push notification permission on mobile after first order
+        if (typeof requestPushNotifications === 'function') {
+          setTimeout(requestPushNotifications, 1000);
+        }
+
         setTimeout(() => {
           if (!items.length && directService) window.location.href = 'services.html';
           else renderCart();

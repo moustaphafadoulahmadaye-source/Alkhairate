@@ -201,39 +201,71 @@
       return;
     }
 
+  function applyCatalogData(data, isOfflineCache = false) {
+    const container = document.getElementById('catalogContainer');
+    const { service, categories, items } = data;
+    
+    const nameFr = escapeHtml(service.name_fr), nameEn = escapeHtml(service.name_en);
+    document.getElementById('heroTitle').innerHTML = `<span data-fr>${nameFr}</span><span data-en>${nameEn}</span><span data-ar>${nameFr}</span>`;
+    document.getElementById('heroDesc').innerHTML = `<span data-fr>${escapeHtml(service.description_fr||'')}</span><span data-en>${escapeHtml(service.description_en||'')}</span><span data-ar>${escapeHtml(service.description_fr||'')}</span>`;
+    
+    let html = '';
+    if (isOfflineCache) {
+      html += `<div style="background:#fef3c7; border:1px solid #fde68a; color:#92400e; padding:10px 16px; border-radius:10px; margin-bottom:20px; font-size:13.5px; font-weight:600; display:flex; align-items:center; gap:8px;">
+        <span>📡</span>
+        <span>Mode hors ligne : affichage du catalogue en mémoire locale.</span>
+      </div>`;
+    }
+    html += `<div class="category-filter" id="catFilter">
+      <div class="filter-pill active" data-cat="all"><span data-fr>Tout</span><span data-en>All</span><span data-ar>الكل</span></div>
+    `;
+    categories.forEach(cat => {
+      html += `<div class="filter-pill" data-cat="${cat.id}"><span data-fr>${escapeHtml(cat.name_fr)}</span><span data-en>${escapeHtml(cat.name_en)}</span><span data-ar>${escapeHtml(cat.name_fr)}</span></div>`;
+    });
+    html += `</div><div class="item-grid" id="itemsGrid"></div>`;
+    
+    currentItems = items;
+    container.innerHTML = html;
+    renderGrid('all');
+    
+    // Filter click events
+    document.getElementById('catFilter').addEventListener('click', (e) => {
+      const pill = e.target.closest('.filter-pill');
+      if (!pill) return;
+      
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      
+      renderGrid(pill.dataset.cat);
+    });
+  }
+
+  function loadCatalog() {
+    const container = document.getElementById('catalogContainer');
+    const hash = window.location.hash.substring(1);
+    if (!hash) {
+      window.location.href = 'index.html';
+      return;
+    }
+
+    const cached = typeof CatalogCache !== 'undefined' ? CatalogCache.get('service_' + hash) : null;
+    if (typeof navigator !== 'undefined' && !navigator.onLine && cached) {
+      applyCatalogData(cached, true);
+      return;
+    }
+
     renderLoading(container);
     
     apiFetch('/services/' + encodeURIComponent(hash) + '/catalog').then(data => {
-      const { service, categories, items } = data;
-      
-      const nameFr = escapeHtml(service.name_fr), nameEn = escapeHtml(service.name_en);
-      document.getElementById('heroTitle').innerHTML = `<span data-fr>${nameFr}</span><span data-en>${nameEn}</span><span data-ar>${nameFr}</span>`;
-      document.getElementById('heroDesc').innerHTML = `<span data-fr>${escapeHtml(service.description_fr||'')}</span><span data-en>${escapeHtml(service.description_en||'')}</span><span data-ar>${escapeHtml(service.description_fr||'')}</span>`;
-      
-      let html = `<div class="category-filter" id="catFilter">
-        <div class="filter-pill active" data-cat="all"><span data-fr>Tout</span><span data-en>All</span><span data-ar>الكل</span></div>
-      `;
-      categories.forEach(cat => {
-        html += `<div class="filter-pill" data-cat="${cat.id}"><span data-fr>${escapeHtml(cat.name_fr)}</span><span data-en>${escapeHtml(cat.name_en)}</span><span data-ar>${escapeHtml(cat.name_fr)}</span></div>`;
-      });
-      html += `</div><div class="item-grid" id="itemsGrid"></div>`;
-      
-      currentItems = items;
-      container.innerHTML = html;
-      renderGrid('all');
-      
-      // Filter click events
-      document.getElementById('catFilter').addEventListener('click', (e) => {
-        const pill = e.target.closest('.filter-pill');
-        if (!pill) return;
-        
-        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
-        
-        renderGrid(pill.dataset.cat);
-      });
-      
+      if (typeof CatalogCache !== 'undefined') {
+        CatalogCache.set('service_' + hash, data);
+      }
+      applyCatalogData(data, false);
     }).catch(err => {
+      if (cached) {
+        applyCatalogData(cached, true);
+        return;
+      }
       if (err.status === 404) {
         container.innerHTML = `<p class="async-state error-state"><span data-fr>Service introuvable.</span><span data-en>Service not found.</span><span data-ar>الخدمة غير موجودة.</span></p>`;
         return;

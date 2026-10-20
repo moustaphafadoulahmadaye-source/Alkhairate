@@ -711,8 +711,63 @@
     });
   }
 
-  // Handle form avatar selection (preview only, saves on form submit)
+  // Helper for native avatar capture via @capacitor/camera
+  async function selectAndUploadAvatarNative() {
+    const Camera = window.Capacitor?.Plugins?.Camera;
+    if (!Camera) return null;
+    try {
+      const photo = await Camera.getPhoto({
+        quality: 85,
+        allowEditing: true,
+        resultType: 'base64',
+        source: 'PROMPT'
+      });
+      if (!photo || !photo.base64String) return null;
+      const mime = photo.format === 'png' ? 'image/png' : (photo.format === 'webp' ? 'image/webp' : 'image/jpeg');
+      const base64 = `data:${mime};base64,${photo.base64String}`;
+      const filename = `avatar_${Date.now()}.${photo.format || 'jpeg'}`;
+      
+      const res = await apiFetch('/upload/avatar', {
+        method: 'POST',
+        body: JSON.stringify({ imageBase64: base64, filename })
+      });
+      return { url: res.url, base64 };
+    } catch(err) {
+      if (err && err.message && !err.message.includes('User cancelled')) {
+        console.warn('Native camera error:', err);
+      }
+      return null;
+    }
+  }
+
+  // Handle form avatar selection (preview & staging)
   const avatarFile = document.getElementById('avatarFileInput');
+  const avatarUploadLabel = document.querySelector('label[for="avatarFileInput"]');
+  
+  if (avatarUploadLabel) {
+    avatarUploadLabel.addEventListener('click', async (e) => {
+      if (typeof isNativeApp === 'function' && isNativeApp() && window.Capacitor?.Plugins?.Camera) {
+        e.preventDefault();
+        const uploaded = await selectAndUploadAvatarNative();
+        if (uploaded && uploaded.url) {
+          document.getElementById('avatarUrlInput').value = uploaded.url;
+          const formPreview = document.getElementById('formAvatarPreview');
+          const safeBase64 = typeof sanitizeImageSrc === 'function' ? sanitizeImageSrc(uploaded.base64) : uploaded.base64;
+          if (formPreview && safeBase64) {
+            formPreview.style.backgroundImage = `url("${safeBase64}")`;
+            const fi = document.getElementById('formAvatarInitials');
+            if (fi) fi.style.display = 'none';
+          }
+          const headerAvatar = document.getElementById('dashAvatar');
+          if (headerAvatar) {
+            headerAvatar.style.background = `url("${safeBase64}") center/cover no-repeat`;
+            headerAvatar.textContent = '';
+          }
+        }
+      }
+    });
+  }
+
   if (avatarFile) {
     avatarFile.addEventListener('change', async (e) => {
       const file = e.target.files[0];
@@ -765,8 +820,28 @@
   // Handle sidebar avatar click and auto-upload
   const sidebarAvatar = document.getElementById('dashAvatar');
   const sidebarInput = document.getElementById('sidebarAvatarInput');
-  if (sidebarAvatar && sidebarInput) {
-    sidebarAvatar.addEventListener('click', () => sidebarInput.click());
+  if (sidebarAvatar) {
+    sidebarAvatar.addEventListener('click', async () => {
+      if (typeof isNativeApp === 'function' && isNativeApp() && window.Capacitor?.Plugins?.Camera) {
+        const uploaded = await selectAndUploadAvatarNative();
+        if (uploaded && uploaded.url) {
+          try {
+            const updateRes = await apiFetch('/auth/me', {
+              method: 'PATCH', body: JSON.stringify({ avatar_url: uploaded.url })
+            });
+            Auth.setSession(Auth.getToken(), updateRes.user);
+            updateAvatarDisplay(updateRes.user);
+            document.getElementById('avatarUrlInput').value = uploaded.url;
+          } catch(err) {
+            console.error(err);
+          }
+        }
+      } else if (sidebarInput) {
+        sidebarInput.click();
+      }
+    });
+  }
+  if (sidebarInput) {
     sidebarInput.addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
