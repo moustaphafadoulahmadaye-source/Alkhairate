@@ -14,6 +14,7 @@
     "restore": "npm --prefix backend run restore",
     "test-email": "npm --prefix backend run test-email",
     "prepare:mobile": "node scripts/prepare-mobile.js",
+    "assets:generate": "node scripts/prepare-assets-and-images.js",
     "build:mobile": "node scripts/prepare-mobile.js && npx cap copy",
     "cap:sync": "node scripts/prepare-mobile.js && npx cap sync"
   },
@@ -30,7 +31,9 @@
   },
   "devDependencies": {
     "@capacitor/android": "^8.5.3",
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.5.3",
-    "@capacitor/ios": "^8.5.3"
+    "@capacitor/ios": "^8.5.3",
+    "sharp": "^0.35.5"
   }
 }

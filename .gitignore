@@ -15,3 +15,4 @@ frontend/temp*
 www/
 *.keystore
 *.jks
+originals_backup/
