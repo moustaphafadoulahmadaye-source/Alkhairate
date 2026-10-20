@@ -545,11 +545,77 @@
           </div>
           <div id="profileMsg" class="form-msg" style="margin-top: 16px;"></div>
         </form>
+
+        <!-- DANGER ZONE: DELETE ACCOUNT -->
+        <div class="danger-zone-card" style="margin-top: 48px; padding: 24px; border: 1px solid #fecaca; background: #fff5f5; border-radius: 14px;">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+            <div style="max-width: 540px;">
+              <h3 style="margin: 0 0 8px 0; color: #991b1b; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20" style="color:#dc2626;"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <span data-fr>Zone de danger — Suppression du compte</span>
+                <span data-en>Danger Zone — Delete Account</span>
+                <span data-ar>منطقة الخطر — حذف الحساب</span>
+              </h3>
+              <p style="margin: 0; color: #7f1d1d; font-size: 13.5px; line-height: 1.55;">
+                <span data-fr>La suppression est irréversible. Vos données personnelles (nom, identifiants, avatar) seront définitivement effacées. Conformément aux obligations légales et comptables, l'historique de vos commandes passées sera conservé de façon anonymisée.</span>
+                <span data-en>Account deletion is permanent. Your personal data will be deleted. Order history will be retained anonymously for legal accounting records.</span>
+              </p>
+            </div>
+            <button id="btnOpenDeleteAccountModal" type="button" style="background: #dc2626; color: white; border: none; padding: 11px 20px; border-radius: 10px; font-weight: 700; font-size: 13.5px; cursor: pointer; transition: background 0.2s; align-self: center;">
+              <span data-fr>Supprimer mon compte</span>
+              <span data-en>Delete account</span>
+              <span data-ar>حذف حسابي</span>
+            </button>
+          </div>
+        </div>
       </div>
 
     </div>
   </div>
 </section>
+
+<!-- DELETE ACCOUNT CONFIRMATION MODAL -->
+<div id="deleteAccountModal" class="custom-modal-overlay" style="display:none;" aria-hidden="true">
+  <div class="custom-modal-card" role="dialog" aria-modal="true" aria-labelledby="delModalTitle" style="max-width: 500px;">
+    <h3 id="delModalTitle" class="custom-modal-title" style="color: #991b1b; display: flex; align-items: center; gap: 10px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24" style="color: #dc2626;"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      <span>Confirmer la suppression</span>
+    </h3>
+    <div class="custom-modal-body">
+      <p style="margin: 0 0 16px 0; font-size: 14px; color: #475569; line-height: 1.5;">
+        Êtes-vous absolument certain(e) de vouloir supprimer votre compte ? Cette action est <strong>immédiate et irréversible</strong>.
+      </p>
+      
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 13px; color: #334155;">
+        <ul style="margin: 0; padding-left: 18px; line-height: 1.5;">
+          <li>Vos informations personnelles et votre avatar seront supprimés.</li>
+          <li>Vos sessions actives seront révoquées et vous serez déconnecté(e).</li>
+          <li>Les commandes passées seront conservées anonymement pour obligations comptables.</li>
+        </ul>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label for="deleteCurrentPassword" style="display: block; font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 6px;">
+          Mot de passe actuel <span style="color: #dc2626;">*</span>
+        </label>
+        <input type="password" id="deleteCurrentPassword" placeholder="Entrez votre mot de passe pour confirmer" style="width: 100%; box-sizing: border-box; padding: 11px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;" autocomplete="current-password">
+      </div>
+
+      <div style="margin-bottom: 8px;">
+        <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #1e293b; cursor: pointer; line-height: 1.4;">
+          <input type="checkbox" id="confirmDeleteCheckbox" style="margin-top: 3px; cursor: pointer;">
+          <span>Je confirme vouloir supprimer définitivement mon compte et mes données personnelles.</span>
+        </label>
+      </div>
+
+      <div id="deleteModalError" class="form-msg err" style="display: none; margin-top: 12px; padding: 10px; border-radius: 8px; font-size: 13px;"></div>
+    </div>
+    <div class="custom-modal-actions">
+      <button type="button" id="btnCancelDeleteModal" class="custom-modal-btn cancel">Annuler</button>
+      <button type="button" id="btnConfirmDeleteAccount" class="custom-modal-btn danger" disabled style="opacity: 0.5; cursor: not-allowed;">Supprimer définitivement</button>
+    </div>
+  </div>
+</div>
 </main>
 <div id="site-footer"></div>
 <script src="assets/js/api.js?v=2.2"></script>
@@ -779,6 +845,115 @@
       msg.textContent = err.data?.error || localizedText('loadError');
     }
   });
+
+  // Delete account modal logic
+  const openDeleteModalBtn = document.getElementById('btnOpenDeleteAccountModal');
+  const deleteModal = document.getElementById('deleteAccountModal');
+  const cancelDeleteBtn = document.getElementById('btnCancelDeleteModal');
+  const confirmDeleteBtn = document.getElementById('btnConfirmDeleteAccount');
+  const deletePwdInput = document.getElementById('deleteCurrentPassword');
+  const confirmCheckbox = document.getElementById('confirmDeleteCheckbox');
+  const deleteModalError = document.getElementById('deleteModalError');
+
+  function updateDeleteButtonState() {
+    if (confirmDeleteBtn) {
+      const canSubmit = confirmCheckbox && confirmCheckbox.checked && deletePwdInput && deletePwdInput.value.trim().length > 0;
+      confirmDeleteBtn.disabled = !canSubmit;
+      confirmDeleteBtn.style.opacity = canSubmit ? '1' : '0.5';
+      confirmDeleteBtn.style.cursor = canSubmit ? 'pointer' : 'not-allowed';
+    }
+  }
+
+  if (openDeleteModalBtn && deleteModal) {
+    openDeleteModalBtn.addEventListener('click', () => {
+      deleteModal.style.display = 'flex';
+      deleteModal.setAttribute('aria-hidden', 'false');
+      setTimeout(() => deleteModal.classList.add('show'), 10);
+      if (deletePwdInput) deletePwdInput.value = '';
+      if (confirmCheckbox) confirmCheckbox.checked = false;
+      if (deleteModalError) {
+        deleteModalError.style.display = 'none';
+        deleteModalError.textContent = '';
+      }
+      updateDeleteButtonState();
+      if (deletePwdInput) deletePwdInput.focus();
+    });
+  }
+
+  function closeDeleteModal() {
+    if (deleteModal) {
+      deleteModal.classList.remove('show');
+      deleteModal.setAttribute('aria-hidden', 'true');
+      setTimeout(() => {
+        deleteModal.style.display = 'none';
+        if (deletePwdInput) deletePwdInput.value = '';
+        if (confirmCheckbox) confirmCheckbox.checked = false;
+        if (deleteModalError) deleteModalError.style.display = 'none';
+        updateDeleteButtonState();
+      }, 300);
+    }
+  }
+
+  if (cancelDeleteBtn) {
+    cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+  }
+
+  if (deletePwdInput) {
+    deletePwdInput.addEventListener('input', updateDeleteButtonState);
+  }
+  if (confirmCheckbox) {
+    confirmCheckbox.addEventListener('change', updateDeleteButtonState);
+  }
+
+  if (confirmDeleteBtn) {
+    confirmDeleteBtn.addEventListener('click', async () => {
+      const password = (deletePwdInput ? deletePwdInput.value : '').trim();
+      if (!password) {
+        if (deleteModalError) {
+          deleteModalError.className = 'form-msg err';
+          deleteModalError.style.display = 'block';
+          deleteModalError.textContent = 'Veuillez saisir votre mot de passe actuel.';
+        }
+        return;
+      }
+      if (!confirmCheckbox || !confirmCheckbox.checked) {
+        if (deleteModalError) {
+          deleteModalError.className = 'form-msg err';
+          deleteModalError.style.display = 'block';
+          deleteModalError.textContent = 'Veuillez cocher la case de confirmation.';
+        }
+        return;
+      }
+
+      confirmDeleteBtn.disabled = true;
+      confirmDeleteBtn.textContent = 'Suppression en cours...';
+
+      try {
+        const res = await apiFetch('/auth/me', {
+          method: 'DELETE',
+          body: JSON.stringify({ current_password: password })
+        });
+        if (deleteModalError) {
+          deleteModalError.className = 'form-msg ok';
+          deleteModalError.style.display = 'block';
+          deleteModalError.textContent = res.message || 'Votre compte a été supprimé. Redirection...';
+        }
+        setTimeout(() => {
+          Auth.clear();
+          window.location.href = 'index.html';
+        }, 1200);
+      } catch (err) {
+        confirmDeleteBtn.disabled = false;
+        confirmDeleteBtn.textContent = 'Supprimer définitivement';
+        if (deleteModalError) {
+          deleteModalError.className = 'form-msg err';
+          deleteModalError.style.display = 'block';
+          deleteModalError.textContent = err.data?.error || err.message || 'Erreur lors de la suppression.';
+        }
+        updateDeleteButtonState();
+      }
+    });
+  }
 </script>
 </body>
 </html>

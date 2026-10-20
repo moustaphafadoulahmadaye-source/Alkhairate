@@ -2,10 +2,13 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const path = require('path');
+const fs = require('fs');
 const db = require('../db');
 const { requireAuth, signToken, JWT_SECRET } = require('../middleware/auth');
 const { sanitizeText } = require('../utils/sanitize');
 const { notify, sendWelcome, sendAdminNotification, sendPasswordReset } = require('../services/email');
+const { AVATARS_DIR } = require('../utils/storage');
 
 const router = express.Router();
 
@@ -235,6 +238,93 @@ router.post('/change-password', requireAuth, (req, res) => {
     message: 'Votre mot de passe a été modifié avec succès !',
     token,
     user: updatedUser
+  });
+});
+
+// Delete account (authenticated users)
+router.delete('/me', requireAuth, (req, res) => {
+  const { current_password } = req.body || {};
+
+  if (!current_password || typeof current_password !== 'string') {
+    return res.status(400).json({ error: 'Le mot de passe actuel est requis pour confirmer la suppression de votre compte.' });
+  }
+
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
+  if (!user) {
+    return res.status(404).json({ error: 'Utilisateur introuvable.' });
+  }
+
+  if (!bcrypt.compareSync(current_password, user.password_hash)) {
+    return res.status(400).json({ error: 'Le mot de passe actuel est incorrect.' });
+  }
+
+  // Prevent primary admin or sole admin from deleting their account
+  const configuredAdminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+  if (user.role === 'admin' && configuredAdminEmail && user.email.toLowerCase() === configuredAdminEmail) {
+    return res.status(403).json({ error: 'Le compte administrateur principal ne peut pas être supprimé.' });
+  }
+  if (user.role === 'admin') {
+    const adminCount = db.prepare("SELECT COUNT(*) AS c FROM users WHERE role = 'admin'").get().c;
+    if (adminCount <= 1) {
+      return res.status(403).json({ error: 'Impossible de supprimer le dernier compte administrateur restant.' });
+    }
+  }
+
+  // Anonymize/detach orders & messages to retain accounting records legally
+  const deleteTransaction = db.transaction(() => {
+    // 1. Detach and preserve orders for commercial/accounting retention (mandatory 10-year legal record)
+    db.prepare(`
+      UPDATE orders SET
+        guest_name = COALESCE(NULLIF(guest_name, ''), ?),
+        guest_email = COALESCE(NULLIF(guest_email, ''), ?),
+        guest_phone = COALESCE(NULLIF(guest_phone, ''), ?),
+        user_id = NULL
+      WHERE user_id = ?
+    `).run(user.full_name, user.email, user.phone, user.id);
+
+    // 2. Detach messages
+    db.prepare(`
+      UPDATE messages SET
+        guest_name = COALESCE(NULLIF(guest_name, ''), ?),
+        guest_email = COALESCE(NULLIF(guest_email, ''), ?),
+        guest_phone = COALESCE(NULLIF(guest_phone, ''), ?),
+        user_id = NULL
+      WHERE user_id = ?
+    `).run(user.full_name, user.email, user.phone, user.id);
+
+    // 3. Purge sessions and password reset tokens
+    db.prepare('DELETE FROM sessions_log WHERE user_id = ?').run(user.id);
+    db.prepare('DELETE FROM password_reset_tokens WHERE user_id = ?').run(user.id);
+
+    // 4. Invalidate / revoke token
+    if (req.authPayload?.jti) {
+      const exp = Number.isInteger(Number(req.authPayload.exp)) ? Number(req.authPayload.exp) : Math.floor(Date.now() / 1000) + 86400;
+      db.prepare('INSERT OR REPLACE INTO revoked_tokens (jti, expires_at) VALUES (?, ?)').run(req.authPayload.jti, exp);
+    }
+
+    // 5. Delete user from database
+    db.prepare('DELETE FROM users WHERE id = ?').run(user.id);
+  });
+  deleteTransaction();
+
+  // 6. Delete avatar file from disk if stored locally
+  if (user.avatar_url && typeof user.avatar_url === 'string') {
+    try {
+      const filename = path.basename(user.avatar_url);
+      if (filename && filename !== '.' && filename !== '..') {
+        const filePath = path.join(AVATARS_DIR, filename);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+    } catch (e) {
+      // Ignore avatar cleanup error
+    }
+  }
+
+  res.json({
+    ok: true,
+    message: 'Votre compte et vos données personnelles ont été supprimés avec succès.'
   });
 });
 
