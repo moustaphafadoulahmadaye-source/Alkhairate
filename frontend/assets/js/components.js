@@ -341,6 +341,8 @@ function renderFooter(){
           <li><a href="services.html"><span data-fr>Nos Services</span><span data-en>Our Services</span><span data-ar>خدماتنا</span></a></li>
           <li><a href="products.html"><span data-fr>Commerce Général</span><span data-en>General Trading</span><span data-ar>التجارة العامة</span></a></li>
           <li><a href="about.html"><span data-fr>À propos</span><span data-en>About us</span><span data-ar>من نحن</span></a></li>
+          <li><a href="privacy.html"><span data-fr>Confidentialité</span><span data-en>Privacy</span><span data-ar>الخصوصية</span></a></li>
+          <li><a href="terms.html"><span data-fr>Conditions</span><span data-en>Terms</span><span data-ar>الشروط</span></a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -350,10 +352,17 @@ function renderFooter(){
         <p>📧 <strong>Email:</strong><br> <a href="mailto:contact@alkhairat-energie.com" style="color:#b9c3e0; text-decoration:none;">contact@alkhairat-energie.com</a></p>
       </div>
     </div>
-    <div class="footer-bottom">
-      <span data-fr>© 2026 Établissement Alkhaïrat Énergie (EAEPCG). Tous droits réservés.</span>
-      <span data-en>© 2026 Etablissement Alkhaïrat Énergie (EAEPCG). All rights reserved.</span>
-      <span data-ar>© 2026 مؤسسة الخيرات للطاقة (EAEPCG). جميع الحقوق محفوظة.</span>
+    <div class="footer-bottom" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div>
+        <span data-fr>© 2026 Établissement Alkhaïrat Énergie (EAEPCG). Tous droits réservés.</span>
+        <span data-en>© 2026 Etablissement Alkhaïrat Énergie (EAEPCG). All rights reserved.</span>
+        <span data-ar>© 2026 مؤسسة الخيرات للطاقة (EAEPCG). جميع الحقوق محفوظة.</span>
+      </div>
+      <div style="font-size:13px; opacity:0.85;">
+        <a href="privacy.html" style="color:inherit; text-decoration:none; margin-right:12px;"><span data-fr>Confidentialité</span><span data-en>Privacy</span><span data-ar>الخصوصية</span></a>
+        <span>•</span>
+        <a href="terms.html" style="color:inherit; text-decoration:none; margin-left:12px;"><span data-fr>Conditions d'utilisation</span><span data-en>Terms of Service</span><span data-ar>الشروط</span></a>
+      </div>
     </div>
   </footer>`;
 }

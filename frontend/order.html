@@ -240,6 +240,15 @@
         <label><span data-fr>Notes / Description de la demande (optionnel)</span><span data-en>Notes / Request description (optional)</span><span data-ar>ملاحظات (اختياري)</span></label>
         <textarea name="notes" placeholder="${isServiceRequest ? `Décrivez votre besoin d'installation en détail...` : `Détails supplémentaires...`}" rows="4" style="width:100%; border:1px solid var(--line); border-radius:8px; padding:12px; font-family:inherit;"></textarea>
       </div>
+      <div class="payment-method-notice" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px; margin-top:16px; margin-bottom:16px; font-size:13.5px; color:#334155; display:flex; align-items:flex-start; gap:10px;">
+        <span style="font-size:20px; line-height:1;">ℹ️</span>
+        <div>
+          <strong style="color:#0f172a;"><span data-fr>Paiement à la livraison / au retrait</span><span data-en>Payment upon delivery or pickup</span><span data-ar>الدفع عند الاستلام</span></strong><br>
+          <span data-fr>Cette application propose des biens d'équipement et services physiques. Aucun paiement électronique direct n'est effectué dans l'application. Le règlement s'effectue en espèces ou virement directement à la livraison ou au comptoir de l'établissement après vérification de votre commande.</span>
+          <span data-en>This app provides physical goods and services. No electronic payment is charged in the app. Payment is made directly upon delivery or at the store counter upon inspection.</span>
+          <span data-ar>يقدم هذا التطبيق معدات وخدمات مادية. لا يتم خصم أي دفع إلكتروني داخل التطبيق. يتم الدفع نقداً أو بالتحويل مباشرة عند الاستلام.</span>
+        </div>
+      </div>
       <button type="submit" class="btn btn-primary btn-block" style="margin-top:8px;" id="submitOrderBtn">
         <span data-fr>✅ Confirmer la commande</span><span data-en>✅ Confirm order</span><span data-ar>✅ تأكيد الطلب</span>
       </button>
