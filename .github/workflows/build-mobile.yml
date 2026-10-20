@@ -1,0 +1,155 @@
+name: Build Mobile (Android & iOS)
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Type de build'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - both
+          - android
+          - ios
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - 'capacitor.config.ts'
+      - 'scripts/prepare-mobile.js'
+      - '.github/workflows/build-mobile.yml'
+
+jobs:
+  # =========================================================
+  # 1. BUILD ANDROID (AAB pour Google Play Store)
+  # =========================================================
+  build-android:
+    if: github.event.inputs.build_type == 'both' || github.event.inputs.build_type == 'android' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prepare Web Assets for Mobile
+        run: npm run prepare:mobile
+
+      - name: Sync Capacitor Android
+        run: npx cap sync android
+
+      - name: Build Android App Bundle (Release AAB)
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          cd android
+          chmod +x gradlew
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "Signing keystore provided via secrets..."
+            echo "$KEYSTORE_BASE64" | base64 --decode > /tmp/release.jks
+            export KEYSTORE_PATH="/tmp/release.jks"
+            ./gradlew bundleRelease
+          else
+            echo "Building unsigned/debug AAB (configure secrets for signed release)..."
+            ./gradlew bundleRelease || ./gradlew assembleDebug
+          fi
+
+      - name: Upload Android Bundle Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: alkheyrat-android-bundle
+          path: |
+            android/app/build/outputs/bundle/release/*.aab
+            android/app/build/outputs/apk/debug/*.apk
+          retention-days: 14
+
+  # =========================================================
+  # 2. BUILD iOS SANS MAC (macOS Cloud Runner pour App Store / TestFlight)
+  # =========================================================
+  build-ios:
+    if: github.event.inputs.build_type == 'both' || github.event.inputs.build_type == 'ios' || github.event_name == 'push'
+    runs-on: macos-14
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Select Xcode 15/16
+        run: sudo xcode-select -switch /Applications/Xcode_15.4.app || sudo xcode-select -switch /Applications/Xcode.app
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Prepare Web Assets for Mobile
+        run: npm run prepare:mobile
+
+      - name: Sync Capacitor iOS
+        run: npx cap sync ios
+
+      - name: Setup Apple Certificate & Profile (If configured)
+        if: env.BUILD_CERTIFICATE_BASE64 != ''
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD || 'temporary123' }}
+        run: |
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          echo "$BUILD_CERTIFICATE_BASE64" | base64 --decode > $CERTIFICATE_PATH
+          echo "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode > $PP_PATH
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: Build and Archive iOS Project
+        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath $RUNNER_TEMP/App.xcarchive \
+            CODE_SIGNING_ALLOWED=NO \
+            archive
+
+      - name: Upload iOS Archive Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: alkheyrat-ios-archive
+          path: ${{ runner.temp }}/App.xcarchive
+          retention-days: 14

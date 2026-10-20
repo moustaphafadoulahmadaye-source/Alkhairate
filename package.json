@@ -18,7 +18,8 @@
     "build:mobile": "node scripts/prepare-mobile.js && npx cap copy",
     "cap:sync": "node scripts/prepare-mobile.js && npx cap sync",
     "android:sync": "node scripts/prepare-mobile.js && npx cap sync android",
-    "android:open": "npx cap open android"
+    "android:open": "npx cap open android",
+    "ios:sync": "node scripts/prepare-mobile.js && npx cap sync ios"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.2",
