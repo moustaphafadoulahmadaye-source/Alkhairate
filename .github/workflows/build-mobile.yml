@@ -108,9 +108,9 @@ jobs:
           retention-days: 30
 
   # =========================================================
-  # 2. BUILD iOS SANS MAC (macOS Cloud Runner pour App Store / TestFlight)
+  # 2. COMPILATION iOS SANS SIGNATURE (Vérification syntaxe & plugins)
   # =========================================================
-  build-ios:
+  compile-ios-unsigned:
     if: github.event.inputs.build_type == 'both' || github.event.inputs.build_type == 'ios' || github.event_name == 'push'
     runs-on: macos-14
     steps:
@@ -123,8 +123,8 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: Select Xcode 15/16
-        run: sudo xcode-select -switch /Applications/Xcode_15.4.app || sudo xcode-select -switch /Applications/Xcode.app
+      - name: Select Xcode 16 / 15
+        run: sudo xcode-select -switch /Applications/Xcode_16.0.app || sudo xcode-select -switch /Applications/Xcode_15.4.app || sudo xcode-select -switch /Applications/Xcode.app
 
       - name: Install Node dependencies
         run: npm ci
@@ -135,33 +135,117 @@ jobs:
       - name: Sync Capacitor iOS
         run: npx cap sync ios
 
-      - name: Setup Apple Certificate & Profile (If configured)
-        if: env.BUILD_CERTIFICATE_BASE64 != ''
-        env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD || 'temporary123' }}
+      - name: Test iOS Compilation (Unsigned Build Check)
         run: |
-          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
 
-          echo "$BUILD_CERTIFICATE_BASE64" | base64 --decode > $CERTIFICATE_PATH
-          echo "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode > $PP_PATH
+  # =========================================================
+  # 3. BUILD iOS SIGNÉ & DÉPLOIEMENT TESTFLIGHT (App Store Connect)
+  # =========================================================
+  deploy-ios-testflight:
+    if: github.event.inputs.build_type == 'both' || github.event.inputs.build_type == 'ios' || github.event_name == 'push'
+    runs-on: macos-14
+    needs: [compile-ios-unsigned]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Select Xcode 16 / 15
+        run: sudo xcode-select -switch /Applications/Xcode_16.0.app || sudo xcode-select -switch /Applications/Xcode_15.4.app || sudo xcode-select -switch /Applications/Xcode.app
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Prepare Web Assets for Mobile
+        run: npm run prepare:mobile
+
+      - name: Sync Capacitor iOS
+        run: npx cap sync ios
+
+      - name: Validate Apple Signing Secrets
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_PROVISION_PROFILE_BASE64: ${{ secrets.APPLE_PROVISION_PROFILE_BASE64 }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+        run: |
+          if [ -z "$APPLE_CERTIFICATE_BASE64" ] || [ -z "$APPLE_CERTIFICATE_PASSWORD" ] || [ -z "$APPLE_PROVISION_PROFILE_BASE64" ] || [ -z "$APP_STORE_CONNECT_KEY_ID" ] || [ -z "$APP_STORE_CONNECT_ISSUER_ID" ] || [ -z "$APP_STORE_CONNECT_PRIVATE_KEY" ]; then
+            echo "::error::Secrets de signature Apple ou clés App Store Connect manquants. Requis : APPLE_CERTIFICATE_BASE64, APPLE_CERTIFICATE_PASSWORD, APPLE_PROVISION_PROFILE_BASE64, APP_STORE_CONNECT_KEY_ID, APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_PRIVATE_KEY."
+            exit 1
+          fi
+
+      - name: Install Apple Distribution Certificate & Provisioning Profile
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_PROVISION_PROFILE_BASE64: ${{ secrets.APPLE_PROVISION_PROFILE_BASE64 }}
+        run: |
+          KEYCHAIN_PATH=$RUNNER_TEMP/build.keychain
+          KEYCHAIN_PASSWORD=$(uuidgen)
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
+          echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> $GITHUB_ENV
+
+          # Créer le trousseau temporaire
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
-          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          # Importer le certificat P12
+          CERT_PATH=$RUNNER_TEMP/certificate.p12
+          echo "$APPLE_CERTIFICATE_BASE64" | base64 --decode > $CERT_PATH
+          security import $CERT_PATH -P "$APPLE_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security list-keychain -d user -s $KEYCHAIN_PATH
+          security list-keychains -d user -s $KEYCHAIN_PATH $(security list-keychains -d user | tr -d '"')
 
+          # Installer le profil de provisioning
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
+          PP_PATH=$RUNNER_TEMP/profile.mobileprovision
+          echo "$APPLE_PROVISION_PROFILE_BASE64" | base64 --decode > $PP_PATH
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(security cms -D -i $PP_PATH))
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
+          echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
 
-      - name: Build and Archive iOS Project
+          # Générer ExportOptions.plist
+          cat <<EOF > $RUNNER_TEMP/ExportOptions.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>app-store</string>
+              <key>signingStyle</key>
+              <string>manual</string>
+              <key>provisioningProfiles</key>
+              <dict>
+                  <key>com.alkhairat.energie</key>
+                  <string>${PROFILE_UUID}</string>
+              </dict>
+              <key>destination</key>
+              <string>export</string>
+              <key>stripSwiftSymbols</key>
+              <true/>
+              <key>compileBitcode</key>
+              <false/>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Archive and Export Signed IPA
         run: |
           cd ios/App
           xcodebuild -workspace App.xcworkspace \
@@ -169,12 +253,51 @@ jobs:
             -configuration Release \
             -destination 'generic/platform=iOS' \
             -archivePath $RUNNER_TEMP/App.xcarchive \
-            CODE_SIGNING_ALLOWED=NO \
             archive
 
-      - name: Upload iOS Archive Artifact
+          xcodebuild -exportArchive \
+            -archivePath $RUNNER_TEMP/App.xcarchive \
+            -exportPath $RUNNER_TEMP/export \
+            -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist
+
+          IPA_PATH=$(ls $RUNNER_TEMP/export/*.ipa 2>/dev/null | head -n 1)
+          if [ -z "$IPA_PATH" ] || [ ! -s "$IPA_PATH" ]; then
+            echo "::error::Aucun fichier IPA signé n'a été produit."
+            exit 1
+          fi
+          echo "IPA_PATH=$IPA_PATH" >> $GITHUB_ENV
+          echo "✅ IPA produit avec succès : $IPA_PATH"
+
+      - name: Upload IPA to TestFlight
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
+
+          echo "Envoi vers TestFlight via App Store Connect API..."
+          xcrun altool --upload-app \
+            --type ios \
+            --file "$IPA_PATH" \
+            --apiKey "$APP_STORE_CONNECT_KEY_ID" \
+            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
+
+          rm -rf ~/.appstoreconnect/private_keys
+
+      - name: Upload Signed iOS IPA Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: alkheyrat-ios-archive
-          path: ${{ runner.temp }}/App.xcarchive
-          retention-days: 14
+          name: alkheyrat-ios-signed-ipa
+          path: ${{ env.IPA_PATH }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Clean Up Keychain
+        if: always()
+        run: |
+          if [ -n "$KEYCHAIN_PATH" ] && [ -f "$KEYCHAIN_PATH" ]; then
+            security delete-keychain $KEYCHAIN_PATH || true
+          fi
+          rm -rf ~/.appstoreconnect/private_keys || true
