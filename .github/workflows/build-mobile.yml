@@ -65,33 +65,47 @@ jobs:
       - name: Sync Capacitor Android
         run: npx cap sync android
 
-      - name: Build Android App Bundle (Release AAB)
+      - name: Build Signed Android App Bundle (Release AAB)
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          cd android
-          chmod +x gradlew
-          if [ -n "$KEYSTORE_BASE64" ]; then
-            echo "Signing keystore provided via secrets..."
-            echo "$KEYSTORE_BASE64" | base64 --decode > /tmp/release.jks
-            export KEYSTORE_PATH="/tmp/release.jks"
-            ./gradlew bundleRelease
-          else
-            echo "Building unsigned/debug AAB (configure secrets for signed release)..."
-            ./gradlew bundleRelease || ./gradlew assembleDebug
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
+            echo "::error::Secrets de signature Android manquants. Veuillez configurer ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS et ANDROID_KEY_PASSWORD dans les GitHub Secrets du dépôt."
+            exit 1
           fi
 
-      - name: Upload Android Bundle Artifact
+          echo "Décodage sécurisé du keystore de signature..."
+          echo "$KEYSTORE_BASE64" | base64 --decode > /tmp/release.jks
+          if [ ! -s /tmp/release.jks ]; then
+            echo "::error::Le fichier keystore décodé est vide ou corrompu."
+            exit 1
+          fi
+
+          cd android
+          chmod +x gradlew
+          export KEYSTORE_PATH="/tmp/release.jks"
+          ./gradlew bundleRelease --stacktrace
+
+          # Nettoyage immédiat du fichier keystore éphémère
+          rm -f /tmp/release.jks
+
+          AAB_FILE=$(ls app/build/outputs/bundle/release/*.aab 2>/dev/null | head -n 1)
+          if [ -z "$AAB_FILE" ] || [ ! -s "$AAB_FILE" ]; then
+            echo "::error::Échec : Aucun bundle AAB release signé n'a été généré."
+            exit 1
+          fi
+          echo "✅ Bundle AAB release signé généré avec succès : $AAB_FILE"
+
+      - name: Upload Signed Android Release Bundle
         uses: actions/upload-artifact@v4
         with:
-          name: alkheyrat-android-bundle
-          path: |
-            android/app/build/outputs/bundle/release/*.aab
-            android/app/build/outputs/apk/debug/*.apk
-          retention-days: 14
+          name: alkheyrat-android-release-signed-aab
+          path: android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+          retention-days: 30
 
   # =========================================================
   # 2. BUILD iOS SANS MAC (macOS Cloud Runner pour App Store / TestFlight)
