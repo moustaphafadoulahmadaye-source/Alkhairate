@@ -101,6 +101,7 @@ async function requestPushNotifications() {
     PushNotifications.addListener('registration', async (token) => {
       try {
         const platform = window.Capacitor.getPlatform() === 'ios' ? 'ios' : 'android';
+        try { localStorage.setItem('eaepcg_device_token', token.value); } catch(e){}
         await apiFetch('/push/register', {
           method: 'POST',
           body: JSON.stringify({ token: token.value, platform })

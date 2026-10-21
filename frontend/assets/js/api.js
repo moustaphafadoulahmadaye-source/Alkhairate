@@ -110,6 +110,17 @@ const Auth = {
   },
 
   clear() {
+    // Detach push notification token on server if registered
+    const deviceToken = typeof localStorage !== 'undefined' ? localStorage.getItem('eaepcg_device_token') : null;
+    if (deviceToken) {
+      try {
+        apiFetch('/push/deregister', {
+          method: 'POST',
+          body: JSON.stringify({ token: deviceToken })
+        }).catch(() => {});
+      } catch(e){}
+    }
+
     _cachedToken = null;
     _cachedUser = null;
     try {

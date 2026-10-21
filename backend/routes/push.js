@@ -35,4 +35,29 @@ router.post('/register', optionalAuth, (req, res) => {
   }
 });
 
+/**
+ * Detach or remove push token on logout
+ */
+router.post('/deregister', optionalAuth, (req, res) => {
+  const { token } = req.body || {};
+
+  if (!token || typeof token !== 'string') {
+    return res.status(400).json({ error: 'Jeton requis' });
+  }
+
+  const safeToken = token.trim();
+
+  try {
+    if (req.user) {
+      db.prepare('UPDATE device_tokens SET user_id = NULL, updated_at = datetime("now") WHERE token = ? AND user_id = ?').run(safeToken, req.user.id);
+    } else {
+      db.prepare('UPDATE device_tokens SET user_id = NULL, updated_at = datetime("now") WHERE token = ?').run(safeToken);
+    }
+    res.json({ ok: true, deregistered: true });
+  } catch(err) {
+    console.error('[Push Router] Erreur désenregistrement jeton:', err.message);
+    res.status(500).json({ error: 'Erreur lors du désenregistrement du jeton' });
+  }
+});
+
 module.exports = router;

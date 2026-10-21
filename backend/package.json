@@ -11,6 +11,7 @@
     "backup": "node scripts/backup.js",
     "restore": "node scripts/restore.js",
     "test-email": "node scripts/testEmail.js",
+    "test-push": "node scripts/testPush.js",
     "db:init": "node seedAdmin.js"
   },
   "dependencies": {
