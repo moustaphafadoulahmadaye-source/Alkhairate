@@ -56,3 +56,37 @@ test('Part 3: Restore script lists available backups and verifies integrity', ()
   assert.ok(fs.existsSync(latestBackupFolder), 'Latest backup folder must exist');
   assert.ok(fs.existsSync(path.join(latestBackupFolder, 'eaepcg.db')), 'Latest backup must contain eaepcg.db');
 });
+
+test('Part 3: exportBackupArchive creates compressed archive with sha256 checksum', () => {
+  const { exportBackupArchive } = require('../scripts/exportArchive');
+  const result = exportBackupArchive();
+
+  assert.ok(fs.existsSync(result.archivePath), 'Archive .tar.gz must exist');
+  assert.ok(fs.existsSync(result.sha256Path), 'SHA256 file must exist');
+  assert.ok(result.sizeBytes > 0, 'Archive size must be > 0');
+  assert.equal(result.sha256.length, 64, 'SHA256 must be 64 characters');
+
+  // Verify sha256 file content
+  const hashFileContent = fs.readFileSync(result.sha256Path, 'utf8');
+  assert.ok(hashFileContent.includes(result.sha256), 'Hash file must contain calculated sha256');
+
+  // Clean up test archive
+  try {
+    fs.unlinkSync(result.archivePath);
+    fs.unlinkSync(result.sha256Path);
+  } catch(e) {}
+});
+
+test('Part 3: restoreBackup successfully executes and restores database and assets', () => {
+  const available = listAvailableBackups();
+  assert.ok(available.length > 0, 'Must have at least one backup to test restore');
+
+  const success = restoreBackup(available[0]);
+  assert.equal(success, true, 'restoreBackup must return true');
+
+  // Verify restored database passes integrity check
+  const db = new Database(DB_PATH);
+  const integrity = db.prepare('PRAGMA integrity_check').get();
+  db.close();
+  assert.equal(integrity.integrity_check, 'ok', 'Restored database must be intact and valid');
+});

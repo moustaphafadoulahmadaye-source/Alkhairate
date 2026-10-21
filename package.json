@@ -16,6 +16,7 @@
     "reset-admin-password": "npm --prefix backend run reset-admin-password",
     "backup": "npm --prefix backend run backup",
     "restore": "npm --prefix backend run restore",
+    "export-archive": "npm --prefix backend run export-archive",
     "test-email": "npm --prefix backend run test-email",
     "prepare:mobile": "node scripts/prepare-mobile.js",
     "assets:generate": "node scripts/prepare-assets-and-images.js",
