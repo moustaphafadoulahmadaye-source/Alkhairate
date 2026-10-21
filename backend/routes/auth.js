@@ -292,7 +292,10 @@ router.delete('/me', requireAuth, (req, res) => {
       WHERE user_id = ?
     `).run(user.full_name, user.email, user.phone, user.id);
 
-    // 3. Purge sessions and password reset tokens
+    // 3. Purge sessions, push tokens, and password reset tokens
+    try {
+      db.prepare('DELETE FROM device_tokens WHERE user_id = ?').run(user.id);
+    } catch(e) {}
     db.prepare('DELETE FROM sessions_log WHERE user_id = ?').run(user.id);
     db.prepare('DELETE FROM password_reset_tokens WHERE user_id = ?').run(user.id);
 

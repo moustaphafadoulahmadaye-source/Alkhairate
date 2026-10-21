@@ -1,6 +1,6 @@
 # Fiches des Stores (Google Play & Apple App Store) — Alkhaïrat Énergie
 
-Ce document contient l'ensemble des textes, descriptions, catégories, réponses aux formulaires de confidentialité et spécifications graphiques pour la publication de l'application sur **Google Play** et l'**App Store**.
+Ce document contient l'ensemble des textes, descriptions, catégories, réponses détaillées aux formulaires de confidentialité, identifiants pour les équipes d'examen (Apple/Google Review) et spécifications graphiques officielles pour la publication de l'application sur **Google Play** et l'**App Store**.
 
 ---
 
@@ -12,7 +12,7 @@ Ce document contient l'ensemble des textes, descriptions, catégories, réponses
 - **Pays / Région principale :** Tchad (Afrique Centrale)
 - **Langue principale :** Français (FR)
 - **Langues secondaires :** Anglais (EN), Arabe (AR)
-- **Catégorie principale Google Play :** Entreprise (Business) ou Shopping
+- **Catégorie principale Google Play :** Shopping / Entreprise (Business)
 - **Catégorie principale App Store :** Business / Utilities
 - **Classification d'âge :** Tous publics (PEGI 3 / 4+)
 
@@ -20,7 +20,7 @@ Ce document contient l'ensemble des textes, descriptions, catégories, réponses
 
 ## 2. Textes pour Google Play Store
 
-### A. Titre (30 caractères max)
+### A. Titre de l'application (30 caractères max)
 - **FR :** Alkhaïrat Énergie
 - **EN :** Alkhaïrat Énergie
 
@@ -63,8 +63,8 @@ L'application vend des biens et services matériels physiques. Aucun paiement é
 
 Établissement Alkhaïrat Énergie (EAEPCG) — L'énergie et l'eau au cœur du développement.
 Site web : https://alkhairate.onrender.com
-Contact : contact@alkhairat-energie.com / +235 66 34 10 78
-Localisation : Quartier Am-Rigo, Abéché, Tchad.
+Contact : contact@alkhairat-energie.com [À CONFIRMER PAR LE PROPRIÉTAIRE] / +235 66 34 10 78 [À CONFIRMER PAR LE PROPRIÉTAIRE]
+Localisation : Quartier Am-Rigo, Abéché, Tchad [À CONFIRMER PAR LE PROPRIÉTAIRE]
 ```
 
 ---
@@ -93,54 +93,107 @@ Localisation : Quartier Am-Rigo, Abéché, Tchad.
 
 ---
 
-## 4. Déclaration « Sécurité des données » (Google Play Data Safety)
+## 4. Compte de Démonstration & Notes pour les Examinateurs (Reviewer Notes)
+
+Pour faciliter l'examen Apple et Google sans bloquer la validation :
+
+### Identifiants de test (Apple App Review & Google Review)
+- **Email :** `demo-customer@alkhairat-energie.com` (ou créer un compte directement dans l'application)
+- **Mot de passe :** `Customer2026!Demo`
+- **Rôle :** Client standard (`customer`)
+
+### Notes d'examen (App Review Information / Reviewer Notes)
+```
+[FR]
+L'application « Alkhaïrat Énergie » est une boutique de vente et de réservation d'équipements physiques professionnels (panneaux solaires, pompes à eau immergées pour forages et lavage haute pression) au Tchad.
+- Aucune transaction financière numérique ou achat intégré (IAP) n'est proposé : tous les biens vendus sont des biens physiques matériels livrés sur site ou retirés au comptoir.
+- Les règlements s'effectuent physiquement lors de la livraison ou au magasin conformément aux pratiques locales au Tchad.
+- L'identifiant de démonstration fourni permet d'accéder à l'espace client, consulter les commandes exemples et naviguer dans l'ensemble des fonctionnalités.
+
+[EN]
+The "Alkhaïrat Énergie" application is an e-commerce platform for physical hardware (solar panels, submersible water borehole pumps) and on-site technical services based in Chad.
+- No in-app purchases (IAP) or digital goods are sold: all products are tangible physical items delivered on-site or collected in-store.
+- In accordance with local market practices in Chad, payments are settled offline upon physical receipt of hardware.
+- The provided demo credentials allow full testing of account features, order tracking, and catalog browsing.
+```
+
+---
+
+## 5. Déclaration « Sécurité des données » (Google Play Data Safety)
 
 À renseigner dans la console Google Play lors de la soumission :
 
 1. **L'application collecte-t-elle ou partage-t-elle des données utilisateur ?**
    👉 **Oui**
 2. **Toutes les données utilisateur collectées sont-elles chiffrées en transit ?**
-   👉 **Oui** (Toutes les requêtes passent en HTTPS sécurisé TLS 1.3).
+   👉 **Oui** (Toutes les requêtes transitent en HTTPS avec TLS 1.3).
 3. **Fournissez-vous aux utilisateurs un moyen de demander la suppression de leurs données ?**
-   👉 **Oui** (Option directe dans l'application : Mon Espace > Supprimer mon compte, et par e-mail).
-4. **Détail des données collectées :**
-   - **Nom** : Collecté pour la personnalisation du compte et la livraison. Partagé avec des tiers ? Non.
-   - **Adresse e-mail** : Collecté pour l'authentification et les notifications. Partagé avec des tiers ? Non.
-   - **Numéro de téléphone** : Collecté pour la confirmation de commande et la livraison. Partagé avec des tiers ? Non.
-   - **Identifiants de l'appareil (Device Token)** : Collecté pour l'envoi de notifications push relatives aux commandes.
-   - **Photos (optionnel)** : Photo de profil si l'utilisateur choisit d'en ajouter une.
+   👉 **Oui** (Bouton de suppression instantanée dans l'application : Mon Espace > Informations Personnelles > Supprimer mon compte, et formulaire web).
+4. **Détail des types de données collectées :**
+   - **Nom (Name)** : Collecté pour la personnalisation du compte et la livraison.
+     - *Partagé avec des tiers ?* Non.
+     - *Facultatif ou obligatoire ?* Obligatoire pour l'inscription.
+   - **Adresse e-mail (Email Address)** : Collecté pour l'authentification et les notifications d'état de commande.
+     - *Partagé avec des tiers ?* Non.
+   - **Numéro de téléphone (Phone Number)** : Collecté pour la confirmation de livraison et de rendez-vous sur site.
+     - *Partagé avec des tiers ?* Non.
+   - **Identifiants de l'appareil (Device or other IDs)** : Jeton de notification push FCM pour alerter l'utilisateur des mises à jour de ses commandes.
+     - *Partagé avec des tiers ?* Oui (Google Firebase Cloud Messaging en tant que sous-traitant technique).
+   - **Photos (optionnel)** : Avatar utilisateur si l'utilisateur choisit d'en ajouter un depuis la galerie ou l'appareil photo.
+     - *Partagé avec des tiers ?* Non.
 5. **Données financières :**
-   👉 **Aucune** (Aucun numéro de carte, compte bancaire ou historique financier électronique n'est collecté).
+   👉 **Aucune** (Aucun numéro de carte, compte bancaire ou historique de paiement électronique n'est collecté).
 
 ---
 
-## 5. Déclaration « App Privacy » (Apple App Store)
+## 6. Déclaration « App Privacy » (Apple App Store)
 
 À renseigner dans App Store Connect (Section *Confidentialité de l'app*) :
 
 1. **Données utilisées pour vous suivre (Tracking) :**
-   👉 **Aucune** (L'application n'utilise aucun traceur publicitaire ni courtier de données).
-2. **Données associées à l'utilisateur :**
+   👉 **Aucune** (L'application n'utilise aucun SDK publicitaire, traceur ou courtier de données).
+2. **Données associées à l'utilisateur (Data Linked to You) :**
    - **Coordonnées (Contact Info) :**
-     - Nom, Adresse e-mail, Numéro de téléphone.
-     - *Finalité :* Fonctionnalité de l'app (gestion du compte client, livraison des commandes).
+     - *Types :* Nom, Adresse e-mail, Numéro de téléphone.
+     - *Finalité :* Fonctionnalité de l'app (gestion du compte, contact logistique pour livraison).
    - **Contenu de l'utilisateur (User Content) :**
-     - Photos (avatar optionnel).
-     - Messages du support client.
+     - *Types :* Photos (photo de profil optionnelle), Messages du support client.
      - *Finalité :* Fonctionnalité de l'app.
    - **Identifiants (Identifiers) :**
-     - Identifiant d'utilisateur (User ID interne).
-     - Identifiant de l'appareil (Device Token FCM/APNs).
-     - *Finalité :* Fonctionnalité de l'app (session et notifications push).
+     - *Types :* Identifiant utilisateur interne, Identifiant d'appareil (Device Token APNs).
+     - *Finalité :* Fonctionnalité de l'app (maintien de session sécurisée, acheminement des notifications push).
+3. **Données non associées à l'utilisateur :**
+   👉 Aucune.
 
 ---
 
-## 6. Spécifications des Éléments Graphiques Requis
+## 7. Spécifications Exactes des Éléments Graphiques Requis
 
-| Élément | Dimensions requises | Format | Usage |
+### Google Play Store
+| Élément | Dimensions exactes | Format | Contraintes |
 |---|---|---|---|
-| **Icône de l'app Store** | 1024 x 1024 px (sans transparence) | PNG | Google Play & App Store Connect |
-| **Bannière Feature Graphic** | 1024 x 500 px | JPEG ou PNG 24-bit | Fiche Google Play Store |
-| **Captures d'écran Android** | Min 1080 x 1920 px (ratio 16:9 / 18:9) | JPEG / PNG | Min 2, max 8 captures par langue |
-| **Captures d'écran iPhone 6.7"** | 1290 x 2796 px (iPhone 15/16 Pro Max) | PNG | Requis pour App Store |
-| **Captures d'écran iPhone 6.5" / 5.5"** | 1242 x 2688 px / 1242 x 2208 px | PNG | Optionnel si mise à l'échelle automatique |
+| **Icône de l'application** | 512 x 512 px | PNG 32-bit avec alpha | Max 1 024 Ko, fond opaque recommandé |
+| **Graphique de fonctionnalité (Feature Graphic)** | 1024 x 500 px | JPEG ou PNG 24-bit | Pas de texte promotionnel périmé, max 15 Mo |
+| **Captures d'écran Téléphone** | 1080 x 2400 px (ratio 20:9) ou 1080 x 1920 px (16:9) | JPEG ou PNG 24-bit | Min 2, max 8 captures (accueil, produits, fiche détail, panier, compte) |
+| **Captures d'écran Tablette 7"** | 1200 x 800 px ou 800 x 1280 px | JPEG ou PNG | Optionnel mais recommandé |
+| **Captures d'écran Tablette 10"** | 1920 x 1200 px ou 1200 x 1920 px | JPEG ou PNG | Optionnel mais recommandé |
+
+### Apple App Store
+| Élément | Dimensions exactes | Modèle de référence | Obligation |
+|---|---|---|---|
+| **Icône App Store** | 1024 x 1024 px | Format PNG sans transparence (pas de canal alpha), profil sRGB | **Obligatoire** |
+| **iPhone 6.7 pouces** | 1290 x 2796 px (portrait) | iPhone 16 Pro Max / 15 Pro Max / 14 Pro Max | **Obligatoire** |
+| **iPhone 6.5 pouces** | 1242 x 2688 px (portrait) | iPhone 11 Pro Max, XS Max | Recommandé |
+| **iPhone 5.5 pouces** | 1242 x 2208 px (portrait) | iPhone 8 Plus | Optionnel |
+| **iPad Pro 13 pouces** | 2064 x 2752 px | iPad Pro 13" (M4) / iPad Pro 12.9" | Requis si iPad activé |
+
+---
+
+## 8. Éléments Juridiques Soumis à Confirmation du Propriétaire
+
+> [!WARNING]
+> Les éléments suivants sont inscrits par défaut dans `privacy.html`, `terms.html` et les métadonnées. Ils doivent être explicitement validés ou ajustés par le responsable légal d'EAEPCG :
+> 1. **Adresse e-mail officielle de contact :** `contact@alkhairat-energie.com` (À CONFIRMER PAR LE PROPRIÉTAIRE).
+> 2. **Numéro de téléphone et WhatsApp :** `+235 66 34 10 78` (À CONFIRMER PAR LE PROPRIÉTAIRE).
+> 3. **Adresse postale et siège :** `Quartier Am-Rigo, Abéché, République du Tchad` (À CONFIRMER PAR LE PROPRIÉTAIRE).
+> 4. **Durée de conservation des factures comptables :** Fixée par défaut à 10 ans selon les usages commerciaux (À CONFIRMER PAR LE PROPRIÉTAIRE).
