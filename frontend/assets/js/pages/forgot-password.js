@@ -1,0 +1,2 @@
+renderHeader('login.html'); renderFooter();
+document.getElementById('forgotForm').addEventListener('submit', async e=>{e.preventDefault();const msg=document.getElementById('formMsg');const email=new FormData(e.target).get('email');try{const d=await apiFetch('/auth/forgot-password',{method:'POST',body:JSON.stringify({email})});msg.className='form-msg show ok';msg.textContent=d.message;e.target.reset();}catch(err){msg.className='form-msg show err';msg.textContent=err.data?.error||localizedText('loadError');}});

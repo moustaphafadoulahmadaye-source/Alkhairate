@@ -68,10 +68,13 @@ test('Part 7: Frontend files do not contain unescaped dynamic avatar_url or scri
     const filePath = path.join(frontendDir, file);
     assert.ok(fs.existsSync(filePath), `File ${file} must exist`);
     const content = fs.readFileSync(filePath, 'utf8');
+    const pageJsPath = path.join(frontendDir, 'assets', 'js', 'pages', file.replace('.html', '.js'));
+    const pageJsContent = fs.existsSync(pageJsPath) ? fs.readFileSync(pageJsPath, 'utf8') : '';
+    const fullContent = content + '\n' + pageJsContent;
 
-    // In account.html, avatarUrl must use sanitizeImageSrc
+    // In account.html (or its external script), avatarUrl must use sanitizeImageSrc
     if (file === 'account.html') {
-      assert.ok(content.includes('sanitizeImageSrc(avatarUrl)'), 'account.html must sanitize avatarUrl');
+      assert.ok(fullContent.includes('sanitizeImageSrc(avatarUrl)'), 'account.html must sanitize avatarUrl');
     }
   }
 });

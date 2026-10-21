@@ -1,0 +1,1 @@
+renderHeader('privacy.html'); renderFooter();

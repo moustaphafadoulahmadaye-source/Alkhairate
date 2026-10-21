@@ -43,13 +43,20 @@ if (typeof window !== 'undefined') {
   window.assetUrl = assetUrl;
 }
 
-let _cachedToken = (typeof localStorage !== 'undefined' ? localStorage.getItem('eaepcg_token') : null);
+let _cachedToken = (!isNativeApp() && typeof localStorage !== 'undefined') ? localStorage.getItem('eaepcg_token') : null;
 let _cachedUser = null;
-try {
-  _cachedUser = typeof localStorage !== 'undefined' ? JSON.parse(localStorage.getItem('eaepcg_user') || 'null') : null;
-} catch(e) {
-  _cachedUser = null;
+if (!isNativeApp() && typeof localStorage !== 'undefined') {
+  try {
+    _cachedUser = JSON.parse(localStorage.getItem('eaepcg_user') || 'null');
+  } catch(e) {
+    _cachedUser = null;
+  }
 }
+
+const getSecureStoragePlugin = () => {
+  if (typeof window === 'undefined') return null;
+  return window.Capacitor?.Plugins?.SecureStoragePlugin || null;
+};
 
 const getPreferencesPlugin = () => {
   if (typeof window === 'undefined') return null;
@@ -60,33 +67,32 @@ const Auth = {
   initPromise: null,
 
   async init() {
-    const Prefs = getPreferencesPlugin();
-    if (Prefs) {
-      try {
-        const { value: token } = await Prefs.get({ key: 'eaepcg_token' });
-        const { value: userStr } = await Prefs.get({ key: 'eaepcg_user' });
-        if (token) {
-          _cachedToken = token;
-          try { localStorage.setItem('eaepcg_token', token); } catch(e){}
+    if (isNativeApp()) {
+      const SecureStorage = getSecureStoragePlugin();
+      if (SecureStorage) {
+        try {
+          const { value: token } = await SecureStorage.get({ key: 'eaepcg_token' });
+          const { value: userStr } = await SecureStorage.get({ key: 'eaepcg_user' });
+          if (token) _cachedToken = token;
+          if (userStr) {
+            try { _cachedUser = JSON.parse(userStr); } catch(e){}
+          }
+        } catch(e) {
+          // Key doesn't exist yet or fresh install
         }
-        if (userStr) {
-          try {
-            _cachedUser = JSON.parse(userStr);
-            localStorage.setItem('eaepcg_user', userStr);
-          } catch(e){}
-        }
-      } catch(e) {
-        console.warn('[Auth] Error reading from Capacitor Preferences:', e);
       }
     }
   },
 
   getToken() {
-    return _cachedToken || (typeof localStorage !== 'undefined' ? localStorage.getItem('eaepcg_token') : null);
+    if (_cachedToken) return _cachedToken;
+    if (isNativeApp()) return null;
+    return (typeof localStorage !== 'undefined' ? localStorage.getItem('eaepcg_token') : null);
   },
 
   getUser() {
     if (_cachedUser) return _cachedUser;
+    if (isNativeApp()) return null;
     try {
       return typeof localStorage !== 'undefined' ? JSON.parse(localStorage.getItem('eaepcg_user') || 'null') : null;
     } catch(e) {
@@ -97,15 +103,31 @@ const Auth = {
   setSession(token, user) {
     _cachedToken = token;
     _cachedUser = user;
-    try {
-      localStorage.setItem('eaepcg_token', token);
-      localStorage.setItem('eaepcg_user', JSON.stringify(user));
-    } catch(e){}
 
-    const Prefs = getPreferencesPlugin();
-    if (Prefs) {
-      Prefs.set({ key: 'eaepcg_token', value: token }).catch(console.error);
-      Prefs.set({ key: 'eaepcg_user', value: JSON.stringify(user) }).catch(console.error);
+    if (isNativeApp()) {
+      // Strictly store in Keychain/Keystore via SecureStoragePlugin.
+      // Never store the token in localStorage or @capacitor/preferences!
+      const SecureStorage = getSecureStoragePlugin();
+      if (SecureStorage) {
+        SecureStorage.set({ key: 'eaepcg_token', value: token }).catch(console.error);
+        SecureStorage.set({ key: 'eaepcg_user', value: JSON.stringify(user) }).catch(console.error);
+      }
+      // Wipe any legacy plaintext traces from localStorage and preferences
+      try {
+        localStorage.removeItem('eaepcg_token');
+        localStorage.removeItem('eaepcg_user');
+      } catch(e){}
+      const Prefs = getPreferencesPlugin();
+      if (Prefs) {
+        Prefs.remove({ key: 'eaepcg_token' }).catch(() => {});
+        Prefs.remove({ key: 'eaepcg_user' }).catch(() => {});
+      }
+    } else {
+      // Standard web browser deployment
+      try {
+        localStorage.setItem('eaepcg_token', token);
+        localStorage.setItem('eaepcg_user', JSON.stringify(user));
+      } catch(e){}
     }
   },
 
@@ -123,6 +145,15 @@ const Auth = {
 
     _cachedToken = null;
     _cachedUser = null;
+
+    if (isNativeApp()) {
+      const SecureStorage = getSecureStoragePlugin();
+      if (SecureStorage) {
+        SecureStorage.remove({ key: 'eaepcg_token' }).catch(console.error);
+        SecureStorage.remove({ key: 'eaepcg_user' }).catch(console.error);
+      }
+    }
+
     try {
       localStorage.removeItem('eaepcg_token');
       localStorage.removeItem('eaepcg_user');

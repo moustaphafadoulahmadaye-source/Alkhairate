@@ -5,7 +5,8 @@ const FRONTEND_DIR = path.resolve(__dirname, '..', 'frontend');
 const WWW_DIR = path.resolve(__dirname, '..', 'www');
 
 const EXCLUDED_FILES = new Set([
-  'admin.html'
+  'admin.html',
+  'admin.js'
 ]);
 
 function shouldExclude(fileName) {
@@ -47,6 +48,9 @@ copyRecursive(FRONTEND_DIR, WWW_DIR);
 // Verification assertions
 if (fs.existsSync(path.join(WWW_DIR, 'admin.html'))) {
   throw new Error('ERREUR DE SÉCURITÉ : admin.html a été copié dans www/ !');
+}
+if (fs.existsSync(path.join(WWW_DIR, 'assets', 'js', 'pages', 'admin.js')) || fs.existsSync(path.join(WWW_DIR, 'admin.js'))) {
+  throw new Error('ERREUR DE SÉCURITÉ : admin.js a été copié dans www/ !');
 }
 if (!fs.existsSync(path.join(WWW_DIR, 'index.html'))) {
   throw new Error('ERREUR : index.html est manquant dans www/ !');

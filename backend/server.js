@@ -83,28 +83,46 @@ app.use(cors({
 }));
 
 // Progressive Content Security Policy configuration
+const isCspReportOnly = process.env.CSP_REPORT_ONLY === 'true';
+
 app.use(helmet({
   contentSecurityPolicy: {
+    reportOnly: isCspReportOnly,
     directives: {
       defaultSrc: ["'self'"],
-      // Keep 'unsafe-inline' for now to preserve inline handlers while planning module migration
-      scriptSrc: ["'self'", "'unsafe-inline'"],
+      // Strict CSP: 'unsafe-inline' removed as all page scripts are modularized in assets/js/pages/
+      scriptSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
       fontSrc: ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
-      // Tighter connectSrc: only self and explicit allowed origins (removed dangerous "http:" and "https:" catch-all)
+      // Tighter connectSrc: only self and explicit allowed origins
       connectSrc: ["'self'", ...getAllowedOrigins()],
       mediaSrc: ["'self'", 'data:'],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],
       formAction: ["'self'"],
       frameAncestors: ["'none'"],
+      reportUri: ['/api/csp-report'],
       ...(process.env.NODE_ENV === 'production' ? { upgradeInsecureRequests: [] } : {})
     }
   },
   crossOriginResourcePolicy: { policy: "cross-origin" },
   crossOriginEmbedderPolicy: false
 }));
+
+// Feature / Permissions policy header
+app.use((req, res, next) => {
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+  next();
+});
+
+// CSP report handler
+app.post('/api/csp-report', express.json({ type: ['application/json', 'application/csp-report'] }), (req, res) => {
+  if (req.body && process.env.NODE_ENV !== 'test') {
+    console.warn('[CSP Violation Report]:', JSON.stringify(req.body));
+  }
+  res.status(204).end();
+});
 
 // Body parser separation:
 // - /api/upload accepts base64 payloads up to 8MB (for 5MB binary images)
@@ -134,9 +152,11 @@ app.use('/api/auth/login', rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, stan
 app.use('/api/auth/register', rateLimit({ windowMs: 60 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false }));
 app.use('/api/auth/forgot-password', rateLimit({ windowMs: 60 * 60 * 1000, limit: 5, standardHeaders: true, legacyHeaders: false }));
 app.use('/api/auth/reset-password', rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false }));
+app.use('/api/auth/delete-account', rateLimit({ windowMs: 60 * 60 * 1000, limit: 5, standardHeaders: true, legacyHeaders: false }));
 app.use('/api/orders', rateLimit({ windowMs: 15 * 60 * 1000, limit: 30, standardHeaders: true, legacyHeaders: false }));
 app.use('/api/messages', rateLimit({ windowMs: 15 * 60 * 1000, limit: 30, standardHeaders: true, legacyHeaders: false }));
 app.use('/api/upload', rateLimit({ windowMs: 15 * 60 * 1000, limit: 30, standardHeaders: true, legacyHeaders: false }));
+app.use('/api/push', rateLimit({ windowMs: 15 * 60 * 1000, limit: 30, standardHeaders: true, legacyHeaders: false }));
 
 app.get('/api/health', (req, res) => res.json({ ok: true, name: 'EAEPCG API' }));
 app.get('/api/settings', (req, res) => {

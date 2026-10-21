@@ -142,7 +142,7 @@
     <div class="lavage-map-info">
       <h3>Station de Lavage EAEPCG</h3>
       <p style="color: var(--text-muted); margin-bottom: 16px;">Quartier Am Rigo, Abéché, Tchad</p>
-      <a href="#" class="btn-direction" onclick="alert('Navigation GPS non disponible pour le moment.')">Obtenir l'itinéraire</a>
+      <a href="#" class="btn-direction" id="btnDirections">Obtenir l'itinéraire</a>
     </div>
   </div>
 </div>
@@ -150,20 +150,6 @@
 <div id="site-footer"></div>
 <script src="assets/js/api.js"></script>
 <script src="assets/js/components.js"></script>
-<script>
-  renderHeader('services.html');
-  renderFooter();
-
-  // Try to load dynamic settings for hero image if needed
-  async function loadSettings() {
-    try {
-      const res = await apiFetch('/settings');
-      if (res['service_lavage']) {
-        document.querySelector('.lavage-hero').style.backgroundImage = `linear-gradient(rgba(2, 7, 20, 0.8), rgba(2, 7, 20, 0.9)), url('${res['service_lavage']}')`;
-      }
-    } catch(e) {}
-  }
-  loadSettings();
-</script>
+<script src="assets/js/pages/lavage.js"></script>
 </body>
 </html>
