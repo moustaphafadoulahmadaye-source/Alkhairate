@@ -15,8 +15,13 @@ on:
   push:
     branches:
       - main
-    tags:
-      - 'v*'
+    paths:
+      - 'frontend/**'
+      - 'android/**'
+      - 'ios/**'
+      - 'capacitor.config.ts'
+      - 'scripts/prepare-mobile.js'
+      - '.github/workflows/build-mobile.yml'
 
 jobs:
   # =========================================================
@@ -63,6 +68,7 @@ jobs:
         run: npx cap sync android
 
       - name: Build Signed Android App Bundle (Release AAB)
+        id: build_aab
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -70,8 +76,14 @@ jobs:
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
-            echo "::error::Secrets de signature Android manquants. Veuillez configurer ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS et ANDROID_KEY_PASSWORD dans les GitHub Secrets du dépôt."
-            exit 1
+            echo "::warning::Secrets de signature Android non configurés (ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD)."
+            echo "::warning::Compilation d'un bundle release de validation (non signé pour publication)..."
+            cd android
+            chmod +x gradlew
+            ./gradlew bundleRelease --stacktrace
+            echo "has_signed_aab=false" >> $GITHUB_OUTPUT
+            echo "::notice::La compilation du bundle Android release a réussi ! Pour produire l'AAB signé pour Google Play, ajoutez les 4 secrets dans GitHub (Settings > Secrets > Actions)."
+            exit 0
           fi
 
           echo "Décodage sécurisé du keystore de signature..."
@@ -94,9 +106,11 @@ jobs:
             echo "::error::Échec : Aucun bundle AAB release signé n'a été généré."
             exit 1
           fi
+          echo "has_signed_aab=true" >> $GITHUB_OUTPUT
           echo "✅ Bundle AAB release signé généré avec succès : $AAB_FILE"
 
       - name: Upload Signed Android Release Bundle
+        if: steps.build_aab.outputs.has_signed_aab == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: alkheyrat-android-release-signed-aab
@@ -135,7 +149,7 @@ jobs:
       - name: Test iOS Compilation (Unsigned Build Check)
         run: |
           cd ios/App
-          xcodebuild -workspace App.xcworkspace \
+          xcodebuild -project App.xcodeproj \
             -scheme App \
             -configuration Release \
             -destination 'generic/platform=iOS' \
@@ -245,7 +259,7 @@ jobs:
       - name: Archive and Export Signed IPA
         run: |
           cd ios/App
-          xcodebuild -workspace App.xcworkspace \
+          xcodebuild -project App.xcodeproj \
             -scheme App \
             -configuration Release \
             -destination 'generic/platform=iOS' \
