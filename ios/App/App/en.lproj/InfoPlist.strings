@@ -1,0 +1,5 @@
+/* English localization for Info.plist */
+"CFBundleDisplayName" = "Alkhairat Energy";
+"NSCameraUsageDescription" = "Alkhairat Energy uses your camera to let you take and update your profile picture.";
+"NSPhotoLibraryUsageDescription" = "Alkhairat Energy accesses your photo library to let you select a profile picture.";
+"NSPhotoLibraryAddUsageDescription" = "Alkhairat Energy saves your order documents and estimates to your photo library upon your request.";

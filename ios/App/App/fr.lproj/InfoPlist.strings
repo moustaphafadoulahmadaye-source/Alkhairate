@@ -1,0 +1,5 @@
+/* French localization for Info.plist */
+"CFBundleDisplayName" = "Alkhaïrat Énergie";
+"NSCameraUsageDescription" = "Alkhaïrat Énergie utilise votre appareil photo pour vous permettre de prendre et mettre à jour votre photo de profil.";
+"NSPhotoLibraryUsageDescription" = "Alkhaïrat Énergie accède à votre galerie photo pour vous permettre de choisir une photo de profil.";
+"NSPhotoLibraryAddUsageDescription" = "Alkhaïrat Énergie enregistre vos fiches de commande et devis dans votre galerie à votre demande.";
