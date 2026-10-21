@@ -102,7 +102,11 @@
     waBtn.href = getWhatsAppUrl();
   }
   const slug = new URLSearchParams(window.location.search).get('slug');
-  if (!slug) window.location.href = 'products.html';
+  if (!slug) {
+    document.getElementById('heroTitle').innerHTML = `<span data-fr>Produit</span><span data-en>Product</span><span data-ar>المنتج</span>`;
+    document.getElementById('itemsContainer').innerHTML = `<p class="async-state error-state"><span data-fr>Veuillez sélectionner un produit dans le catalogue.</span><span data-en>Please select a product from the catalog.</span><span data-ar>يرجى اختيار منتج من الكتالوج.</span></p>`;
+    try { window.location.href = 'products.html'; } catch(e){}
+  }
   function formatPrice(p,c){if(!p||p===0)return'—';return new Intl.NumberFormat('fr-FR').format(p)+' '+(c||'XAF');}
   
   window.addToCart = async function(id, name, price, currency, serviceSlug) {
@@ -175,6 +179,7 @@
         </div>
       </div>`).join('');
   }).catch((err)=>{
+    document.getElementById('heroTitle').innerHTML = `<span data-fr>Produit introuvable</span><span data-en>Product not found</span><span data-ar>المنتج غير موجود</span>`;
     if (err.status === 404) {
       container.innerHTML = `<p class="async-state error-state">${escapeHtml(localizedText('productNotFound'))}</p>`;
       return;
@@ -182,7 +187,9 @@
     renderApiError(container, loadProduct);
   });
   }
-  loadProduct();
+  if (slug) {
+    loadProduct();
+  }
 </script>
 </body>
 </html>

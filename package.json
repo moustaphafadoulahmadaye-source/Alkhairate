@@ -9,6 +9,7 @@
     "build": "npm --prefix backend install --no-audit --fund=false",
     "start": "node backend/server.js",
     "test": "npm --prefix backend test",
+    "test:frontend": "node scripts/test-frontend-pages.js",
     "backend": "npm --prefix backend start",
     "db:init": "npm --prefix backend run db:init",
     "seed-admin": "npm --prefix backend run seed-admin",
@@ -40,6 +41,7 @@
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.5.3",
     "@capacitor/ios": "^8.5.3",
+    "jsdom": "^30.1.3",
     "sharp": "^0.35.5",
     "typescript": "^7.0.2"
   }

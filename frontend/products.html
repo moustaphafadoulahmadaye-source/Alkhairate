@@ -193,14 +193,6 @@
     }).join('');
   }
 
-  function loadCatalog(){
-    const container = document.getElementById('catalogContainer');
-    const hash = window.location.hash.substring(1);
-    if (!hash) {
-      window.location.href = 'index.html';
-      return;
-    }
-
   function applyCatalogData(data, isOfflineCache = false) {
     const container = document.getElementById('catalogContainer');
     const { service, categories, items } = data;
@@ -242,10 +234,9 @@
 
   function loadCatalog() {
     const container = document.getElementById('catalogContainer');
-    const hash = window.location.hash.substring(1);
+    let hash = window.location.hash.substring(1);
     if (!hash) {
-      window.location.href = 'index.html';
-      return;
+      hash = 'commerce-general';
     }
 
     const cached = typeof CatalogCache !== 'undefined' ? CatalogCache.get('service_' + hash) : null;
@@ -266,6 +257,8 @@
         applyCatalogData(cached, true);
         return;
       }
+      document.getElementById('heroTitle').innerHTML = `<span data-fr>Catalogue</span><span data-en>Catalog</span><span data-ar>الكتالوج</span>`;
+      document.getElementById('heroDesc').innerHTML = ``;
       if (err.status === 404) {
         container.innerHTML = `<p class="async-state error-state"><span data-fr>Service introuvable.</span><span data-en>Service not found.</span><span data-ar>الخدمة غير موجودة.</span></p>`;
         return;
