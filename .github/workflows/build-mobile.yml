@@ -51,6 +51,17 @@ jobs:
       - name: Prepare Web Assets for Mobile
         run: npm run prepare:mobile
 
+      - name: Setup Firebase google-services.json (if secret configured)
+        env:
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON_BASE64" ]; then
+            echo "Injecting google-services.json from secret..."
+            echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > android/app/google-services.json
+          else
+            echo "GOOGLE_SERVICES_JSON_BASE64 not set; building without Firebase Push plugin."
+          fi
+
       - name: Sync Capacitor Android
         run: npx cap sync android
 

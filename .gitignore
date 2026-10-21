@@ -15,4 +15,5 @@ frontend/temp*
 www/
 *.keystore
 *.jks
+android/app/google-services.json
 originals_backup/

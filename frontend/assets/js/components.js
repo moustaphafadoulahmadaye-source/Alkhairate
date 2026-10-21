@@ -98,8 +98,6 @@ async function requestPushNotifications() {
     }
     if (permStatus.receive !== 'granted') return;
 
-    await PushNotifications.register();
-
     PushNotifications.addListener('registration', async (token) => {
       try {
         const platform = window.Capacitor.getPlatform() === 'ios' ? 'ios' : 'android';
@@ -107,10 +105,18 @@ async function requestPushNotifications() {
           method: 'POST',
           body: JSON.stringify({ token: token.value, platform })
         });
-      } catch(e){}
+      } catch(e){
+        console.warn('[Push] Enregistrement du jeton au serveur ignoré:', e);
+      }
     });
+
+    PushNotifications.addListener('registrationError', (err) => {
+      console.warn('[Push] Service push non disponible ou configuration FCM manquante:', err && err.error ? err.error : err);
+    });
+
+    await PushNotifications.register();
   } catch(err) {
-    console.warn('[Push] Registration notice:', err.message);
+    console.warn('[Push] Registration notice:', err && err.message ? err.message : err);
   }
 }
 
