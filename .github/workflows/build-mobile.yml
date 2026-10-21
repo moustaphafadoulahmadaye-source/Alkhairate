@@ -15,11 +15,8 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'frontend/**'
-      - 'capacitor.config.ts'
-      - 'scripts/prepare-mobile.js'
-      - '.github/workflows/build-mobile.yml'
+    tags:
+      - 'v*'
 
 jobs:
   # =========================================================
