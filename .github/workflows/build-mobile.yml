@@ -151,10 +151,9 @@ jobs:
           cd ios/App
           xcodebuild -project App.xcodeproj \
             -scheme App \
-            -configuration Release \
-            -destination 'generic/platform=iOS' \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
             build
 
   # =========================================================
