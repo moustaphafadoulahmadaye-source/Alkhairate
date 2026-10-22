@@ -125,7 +125,7 @@ jobs:
   # =========================================================
   compile-ios-unsigned:
     if: github.event.inputs.build_type == 'both' || github.event.inputs.build_type == 'ios' || github.event_name == 'push'
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -136,8 +136,10 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: Select Xcode 16 / 15
-        run: sudo xcode-select -switch /Applications/Xcode_16.0.app || sudo xcode-select -switch /Applications/Xcode_15.4.app || sudo xcode-select -switch /Applications/Xcode.app
+      - name: Select Xcode 16
+        run: |
+          sudo xcode-select -switch /Applications/Xcode_16.2.app || sudo xcode-select -switch /Applications/Xcode_16.1.app || sudo xcode-select -switch /Applications/Xcode_16.0.app || sudo xcode-select -switch /Applications/Xcode.app
+          xcodebuild -version
 
       - name: Install Node dependencies
         run: npm ci
@@ -147,6 +149,11 @@ jobs:
 
       - name: Sync Capacitor iOS
         run: npx cap sync ios
+
+      - name: Resolve Swift Package Dependencies
+        run: |
+          cd ios/App
+          xcodebuild -resolvePackageDependencies -project App.xcodeproj -scheme App
 
       - name: Test iOS Compilation (Unsigned Build Check)
         run: |
@@ -166,7 +173,7 @@ jobs:
   # =========================================================
   deploy-ios-testflight:
     if: github.event.inputs.build_type == 'both' || github.event.inputs.build_type == 'ios' || github.event_name == 'push'
-    runs-on: macos-14
+    runs-on: macos-15
     needs: [compile-ios-unsigned]
     steps:
       - name: Checkout repository
@@ -178,8 +185,10 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: Select Xcode 16 / 15
-        run: sudo xcode-select -switch /Applications/Xcode_16.0.app || sudo xcode-select -switch /Applications/Xcode_15.4.app || sudo xcode-select -switch /Applications/Xcode.app
+      - name: Select Xcode 16
+        run: |
+          sudo xcode-select -switch /Applications/Xcode_16.2.app || sudo xcode-select -switch /Applications/Xcode_16.1.app || sudo xcode-select -switch /Applications/Xcode_16.0.app || sudo xcode-select -switch /Applications/Xcode.app
+          xcodebuild -version
 
       - name: Install Node dependencies
         run: npm ci
