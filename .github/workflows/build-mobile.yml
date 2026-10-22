@@ -158,12 +158,21 @@ jobs:
       - name: Test iOS Compilation (Unsigned Build Check)
         run: |
           cd ios/App
+          SIM_ID=$(xcrun simctl list devices available | grep -m 1 -E "iPhone" | grep -o -E "[A-F0-9-]{36}" | head -n 1)
+          if [ -n "$SIM_ID" ]; then
+            DESTINATION="id=$SIM_ID"
+            echo "Simulateur iOS disponible détecté : $DESTINATION"
+          else
+            DESTINATION="platform=iOS Simulator,name=iPhone 16"
+            echo "Fallback vers nom simulateur : $DESTINATION"
+          fi
+
           set +e
           xcodebuild -project App.xcodeproj \
             -scheme App \
             -configuration Debug \
             -sdk iphonesimulator \
-            -destination 'generic/platform=iOS Simulator' \
+            -destination "$DESTINATION" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
@@ -179,6 +188,14 @@ jobs:
             exit $STATUS
           fi
           echo "### ✅ Compilation iOS validée avec succès !" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload iOS Build Log (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-xcodebuild-failure-log
+          path: /tmp/xcode_build.log
+          if-no-files-found: ignore
 
   # =========================================================
   # 3. BUILD iOS SIGNÉ & DÉPLOIEMENT TESTFLIGHT (App Store Connect)
