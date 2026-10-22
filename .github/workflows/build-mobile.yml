@@ -179,11 +179,8 @@ jobs:
             build > /tmp/xcode_build.log 2>&1
           STATUS=$?
           if [ $STATUS -ne 0 ]; then
-            echo "### ❌ Échec de compilation iOS (code $STATUS)" >> $GITHUB_STEP_SUMMARY
-            echo '```text' >> $GITHUB_STEP_SUMMARY
-            (grep -i -C 2 -E "error:|fatal error:|BUILD FAILED" /tmp/xcode_build.log || tail -n 80 /tmp/xcode_build.log) >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            echo "::error::Échec de compilation iOS (code $STATUS)."
+            ERR_MSG=$(cat /tmp/xcode_build.log | tr -d '\r' | tr '\n' ' ' | cut -c 1-800)
+            echo "::error::Xcode build error: $ERR_MSG"
             tail -n 120 /tmp/xcode_build.log
             exit $STATUS
           fi
