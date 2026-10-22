@@ -158,21 +158,11 @@ jobs:
       - name: Test iOS Compilation (Unsigned Build Check)
         run: |
           cd ios/App
-          SIM_ID=$(xcrun simctl list devices available | grep -m 1 -E "iPhone" | grep -o -E "[A-F0-9-]{36}" | head -n 1)
-          if [ -n "$SIM_ID" ]; then
-            DESTINATION="id=$SIM_ID"
-            echo "Simulateur iOS disponible détecté : $DESTINATION"
-          else
-            DESTINATION="platform=iOS Simulator,name=iPhone 16"
-            echo "Fallback vers nom simulateur : $DESTINATION"
-          fi
-
           set +e
           xcodebuild -project App.xcodeproj \
             -scheme App \
             -configuration Debug \
-            -sdk iphonesimulator \
-            -destination "$DESTINATION" \
+            -destination 'generic/platform=iOS' \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
