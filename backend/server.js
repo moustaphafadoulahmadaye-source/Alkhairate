@@ -102,6 +102,8 @@ app.use(helmet({
       baseUri: ["'self'"],
       formAction: ["'self'"],
       frameAncestors: ["'none'"],
+      manifestSrc: ["'self'"],
+      workerSrc: ["'self'"],
       reportUri: ['/api/csp-report'],
       ...(process.env.NODE_ENV === 'production' ? { upgradeInsecureRequests: [] } : {})
     }
@@ -225,6 +227,22 @@ app.use('/assets/avatars', express.static(AVATARS_DIR, {
   setHeaders: setUploadSecurityHeaders
 }));
 
+// PWA explicit endpoints
+app.get('/sw.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Service-Worker-Allowed', '/');
+  res.sendFile(path.join(FRONTEND_DIR, 'sw.js'));
+});
+
+app.get('/manifest.webmanifest', (req, res) => {
+  res.setHeader('Content-Type', 'application/manifest+json');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.sendFile(path.join(FRONTEND_DIR, 'manifest.webmanifest'));
+});
+
 // Serve frontend static files
 app.use(express.static(FRONTEND_DIR, {
   etag: true,
@@ -238,6 +256,12 @@ app.use(express.static(FRONTEND_DIR, {
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
+    }
+    if (filePath.endsWith('sw.js')) {
+      res.setHeader('Service-Worker-Allowed', '/');
+    }
+    if (filePath.endsWith('.webmanifest')) {
+      res.setHeader('Content-Type', 'application/manifest+json');
     }
   }
 }));

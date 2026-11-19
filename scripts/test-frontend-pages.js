@@ -125,23 +125,31 @@ async function run() {
       }
 
       // Allow async fetches and renders to complete
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      const document = dom.window.document;
-
-      // Check if page has any element remaining stuck on "Chargement…"
-      const allElements = document.querySelectorAll('*');
-      const stuckElements = [];
-
-      for (const el of allElements) {
-        // Only inspect leaf or small container elements
-        if (el.children.length === 0 || (el.children.length <= 3 && ['H1','H2','H3','P','SPAN','DIV'].includes(el.tagName))) {
-          const text = (el.textContent || '').trim();
-          if (text === 'Chargement…' || text === 'Loading…' || text === 'جاري التحميل…') {
-            stuckElements.push(`<${el.tagName.toLowerCase()} id="${el.id}" class="${el.className}">: "${text}"`);
+      const getStuck = () => {
+        const stuck = [];
+        const all = dom.window.document.querySelectorAll('*');
+        for (const el of all) {
+          if (el.children.length === 0 || (el.children.length <= 3 && ['H1','H2','H3','P','SPAN','DIV'].includes(el.tagName))) {
+            const text = (el.textContent || '').trim();
+            if (text === 'Chargement…' || text === 'Loading…' || text === 'جاري التحميل…') {
+              stuck.push(`<${el.tagName.toLowerCase()} id="${el.id}" class="${el.className}">: "${text}"`);
+            }
           }
         }
+        return stuck;
+      };
+
+      let stuckElements = [];
+      const startWait = Date.now();
+      while (Date.now() - startWait < 3000) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        stuckElements = getStuck();
+        if (Date.now() - startWait >= 800 && stuckElements.length === 0) {
+          break;
+        }
       }
+
+      const document = dom.window.document;
 
       const isSuccess = pageErrors.length === 0 && stuckElements.length === 0;
       if (!isSuccess) totalErrors++;
