@@ -6,7 +6,7 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "npm --prefix backend install --no-audit --fund=false",
+    "build": "npm --prefix backend install --no-audit --fund=false && npm --prefix backend rebuild better-sqlite3",
     "start": "node backend/server.js",
     "test": "npm --prefix backend test",
     "test:frontend": "node scripts/test-frontend-pages.js",
