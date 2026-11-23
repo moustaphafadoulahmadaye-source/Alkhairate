@@ -25,7 +25,8 @@ for (const p of pages) {
     continue;
   }
   console.log(`Capturing ${p.name} from ${p.url} -> ${outFile}`);
-  const cmd = `"${chrome}" --headless=new --disable-gpu --no-sandbox --hide-scrollbars --window-size=390,844 --screenshot="${outFile}" "${p.url}"`;
+  const winSize = prefix === 'desktop' ? '1280,800' : '390,844';
+  const cmd = `"${chrome}" --headless=new --disable-gpu --no-sandbox --hide-scrollbars --window-size=${winSize} --screenshot="${outFile}" "${p.url}"`;
   try {
     execSync(cmd, { stdio: 'inherit', timeout: 30000 });
     console.log(`✅ Saved ${prefix}_${p.name}.png`);

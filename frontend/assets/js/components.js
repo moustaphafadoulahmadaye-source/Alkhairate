@@ -185,9 +185,15 @@ function renderHeader(activePage){
       <nav class="links" id="navLinks">
         <div class="mobile-nav-auth" id="mobileNavAuth"></div>
         ${linkHtml}
-        <button type="button" class="nav-install-app-btn" id="navInstallBtn">
-          <span class="nav-install-icon">📲</span>
-          <span data-fr>Installer l'application</span><span data-en>Install the app</span><span data-ar>تثبيت التطبيق</span>
+        <button type="button" class="nav-install-app-btn" id="navInstallBtn" aria-label="Installer l'application">
+          <svg class="nav-install-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
+            <path d="M12 7v6"></path>
+            <path d="M9 10l3 3 3-3"></path>
+          </svg>
+          <span class="nav-install-label">
+            <span data-fr>Installer l'application</span><span data-en>Install the app</span><span data-ar>تثبيت التطبيق</span>
+          </span>
         </button>
         ${(Auth.getUser()?.role === 'admin' && !(typeof isNativeApp === 'function' && isNativeApp())) ? `
         <a href="admin.html?filter=pending" class="nav-cart-link" style="background:var(--yellow); color:var(--ink); padding:8px 12px; margin-right:8px;" title="Notifications">

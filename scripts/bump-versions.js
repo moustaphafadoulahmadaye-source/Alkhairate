@@ -7,10 +7,10 @@ const files = fs.readdirSync(dir).filter(f => f.endsWith('.html') && f !== 'admi
 for (const file of files) {
   const p = path.join(dir, file);
   let content = fs.readFileSync(p, 'utf8');
-  content = content.replace(/assets\/css\/style\.css(\?v=[^"'\s>]+)?/g, 'assets/css/style.css?v=3');
-  content = content.replace(/assets\/css\/pwa\.css(\?v=[^"'\s>]+)?/g, 'assets/css/pwa.css?v=3');
-  content = content.replace(/assets\/js\/components\.js(\?v=[^"'\s>]+)?/g, 'assets/js/components.js?v=3');
-  content = content.replace(/assets\/js\/pwa\.js(\?v=[^"'\s>]+)?/g, 'assets/js/pwa.js?v=3');
+  content = content.replace(/assets\/css\/style\.css(\?v=[^"'\s>]+)?/g, 'assets/css/style.css?v=4');
+  content = content.replace(/assets\/css\/pwa\.css(\?v=[^"'\s>]+)?/g, 'assets/css/pwa.css?v=4');
+  content = content.replace(/assets\/js\/components\.js(\?v=[^"'\s>]+)?/g, 'assets/js/components.js?v=4');
+  content = content.replace(/assets\/js\/pwa\.js(\?v=[^"'\s>]+)?/g, 'assets/js/pwa.js?v=4');
   fs.writeFileSync(p, content, 'utf8');
 }
 
