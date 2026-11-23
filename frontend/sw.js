@@ -1,19 +1,19 @@
-const CACHE_NAME = 'eaepcg-pwa-v2';
+const CACHE_NAME = 'eaepcg-pwa-v3';
 
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/offline.html',
   '/assets/css/style.css',
-  '/assets/css/style.css?v=2.2',
+  '/assets/css/style.css?v=3',
   '/assets/css/pwa.css',
+  '/assets/css/pwa.css?v=3',
   '/assets/js/api.js',
-  '/assets/js/api.js?v=2.2',
+  '/assets/js/api.js?v=3',
   '/assets/js/components.js',
-  '/assets/js/components.js?v=2.2',
   '/assets/js/components.js?v=3',
-  '/assets/js/components.js?v=7',
   '/assets/js/pwa.js',
+  '/assets/js/pwa.js?v=3',
   '/assets/js/pages/offline.js',
   '/assets/img/logo.jpg',
   '/assets/icons/icon-192.png',
@@ -117,6 +117,24 @@ self.addEventListener('fetch', (event) => {
   if (isStaticAsset) {
     event.respondWith(
       caches.match(req).then((cachedResponse) => {
+        if (!cachedResponse) {
+          return caches.match(req, { ignoreSearch: true }).then((fallbackResponse) => {
+            const fetchPromise = fetch(req)
+              .then((networkResponse) => {
+                if (networkResponse && networkResponse.status === 200) {
+                  const responseToCache = networkResponse.clone();
+                  caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(req, responseToCache);
+                  });
+                }
+                return networkResponse;
+              })
+              .catch(() => fallbackResponse);
+
+            return fallbackResponse || fetchPromise;
+          });
+        }
+
         const fetchPromise = fetch(req)
           .then((networkResponse) => {
             if (networkResponse && networkResponse.status === 200) {

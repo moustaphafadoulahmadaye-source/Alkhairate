@@ -167,12 +167,28 @@ function renderHeader(activePage){
           <div class="sub">EAEPCG · Énergie & Solutions Industrielles</div>
         </div>
       </a>
-      <button class="nav-hamburger" id="navHamburger" aria-label="Menu" type="button">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <nav class="links" id="navLinks">${linkHtml}
+      <div class="nav-right-wrap">
+        <div class="lang-toggle mobile-lang-toggle" id="mobileLangToggle">
+          <button class="lang-btn" id="mobileLangBtn" type="button" aria-label="Langue">${langLabels[cl] || 'FR'}</button>
+          <div class="lang-dropdown" id="mobileLangDropdown">
+            <button data-lang="fr" class="${cl==='fr'?'active':''}">Français</button>
+            <button data-lang="en" class="${cl==='en'?'active':''}">English</button>
+            <button data-lang="ar" class="${cl==='ar'?'active':''}">عربي</button>
+          </div>
+        </div>
+        <button class="nav-hamburger" id="navHamburger" aria-label="Menu" type="button">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <nav class="links" id="navLinks">
+        <div class="mobile-nav-auth" id="mobileNavAuth"></div>
+        ${linkHtml}
+        <button type="button" class="nav-install-app-btn" id="navInstallBtn">
+          <span class="nav-install-icon">📲</span>
+          <span data-fr>Installer l'application</span><span data-en>Install the app</span><span data-ar>تثبيت التطبيق</span>
+        </button>
         ${(Auth.getUser()?.role === 'admin' && !(typeof isNativeApp === 'function' && isNativeApp())) ? `
         <a href="admin.html?filter=pending" class="nav-cart-link" style="background:var(--yellow); color:var(--ink); padding:8px 12px; margin-right:8px;" title="Notifications">
           <span data-fr>Notifications</span><span data-en>Notifications</span><span data-ar>إشعارات</span><span class="nav-cart-badge" id="adminNotifBadge" style="display:none; background:var(--red); color:white; border:2px solid var(--yellow); right:-6px; top:-6px;"></span>
@@ -214,25 +230,38 @@ function renderHeader(activePage){
     });
   }
 
-  // Language dropdown toggle
-  const langBtn = document.getElementById('langBtn');
-  const langDropdown = document.getElementById('langDropdown');
-  if(langBtn && langDropdown){
-    langBtn.addEventListener('click', (e) => {
+  // Language dropdown toggle (Desktop & Mobile)
+  const setupLangToggle = (btnId, dropId) => {
+    const btn = document.getElementById(btnId);
+    const drop = document.getElementById(dropId);
+    if (!btn || !drop) return;
+    btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      langDropdown.classList.toggle('open');
+      drop.classList.toggle('open');
+      const otherId = dropId === 'langDropdown' ? 'mobileLangDropdown' : 'langDropdown';
+      document.getElementById(otherId)?.classList.remove('open');
     });
-    langDropdown.querySelectorAll('button[data-lang]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        setLang(btn.dataset.lang);
-        langDropdown.classList.remove('open');
-        langBtn.textContent = '🌐 ' + ({fr:'FR',en:'ANG',ar:'عر'}[btn.dataset.lang] || 'FR');
-        langDropdown.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+    drop.querySelectorAll('button[data-lang]').forEach(b => {
+      b.addEventListener('click', () => {
+        setLang(b.dataset.lang);
+        drop.classList.remove('open');
+        const lStr = {fr:'FR', en:'ANG', ar:'عر'}[b.dataset.lang] || 'FR';
+        const dBtn = document.getElementById('langBtn');
+        const mBtn = document.getElementById('mobileLangBtn');
+        if (dBtn) dBtn.textContent = '🌐 ' + lStr;
+        if (mBtn) mBtn.textContent = lStr;
+        document.querySelectorAll('#langDropdown button, #mobileLangDropdown button').forEach(x => {
+          x.classList.toggle('active', x.dataset.lang === b.dataset.lang);
+        });
       });
     });
-    document.addEventListener('click', () => langDropdown.classList.remove('open'));
-  }
+  };
+  setupLangToggle('langBtn', 'langDropdown');
+  setupLangToggle('mobileLangBtn', 'mobileLangDropdown');
+  document.addEventListener('click', () => {
+    document.getElementById('langDropdown')?.classList.remove('open');
+    document.getElementById('mobileLangDropdown')?.classList.remove('open');
+  });
 
   renderNavActions();
   updateCartBadge();
@@ -296,31 +325,55 @@ function updateCartBadge(){
 
 function renderNavActions(){
   const el = document.getElementById('navActions');
-  if (!el) return;
+  const mobEl = document.getElementById('mobileNavAuth');
+  if (!el && !mobEl) return;
   const user = Auth.getUser();
 
   if (user){
     const isNative = typeof isNativeApp === 'function' && isNativeApp();
     const dash = (!isNative && user.role === 'admin') ? 'admin.html' : 'account.html';
-    el.innerHTML = `
-      <a class="topbar-link" href="${dash}">👤 ${escapeHtml(user.full_name.split(' ')[0])}</a>
-      <span class="topbar-divider">|</span>
-      <button class="topbar-link" id="logoutBtn" style="background:none; border:none; cursor:pointer;"><span data-fr>Déconnexion</span><span data-en>Log out</span><span data-ar>خروج</span></button>
-    `;
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
+    if (el) {
+      el.innerHTML = `
+        <a class="topbar-link" href="${dash}">👤 ${escapeHtml(user.full_name.split(' ')[0])}</a>
+        <span class="topbar-divider">|</span>
+        <button class="topbar-link logout-action-btn" type="button" style="background:none; border:none; cursor:pointer;"><span data-fr>Déconnexion</span><span data-en>Log out</span><span data-ar>خروج</span></button>
+      `;
+    }
+    if (mobEl) {
+      mobEl.innerHTML = `
+        <div class="mobile-user-card">
+          <a class="mobile-user-link" href="${dash}">👤 ${escapeHtml(user.full_name)}</a>
+          <button class="mobile-logout-btn logout-action-btn" type="button"><span data-fr>Déconnexion</span><span data-en>Log out</span><span data-ar>خروج</span></button>
+        </div>
+      `;
+    }
+  } else {
+    if (el) {
+      el.innerHTML = `
+        <a class="topbar-link" href="login.html"><span data-fr>Connexion</span><span data-en>Log in</span><span data-ar>دخول</span></a>
+        <span class="topbar-divider">|</span>
+        <a class="topbar-link topbar-link-accent" href="register.html"><span data-fr>Créer un compte</span><span data-en>Sign up</span><span data-ar>إنشاء حساب</span></a>
+      `;
+    }
+    if (mobEl) {
+      mobEl.innerHTML = `
+        <div class="mobile-guest-links">
+          <a class="btn btn-secondary mobile-auth-btn" href="login.html"><span data-fr>Connexion</span><span data-en>Log in</span><span data-ar>دخول</span></a>
+          <a class="btn btn-primary mobile-auth-btn" href="register.html"><span data-fr>Créer un compte</span><span data-en>Sign up</span><span data-ar>إنشاء حساب</span></a>
+        </div>
+      `;
+    }
+  }
+
+  document.querySelectorAll('.logout-action-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
       try { if (Auth.getToken()) await apiFetch('/auth/logout', { method: 'POST' }); }
       finally {
         Auth.clear();
         window.location.href = 'index.html';
       }
     });
-  } else {
-    el.innerHTML = `
-      <a class="topbar-link" href="login.html"><span data-fr>Connexion</span><span data-en>Log in</span><span data-ar>دخول</span></a>
-      <span class="topbar-divider">|</span>
-      <a class="topbar-link topbar-link-accent" href="register.html"><span data-fr>Créer un compte</span><span data-en>Sign up</span><span data-ar>إنشاء حساب</span></a>
-    `;
-  }
+  });
 }
 
 function renderFooter(){
@@ -714,6 +767,18 @@ if (typeof window !== 'undefined') {
   } else {
     initMobileExperience();
   }
+
+  // Global Image Error Fallback Handler
+  window.addEventListener('error', function (e) {
+    const target = e.target;
+    if (target && target.tagName === 'IMG' && !target.dataset.hasFallback) {
+      target.dataset.hasFallback = '1';
+      target.src = 'assets/img/logo.jpg';
+      target.classList.add('img-fallback');
+      const parent = target.closest('.item-img');
+      if (parent) parent.classList.add('fallback-img');
+    }
+  }, true);
 }
 
 if (typeof module !== 'undefined' && module.exports) {

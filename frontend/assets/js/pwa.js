@@ -210,8 +210,46 @@
     if (banner) banner.remove();
   }
 
-  window.addEventListener('offline', showOfflineBanner);
-  window.addEventListener('online', hideOfflineBanner);
+  let wasOffline = !navigator.onLine;
+
+  function showBackOnlineToast() {
+    const existing = document.getElementById('pwaOnlineBanner');
+    if (existing) existing.remove();
+
+    const banner = document.createElement('div');
+    banner.id = 'pwaOnlineBanner';
+    banner.className = 'pwa-online-banner';
+
+    const icon = document.createElement('span');
+    icon.textContent = '🟢';
+
+    const msg = createLangSpan(
+      'Connexion rétablie',
+      'Back online',
+      'تم استعادة الاتصال'
+    );
+
+    banner.appendChild(icon);
+    banner.appendChild(msg);
+    document.body.appendChild(banner);
+
+    setTimeout(function () {
+      banner.classList.add('fade-out');
+      setTimeout(function () { banner.remove(); }, 400);
+    }, 3500);
+  }
+
+  window.addEventListener('offline', function () {
+    wasOffline = true;
+    showOfflineBanner();
+  });
+  window.addEventListener('online', function () {
+    hideOfflineBanner();
+    if (wasOffline) {
+      showBackOnlineToast();
+      wasOffline = false;
+    }
+  });
   if (!navigator.onLine) {
     showOfflineBanner();
   }
@@ -319,7 +357,162 @@
   window.addEventListener('appinstalled', function () {
     deferredPrompt = null;
     hideInstallCard();
+    const navBtn = document.getElementById('navInstallBtn');
+    if (navBtn) navBtn.style.display = 'none';
   });
+
+  // Mobile menu install instructions modal (for iOS or browsers without prompt)
+  function showInstallInstructionsModal() {
+    let modal = document.getElementById('pwaInstallGuideModal');
+    if (modal) { modal.remove(); }
+
+    modal = document.createElement('div');
+    modal.id = 'pwaInstallGuideModal';
+    modal.className = 'pwa-install-modal-backdrop';
+
+    const sheet = document.createElement('div');
+    sheet.className = 'pwa-install-modal-sheet';
+
+    const header = document.createElement('div');
+    header.className = 'pwa-install-modal-header';
+
+    const icon = document.createElement('img');
+    icon.src = 'assets/icons/icon-192.png';
+    icon.alt = 'Alkhaïrat';
+    icon.className = 'pwa-modal-app-icon';
+
+    const titleWrap = document.createElement('div');
+    const title = document.createElement('h3');
+    title.className = 'pwa-modal-title';
+    title.appendChild(createLangSpan(
+      "Installer l'application",
+      "Install the app",
+      "تثبيت التطبيق"
+    ));
+
+    const sub = document.createElement('p');
+    sub.className = 'pwa-modal-sub';
+    sub.appendChild(createLangSpan(
+      "Alkhaïrat Énergie sur votre écran d'accueil",
+      "Alkhaïrat Énergie on your home screen",
+      "الخيرات للطاقة على شاشتك الرئيسية"
+    ));
+
+    titleWrap.appendChild(title);
+    titleWrap.appendChild(sub);
+    header.appendChild(icon);
+    header.appendChild(titleWrap);
+
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'pwa-modal-close';
+    closeBtn.setAttribute('aria-label', 'Fermer');
+    closeBtn.textContent = '✕';
+    closeBtn.addEventListener('click', () => modal.remove());
+    header.appendChild(closeBtn);
+
+    const stepsList = document.createElement('div');
+    stepsList.className = 'pwa-install-steps';
+
+    const step1 = document.createElement('div');
+    step1.className = 'pwa-step-item';
+    step1.innerHTML = `
+      <div class="pwa-step-num">1</div>
+      <div class="pwa-step-text">
+        <span>
+          <span data-fr>Appuyez sur le bouton <strong>Partager</strong> <span class="pwa-icon-hint">⎋</span> (barre Safari sur iPhone ou menu ⋮).</span>
+          <span data-en>Tap the <strong>Share</strong> button <span class="pwa-icon-hint">⎋</span> (Safari bar on iPhone or menu ⋮).</span>
+          <span data-ar>اضغط على زر <strong>المشاركة</strong> <span class="pwa-icon-hint">⎋</span> (في شريط سفاري أو القائمة ⋮).</span>
+        </span>
+      </div>
+    `;
+
+    const step2 = document.createElement('div');
+    step2.className = 'pwa-step-item';
+    step2.innerHTML = `
+      <div class="pwa-step-num">2</div>
+      <div class="pwa-step-text">
+        <span>
+          <span data-fr>Faites défiler et sélectionnez <strong>« Sur l'écran d'accueil »</strong> 📲.</span>
+          <span data-en>Scroll down and select <strong>« Add to Home Screen »</strong> 📲.</span>
+          <span data-ar>مرر للأسفل واختر <strong>«إضافة إلى الشاشة الرئيسية»</strong> 📲.</span>
+        </span>
+      </div>
+    `;
+
+    const step3 = document.createElement('div');
+    step3.className = 'pwa-step-item';
+    step3.innerHTML = `
+      <div class="pwa-step-num">3</div>
+      <div class="pwa-step-text">
+        <span>
+          <span data-fr>Appuyez sur <strong>Ajouter</strong> en haut à droite.</span>
+          <span data-en>Tap <strong>Add</strong> in the top right.</span>
+          <span data-ar>اضغط على <strong>إضافة</strong> في الزاوية العلوية.</span>
+        </span>
+      </div>
+    `;
+
+    stepsList.appendChild(step1);
+    stepsList.appendChild(step2);
+    stepsList.appendChild(step3);
+
+    const okBtn = document.createElement('button');
+    okBtn.type = 'button';
+    okBtn.className = 'pwa-modal-ok-btn';
+    okBtn.appendChild(createLangSpan('Compris', 'Got it', 'فهمت'));
+    okBtn.addEventListener('click', () => modal.remove());
+
+    sheet.appendChild(header);
+    sheet.appendChild(stepsList);
+    sheet.appendChild(okBtn);
+    modal.appendChild(sheet);
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.remove();
+    });
+
+    document.body.appendChild(modal);
+  }
+
+  // Delegated click listener for mobile menu "Install the app" button
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest('#navInstallBtn');
+    if (!btn) return;
+    e.preventDefault();
+
+    const navHamburger = document.getElementById('navHamburger');
+    const navLinks = document.getElementById('navLinks');
+    if (navHamburger) navHamburger.classList.remove('active');
+    if (navLinks) navLinks.classList.remove('mobile-open');
+
+    if (deferredPrompt) {
+      try {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function (choice) {
+          if (choice && choice.outcome === 'accepted') {
+            deferredPrompt = null;
+            hideInstallCard();
+            btn.style.display = 'none';
+          }
+        });
+      } catch (err) {
+        showInstallInstructionsModal();
+      }
+    } else {
+      showInstallInstructionsModal();
+    }
+  });
+
+  // Hide nav install button if already in standalone mode
+  function checkStandaloneNavBtn() {
+    if (isStandalone()) {
+      const navBtn = document.getElementById('navInstallBtn');
+      if (navBtn) navBtn.style.display = 'none';
+    }
+  }
+  document.addEventListener('DOMContentLoaded', checkStandaloneNavBtn);
+  window.addEventListener('load', checkStandaloneNavBtn);
 
   // iOS Safari Install Tip
   function showIosTipCard() {

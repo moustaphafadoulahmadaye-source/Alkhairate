@@ -28,7 +28,7 @@ renderHeader('products.html'); renderFooter();
       const localizedName = currentLang() === 'en' ? item.name_en : item.name_fr;
       return `
       <div class="item-card" data-id="${escapeHtml(item.id)}" data-name="${escapeHtml(localizedName)}" data-price="${Number(item.price) || 0}" data-currency="${escapeHtml(item.currency || 'XAF')}" data-service="${escapeHtml(item.service_slug||'')}" data-image="${typeof sanitizeImageSrc === 'function' ? sanitizeImageSrc(item.image_url) : escapeHtml(item.image_url||'')}">
-        ${item.image_url ? `<div class="item-img"><img src="${typeof sanitizeImageSrc === 'function' ? sanitizeImageSrc(item.image_url) : escapeHtml(item.image_url)}" alt=""></div>` : svgPlaceholder}
+        ${item.image_url ? `<div class="item-img"><img src="${typeof sanitizeImageSrc === 'function' ? sanitizeImageSrc(item.image_url) : escapeHtml(item.image_url)}" alt="${escapeHtml(localizedName)}" loading="lazy"></div>` : `<div class="item-img fallback-img"><img src="assets/img/logo.jpg" alt="${escapeHtml(localizedName)}" loading="lazy" class="img-fallback"></div>`}
         <div class="item-name"><span data-fr>${escapeHtml(item.name_fr)}</span><span data-en>${escapeHtml(item.name_en)}</span><span data-ar>${escapeHtml(item.name_fr)}</span></div>
         <div class="item-price">${formatPrice(item.price, item.currency)}</div>
         <div class="item-stock ${item.in_stock?'yes':'no'}">

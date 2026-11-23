@@ -82,7 +82,7 @@ renderHeader('order.html'); renderFooter();
         tableHtml += `
         <div class="cart-item" style="display:flex; justify-content:space-between; align-items:center; padding:16px; background:#f9fafc; border-radius:12px; margin-bottom:12px; border:1px solid rgba(0,0,0,0.05);">
           <div style="flex:1; display:flex; align-items:center; gap:16px;">
-            ${item.imageUrl ? `<img src="${typeof sanitizeImageSrc === 'function' ? sanitizeImageSrc(item.imageUrl) : escapeHtml(item.imageUrl)}" style="width:56px; height:56px; object-fit:cover; border-radius:8px;">` : ''}
+            ${item.imageUrl ? `<img src="${typeof sanitizeImageSrc === 'function' ? sanitizeImageSrc(item.imageUrl) : escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.name)}" loading="lazy" style="width:56px; height:56px; object-fit:cover; border-radius:8px;">` : `<img src="assets/img/logo.jpg" alt="${escapeHtml(item.name)}" loading="lazy" class="img-fallback" style="width:56px; height:56px; object-fit:contain; border-radius:8px; background:#f8fafc; padding:4px;">`}
             <div>
               <div style="font-weight:700; font-size:15px; margin-bottom:6px; font-family:'Space Grotesk', sans-serif;">${escapeHtml(item.name)}</div>
               <div style="font-size:13px; color:var(--text-light);">
