@@ -357,10 +357,12 @@ let lastPendingOrdersCount = null;
     initSettingsManagerEvents();
 
     // Logout
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
+    const handleLogout = async () => {
       try { await apiFetch('/auth/logout', { method: 'POST' }); }
       finally { Auth.clear(); window.location.href = 'login.html'; }
-    });
+    };
+    document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
+    document.getElementById('sidebarLogoutBtn')?.addEventListener('click', handleLogout);
 
     // Search Logic (Simple text match for tables)
     ['orders', 'products', 'clients', 'messages'].forEach(type => {
