@@ -35,17 +35,18 @@ function getAllowedOrigins() {
     }
   }
 
+  // Canonical production domain is always permitted
+  const productionOrigin = 'https://alkhairate.onrender.com';
+  if (!configured.includes(productionOrigin)) {
+    configured.push(productionOrigin);
+  }
+
   // Capacitor mobile app origins (Android & iOS)
   const capacitorOrigins = ['capacitor://localhost', 'https://localhost', 'http://localhost'];
   for (const capOrigin of capacitorOrigins) {
     if (!configured.includes(capOrigin)) {
       configured.push(capOrigin);
     }
-  }
-
-  // Safe fallback in production if not explicitly configured
-  if (configured.length === 0 && process.env.NODE_ENV === 'production') {
-    configured.push('https://alkhairate.onrender.com');
   }
 
   return configured;
@@ -60,9 +61,10 @@ function isAllowedOrigin(origin) {
 
   if (allowed.includes(normalized)) return true;
 
-  // Development mode only: allow localhost and 127.0.0.1 on any local port
+  // Development mode only: allow localhost and 127.0.0.1 on any local port, and null for local file://
   const isDev = process.env.NODE_ENV !== 'production';
   if (isDev) {
+    if (normalized === 'null') return true;
     try {
       const url = new URL(normalized);
       if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
