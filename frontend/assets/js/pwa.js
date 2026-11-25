@@ -475,9 +475,9 @@
     document.body.appendChild(modal);
   }
 
-  // Delegated click listener for mobile menu "Install the app" button
+  // Delegated click listener for "Install the app" buttons (mobile drawer & footer)
   document.addEventListener('click', function (e) {
-    const btn = e.target.closest('#navInstallBtn');
+    const btn = e.target.closest('#navInstallBtn, #footerInstallBtn');
     if (!btn) return;
     e.preventDefault();
 
@@ -504,11 +504,13 @@
     }
   });
 
-  // Hide nav install button if already in standalone mode
+  // Hide install buttons if already in standalone mode
   function checkStandaloneNavBtn() {
     if (isStandalone()) {
       const navBtn = document.getElementById('navInstallBtn');
       if (navBtn) navBtn.style.display = 'none';
+      const footerBtn = document.getElementById('footerInstallBtn');
+      if (footerBtn) footerBtn.style.display = 'none';
     }
   }
   document.addEventListener('DOMContentLoaded', checkStandaloneNavBtn);

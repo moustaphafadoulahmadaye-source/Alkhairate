@@ -409,6 +409,7 @@ function renderFooter(){
           <li><a href="about.html"><span data-fr>À propos</span><span data-en>About us</span><span data-ar>من نحن</span></a></li>
           <li><a href="privacy.html"><span data-fr>Confidentialité</span><span data-en>Privacy</span><span data-ar>الخصوصية</span></a></li>
           <li><a href="terms.html"><span data-fr>Conditions</span><span data-en>Terms</span><span data-ar>الشروط</span></a></li>
+          <li class="footer-install-row"><a href="#" id="footerInstallBtn" style="color:var(--yellow);"><span data-fr>📱 Installer l'application</span><span data-en>📱 Install App</span><span data-ar>📱 تثبيت التطبيق</span></a></li>
         </ul>
       </div>
       <div class="footer-col">

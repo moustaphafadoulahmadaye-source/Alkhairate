@@ -9,6 +9,8 @@ process.env.DATA_DIR = tempDir;
 process.env.DB_PATH = path.join(tempDir, 'test.db');
 process.env.NODE_ENV = 'development';
 process.env.JWT_SECRET = 'test-secret-key-that-is-at-least-32-chars-long!';
+if (!process.env.ADMIN_EMAIL) process.env.ADMIN_EMAIL = 'admin@alkheyrat.com';
+if (!process.env.ADMIN_PASSWORD) process.env.ADMIN_PASSWORD = 'TestAdminPassword123!';
 
 const { JSDOM, VirtualConsole } = require('jsdom');
 const { app } = require('../backend/server');

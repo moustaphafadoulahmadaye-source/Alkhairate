@@ -511,60 +511,9 @@ html[lang="ar"] .pwa-update-text {
   }
 }
 
-/* ── Base / Desktop Styles for Install App Button in Navigation ── */
+/* ── Base / Desktop: Hide Install Button from Desktop Header (Clean, High-End Corporate Look) ── */
 .nav-install-app-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 8px !important;
-  padding: 8px 16px !important;
-  background: linear-gradient(135deg, rgba(11, 42, 138, 0.08) 0%, rgba(11, 42, 138, 0.16) 100%) !important;
-  color: var(--pwa-blue, #0B2A8A) !important;
-  border: 1.5px solid rgba(11, 42, 138, 0.28) !important;
-  border-radius: 100px !important;
-  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  line-height: 1 !important;
-  white-space: nowrap !important;
-  cursor: pointer !important;
-  box-shadow: 0 2px 8px rgba(11, 42, 138, 0.08) !important;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  box-sizing: border-box !important;
-  outline: none !important;
-  -webkit-appearance: none !important;
-  appearance: none !important;
-}
-
-.nav-install-app-btn:hover {
-  background: linear-gradient(135deg, var(--pwa-blue, #0B2A8A) 0%, var(--pwa-deep-blue, #061436) 100%) !important;
-  color: #ffffff !important;
-  border-color: var(--pwa-yellow, #F5C518) !important;
-  box-shadow: 0 6px 18px rgba(11, 42, 138, 0.25) !important;
-  transform: translateY(-2px) !important;
-}
-
-.nav-install-app-btn:active {
-  transform: translateY(0) scale(0.98) !important;
-}
-
-.nav-install-svg {
-  width: 15px !important;
-  height: 15px !important;
-  flex-shrink: 0 !important;
-  stroke: currentColor !important;
-  transition: transform 0.25s ease, stroke 0.25s ease !important;
-}
-
-.nav-install-app-btn:hover .nav-install-svg {
-  stroke: var(--pwa-yellow, #F5C518) !important;
-  transform: translateY(1px) !important;
-}
-
-.nav-install-label {
-  display: inline-flex !important;
-  align-items: center !important;
-  white-space: nowrap !important;
+  display: none !important;
 }
 
 /* ── 3. Mobile Navigation Drawer & Install Button ── */
@@ -640,7 +589,7 @@ html[lang="ar"] .pwa-update-text {
     min-height: 32px;
   }
 
-  .nav-install-app-btn {
+  nav.links.mobile-open .nav-install-app-btn {
     width: 100% !important;
     display: flex !important;
     align-items: center !important;
@@ -652,19 +601,21 @@ html[lang="ar"] .pwa-update-text {
     color: #ffffff !important;
     border: 1.5px solid var(--pwa-yellow, #F5C518) !important;
     border-radius: 12px !important;
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif !important;
     font-size: 14px !important;
     font-weight: 700 !important;
     box-shadow: 0 6px 20px rgba(11, 42, 138, 0.25) !important;
     margin-top: 6px !important;
     margin-bottom: 4px !important;
+    cursor: pointer !important;
   }
 
-  .nav-install-app-btn:hover {
+  nav.links.mobile-open .nav-install-app-btn:hover {
     filter: brightness(1.1) !important;
     transform: none !important;
   }
 
-  .nav-install-app-btn .nav-install-svg {
+  nav.links.mobile-open .nav-install-app-btn .nav-install-svg {
     width: 18px !important;
     height: 18px !important;
     stroke: var(--pwa-yellow, #F5C518) !important;
@@ -674,6 +625,7 @@ html[lang="ar"] .pwa-update-text {
 /* ── 4. Standalone Mode: Hide Install Options ── */
 @media all and (display-mode: standalone) {
   .nav-install-app-btn,
+  .footer-install-row,
   .pwa-install-card,
   .pwa-ios-tip {
     display: none !important;
