@@ -185,16 +185,6 @@ function renderHeader(activePage){
       <nav class="links" id="navLinks">
         <div class="mobile-nav-auth" id="mobileNavAuth"></div>
         ${linkHtml}
-        <button type="button" class="nav-install-app-btn" id="navInstallBtn" aria-label="Installer l'application">
-          <svg class="nav-install-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
-            <path d="M12 7v6"></path>
-            <path d="M9 10l3 3 3-3"></path>
-          </svg>
-          <span class="nav-install-label">
-            <span data-fr>Installer l'application</span><span data-en>Install the app</span><span data-ar>تثبيت التطبيق</span>
-          </span>
-        </button>
         ${(Auth.getUser()?.role === 'admin' && !(typeof isNativeApp === 'function' && isNativeApp())) ? `
         <a href="admin.html?filter=pending" class="nav-cart-link" style="background:var(--yellow); color:var(--ink); padding:8px 12px; margin-right:8px;" title="Notifications">
           <span data-fr>Notifications</span><span data-en>Notifications</span><span data-ar>إشعارات</span><span class="nav-cart-badge" id="adminNotifBadge" style="display:none; background:var(--red); color:white; border:2px solid var(--yellow); right:-6px; top:-6px;"></span>
@@ -409,7 +399,6 @@ function renderFooter(){
           <li><a href="about.html"><span data-fr>À propos</span><span data-en>About us</span><span data-ar>من نحن</span></a></li>
           <li><a href="privacy.html"><span data-fr>Confidentialité</span><span data-en>Privacy</span><span data-ar>الخصوصية</span></a></li>
           <li><a href="terms.html"><span data-fr>Conditions</span><span data-en>Terms</span><span data-ar>الشروط</span></a></li>
-          <li class="footer-install-row"><a href="#" id="footerInstallBtn" style="color:var(--yellow);"><span data-fr>📱 Installer l'application</span><span data-en>📱 Install App</span><span data-ar>📱 تثبيت التطبيق</span></a></li>
         </ul>
       </div>
       <div class="footer-col">

@@ -1,19 +1,19 @@
-const CACHE_NAME = 'eaepcg-pwa-v5';
+const CACHE_NAME = 'eaepcg-pwa-v6';
 
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/offline.html',
   '/assets/css/style.css',
-  '/assets/css/style.css?v=5',
+  '/assets/css/style.css?v=6',
   '/assets/css/pwa.css',
-  '/assets/css/pwa.css?v=5',
+  '/assets/css/pwa.css?v=6',
   '/assets/js/api.js',
-  '/assets/js/api.js?v=5',
+  '/assets/js/api.js?v=6',
   '/assets/js/components.js',
-  '/assets/js/components.js?v=5',
+  '/assets/js/components.js?v=6',
   '/assets/js/pwa.js',
-  '/assets/js/pwa.js?v=5',
+  '/assets/js/pwa.js?v=6',
   '/assets/js/pages/offline.js',
   '/assets/img/logo.jpg',
   '/assets/icons/icon-192.png',
