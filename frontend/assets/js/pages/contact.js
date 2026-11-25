@@ -1,6 +1,12 @@
 renderHeader('contact.html');
   renderFooter();
 
+  // Initialize WhatsApp contact link if present
+  const contactWa = document.getElementById('contactWhatsAppLink');
+  if (contactWa && typeof getWhatsAppUrl === 'function') {
+    contactWa.href = getWhatsAppUrl();
+  }
+
   // Handle Form Submission
   document.getElementById('premiumContactForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -50,15 +56,49 @@ renderHeader('contact.html');
         alertBox.style.display = 'block';
         document.getElementById('premiumContactForm').reset();
       } else {
-        // Guest User: also Redirect to WhatsApp
-        let waText = `*EAEPCG - Nouveau Contact*\n\n`;
-        waText += `*Nom :* ${name}\n`;
-        waText += `*Téléphone :* ${phone}\n`;
-        if (email) waText += `*Email :* ${email}\n`;
-        waText += `*Service:* ${service}\n\n`;
-        waText += `*Message:*\n${message}\n`;
+        // Guest User: also Redirect to WhatsApp with structured professional format
+        const lang = (typeof currentLang === 'function') ? currentLang() : 'fr';
+        let waText = '';
+        if (lang === 'ar') {
+          waText = `🏛️ *مؤسسة الخيرات للطاقة (EAEPCG)*\n` +
+                   `📩 *طلب تواصل واستفسار جديد*\n` +
+                   `──────────────────────────\n` +
+                   `👤 *الاسم :* ${name}\n` +
+                   `📞 *الهاتف :* ${phone}\n` +
+                   (email ? `✉️ *البريد :* ${email}\n` : '') +
+                   `🛠️ *الخدمة :* ${service}\n` +
+                   `──────────────────────────\n` +
+                   `💬 *تفاصيل الرسالة :*\n${message}\n` +
+                   `──────────────────────────\n` +
+                   `_مرسل عبر تطبيق مؤسسة الخيرات للطاقة_`;
+        } else if (lang === 'en') {
+          waText = `🏛️ *Établissement Alkhaïrat Énergie (EAEPCG)*\n` +
+                   `📩 *New Contact & Quote Inquiry*\n` +
+                   `──────────────────────────\n` +
+                   `👤 *Name :* ${name}\n` +
+                   `📞 *Phone :* ${phone}\n` +
+                   (email ? `✉️ *Email :* ${email}\n` : '') +
+                   `🛠️ *Service :* ${service}\n` +
+                   `──────────────────────────\n` +
+                   `💬 *Message :*\n${message}\n` +
+                   `──────────────────────────\n` +
+                   `_Sent via Alkhaïrat Énergie Platform_`;
+        } else {
+          waText = `🏛️ *Établissement Alkhaïrat Énergie (EAEPCG)*\n` +
+                   `📩 *Nouvelle demande de contact & devis*\n` +
+                   `──────────────────────────\n` +
+                   `👤 *Nom :* ${name}\n` +
+                   `📞 *Téléphone :* ${phone}\n` +
+                   (email ? `✉️ *Email :* ${email}\n` : '') +
+                   `🛠️ *Service :* ${service}\n` +
+                   `──────────────────────────\n` +
+                   `💬 *Message :*\n${message}\n` +
+                   `──────────────────────────\n` +
+                   `_Envoyé via l'application Alkhaïrat Énergie_`;
+        }
 
-        const waUrl = `https://wa.me/23566341078?text=${encodeURIComponent(waText)}`;
+        const phoneTarget = (typeof COMPANY_CONFIG !== 'undefined' && COMPANY_CONFIG.phoneRaw) ? COMPANY_CONFIG.phoneRaw : '23566341078';
+        const waUrl = `https://wa.me/${phoneTarget}?text=${encodeURIComponent(waText)}`;
         window.open(waUrl, '_blank');
 
         alertBox.className = 'alert-message alert-success';

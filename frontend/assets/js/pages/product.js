@@ -60,6 +60,11 @@ renderHeader('products.html'); renderFooter();
   const container = document.getElementById('itemsContainer');
   renderLoading(container);
   apiFetch('/products/'+encodeURIComponent(slug)).then(({product,items})=>{
+    window.currentProductForWhatsApp = product;
+    const localizedName = currentLang() === 'en' ? (product.name_en || product.name_fr) : (product.name_fr || product.name_en);
+    if (waBtn && typeof getProductWhatsAppUrl === 'function') {
+      waBtn.href = getProductWhatsAppUrl(localizedName, window.location.href);
+    }
     const lang = document.documentElement.lang;
     const nameFr = escapeHtml(product.name_fr), nameEn = escapeHtml(product.name_en);
     document.getElementById('heroEyebrow').innerHTML=`<span data-fr>${nameFr}</span><span data-en>${nameEn}</span><span data-ar>${nameFr}</span>`;

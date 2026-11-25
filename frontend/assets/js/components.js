@@ -5,8 +5,81 @@ const COMPANY_CONFIG = {
   address: 'Quartier Am-Rigo, Abéché, Tchad'
 };
 
+function getDefaultWhatsAppMessage() {
+  const lang = (typeof currentLang === 'function')
+    ? currentLang()
+    : ((typeof localStorage !== 'undefined' && localStorage.getItem('eaepcg_lang')) || 'fr');
+
+  if (lang === 'ar') {
+    return (
+      `السلام عليكم ورحمة الله وبركاته 👋\n\n` +
+      `فريق مؤسسة الخيرات للطاقة والتجارة العامة (EAEPCG)،\n\n` +
+      `أتواصل معكم للاستفسار وطلب تسعيرة بخصوص حلولكم في الطاقة الشمسية، المضخات والمعدات.\n\n` +
+      `يرجى التكرم بإفادتي وتوجيهي.\n\n` +
+      `شكراً جزيلاً لكم! 🤝`
+    );
+  }
+  if (lang === 'en') {
+    return (
+      `Hello Alkhaïrat Énergie (EAEPCG) team 👋\n\n` +
+      `I am contacting you regarding your energy solutions, equipment, and quotation inquiries.\n\n` +
+      `Could you please assist and guide me?\n\n` +
+      `Thank you in advance for your support! 🤝`
+    );
+  }
+  return (
+    `Bonjour l'équipe Alkhaïrat Énergie (EAEPCG) 👋\n\n` +
+    `Je vous contacte pour une demande d'informations et de devis concernant vos solutions énergétiques et équipements.\n\n` +
+    `Pourriez-vous s'il vous plaît me renseigner et m'orienter ?\n\n` +
+    `Merci d'avance pour votre accueil et votre assistance ! 🤝`
+  );
+}
+
+function getProductWhatsAppMessage(productName, productUrl) {
+  const lang = (typeof currentLang === 'function')
+    ? currentLang()
+    : ((typeof localStorage !== 'undefined' && localStorage.getItem('eaepcg_lang')) || 'fr');
+  const url = productUrl || (typeof window !== 'undefined' ? window.location.href : '');
+  const name = productName || 'Équipement Alkhaïrat';
+
+  if (lang === 'ar') {
+    return (
+      `السلام عليكم ورحمة الله وبركاته 👋\n\n` +
+      `فريق مؤسسة الخيرات للطاقة (EAEPCG)،\n\n` +
+      `أود الاستفسار وطلب تسعيرة بخصوص المنتج التالي الذي اطلعت عليه في تطبيقكم:\n\n` +
+      `📦 *المنتج :* ${name}\n` +
+      (url ? `🔗 *الرابط :* ${url}\n\n` : `\n`) +
+      `هل يمكن تزويدي بالسعر الحالي، مدى التوفر ومواعيد التوصيل؟\n\n` +
+      `شكراً جزيلاً لكم! 🤝`
+    );
+  }
+  if (lang === 'en') {
+    return (
+      `Hello Alkhaïrat Énergie (EAEPCG) team 👋\n\n` +
+      `I am interested in the following product viewed on your platform:\n\n` +
+      `📦 *Product:* ${name}\n` +
+      (url ? `🔗 *Link:* ${url}\n\n` : `\n`) +
+      `Could you please provide information on current pricing, availability, and delivery options?\n\n` +
+      `Thank you very much! 🤝`
+    );
+  }
+  return (
+    `Bonjour l'équipe Alkhaïrat Énergie (EAEPCG) 👋\n\n` +
+    `Je suis intéressé(e) par le produit suivant consulté sur votre application :\n\n` +
+    `📦 *Produit :* ${name}\n` +
+    (url ? `🔗 *Lien :* ${url}\n\n` : `\n`) +
+    `Pourriez-vous m'indiquer la disponibilité, le tarif actuel et les modalités de commande / livraison ?\n\n` +
+    `Merci beaucoup pour votre retour ! 🤝`
+  );
+}
+
 function getWhatsAppUrl(customMessage = '') {
-  const msg = customMessage || "Bonjour, je vous contacte depuis l'application Alkhaïrat Énergie (EAEPCG).";
+  const msg = customMessage || getDefaultWhatsAppMessage();
+  return `https://wa.me/${COMPANY_CONFIG.phoneRaw}?text=${encodeURIComponent(msg)}`;
+}
+
+function getProductWhatsAppUrl(productName, productUrl) {
+  const msg = getProductWhatsAppMessage(productName, productUrl);
   return `https://wa.me/${COMPANY_CONFIG.phoneRaw}?text=${encodeURIComponent(msg)}`;
 }
 
@@ -487,9 +560,28 @@ function initLangToggle(){
   document.documentElement.lang = currentLang();
 }
 
+function updateDynamicWhatsAppLinks() {
+  if (typeof document === 'undefined') return;
+  const fab = document.querySelector('.whatsapp-fab');
+  if (fab) fab.href = getWhatsAppUrl();
+  const contactWa = document.getElementById('contactWhatsAppLink');
+  if (contactWa) contactWa.href = getWhatsAppUrl();
+  const prodWa = document.getElementById('btnProductWhatsApp');
+  if (prodWa) {
+    if (typeof window !== 'undefined' && window.currentProductForWhatsApp) {
+      const p = window.currentProductForWhatsApp;
+      const localizedName = currentLang() === 'en' ? (p.name_en || p.name_fr) : (p.name_fr || p.name_en);
+      prodWa.href = getProductWhatsAppUrl(localizedName, window.location.href);
+    } else {
+      prodWa.href = getWhatsAppUrl();
+    }
+  }
+}
+
 function setLang(lang){
   document.documentElement.lang = lang;
   localStorage.setItem('eaepcg_lang', lang);
+  updateDynamicWhatsAppLinks();
 }
 
 const UI_TEXT = {
@@ -752,6 +844,10 @@ function initMobileExperience() {
 if (typeof window !== 'undefined') {
   window.COMPANY_CONFIG = COMPANY_CONFIG;
   window.getWhatsAppUrl = getWhatsAppUrl;
+  window.getProductWhatsAppUrl = getProductWhatsAppUrl;
+  window.getDefaultWhatsAppMessage = getDefaultWhatsAppMessage;
+  window.getProductWhatsAppMessage = getProductWhatsAppMessage;
+  window.updateDynamicWhatsAppLinks = updateDynamicWhatsAppLinks;
   window.openWhatsApp = openWhatsApp;
   window.callCompany = callCompany;
   window.shareProduct = shareProduct;
@@ -781,6 +877,9 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     COMPANY_CONFIG,
     getWhatsAppUrl,
+    getProductWhatsAppUrl,
+    getDefaultWhatsAppMessage,
+    getProductWhatsAppMessage,
     escapeHtml,
     sanitizeImageSrc,
     formatPrice,
